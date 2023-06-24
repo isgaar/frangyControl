@@ -30,7 +30,7 @@ return [
     |
     */
 
-    'use_ico_only' => false,
+    'use_ico_only' => true,
     'use_full_favicon' => false,
 
     /*
@@ -111,7 +111,7 @@ return [
         'enabled' => true,
         'img' => [
             'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
-            'alt' => 'AdminLTE Preloader Image',
+            'alt' => 'Frangy logo',
             'effect' => 'animation__shake',
             'width' => 60,
             'height' => 60,
@@ -132,7 +132,7 @@ return [
 
     'usermenu_enabled' => true,
     'usermenu_header' => false,
-    'usermenu_header_class' => 'bg-primary',
+    'usermenu_header_class' => 'bg-dark',
     'usermenu_image' => false,
     'usermenu_desc' => false,
     'usermenu_profile_url' => false,
@@ -152,9 +152,9 @@ return [
     'layout_topnav' => null,
     'layout_boxed' => null,
     'layout_fixed_sidebar' => null,
-    'layout_fixed_navbar' => null,
+    'layout_fixed_navbar' => true,
     'layout_fixed_footer' => null,
-    'layout_dark_mode' => null,
+    'layout_dark_mode' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -168,14 +168,21 @@ return [
     |
     */
 
+    // 'classes_auth_card' => 'card-outline card-primary',
+    // 'classes_auth_header' => '',
+    // 'classes_auth_body' => '',
+    // 'classes_auth_footer' => '',
+    // 'classes_auth_icon' => '',
+    // 'classes_auth_btn' => 'btn-flat btn-primary',
+
     'classes_auth_card' => 'card-outline card-primary',
     'classes_auth_header' => '',
-    'classes_auth_body' => '',
-    'classes_auth_footer' => '',
-    'classes_auth_icon' => '',
-    'classes_auth_btn' => 'btn-flat btn-primary',
-
+    'classes_auth_body' => 'bg-gradient-dark',
+    'classes_auth_footer' => 'text-center',
+    'classes_auth_icon' => 'fa-fw text-dark',
+    'classes_auth_btn' => 'btn-flat btn-light',
     /*
+
     |--------------------------------------------------------------------------
     | Admin Panel Classes
     |--------------------------------------------------------------------------
@@ -211,12 +218,12 @@ return [
     |
     */
 
-    'sidebar_mini' => 'lg',
+    'sidebar_mini' => 'false',
     'sidebar_collapse' => false,
     'sidebar_collapse_auto_size' => false,
     'sidebar_collapse_remember' => false,
     'sidebar_collapse_remember_no_transition' => true,
-    'sidebar_scrollbar_theme' => 'os-theme-dark',
+    'sidebar_scrollbar_theme' => 'os-theme-light',
     'sidebar_scrollbar_auto_hide' => 'l',
     'sidebar_nav_accordion' => true,
     'sidebar_nav_animation_speed' => 300,
@@ -297,6 +304,16 @@ return [
             'text'         => 'search',
             'topnav_right' => true,
         ],
+        [
+            'type'         => 'fullscreen-widget',
+            'topnav_right' => false,
+        ],
+        [
+            'text' => 'Inicio',
+            'url' => 'home',
+            'topnav' => true,
+
+        ],
 
         // Sidebar items:
         
@@ -310,7 +327,7 @@ return [
         [
             'text'        => 'Nueva orden',
             'url'         => 'admin/#',
-            'icon'        => 'far fa-fw fa-file',
+            'icon' => 'fas fa-fw fa-shopping-bag',
             'label'       => 4,
             'label_color' => 'success',
         ],
@@ -386,6 +403,13 @@ return [
             'icon'        => 'fas fa-fw fa-lock',
             'label'       => 4,
             'label_color' => 'success',
+        ],
+        [
+            'text'        => 'Empleados',
+            'url'         => '/admin/users/usuarios',
+            'icon' => 'fas fa-fw fa-users',
+            //'label'       => 0,
+            //'label_color' => 'success',
         ],
 
         
