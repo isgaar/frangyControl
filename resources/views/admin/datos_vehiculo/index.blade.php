@@ -22,11 +22,11 @@
         <div class="card-header">
         <ul>
             <li style="display: inline-block;">
-                <h1 style="display: inline-block;">Empleados</h1>
+                <h1 style="display: inline-block;">Datos generales</h1>
             </li>
             <li style="display: inline-block; float: right;">
-                <a type="button" href="{{ route('users.create') }}" class="btn btn-dark" title="Agregar empleado">
-                    <i class="fas fa-user-plus"></i> Nuevo empleado
+                <a type="button" href="{{ route('datosv.create') }}" class="btn btn-dark" title="Agregar empleado">
+                    <i class="fas fa-puzzle-piece"></i> Nuevos datos
                 </a>
             </li>
         </ul>
@@ -44,7 +44,7 @@
                                 {{($data->total()==0) ? '0' : $data->perPage()}}</h5>
                             </div>
                             <div class="col-lg-5 col-sm-5 col-5">
-                                <form action="{{route('users.index')}}" method="get">
+                                <form action="{{route('datosv.index')}}" method="get">
                                     <div class="input-group">
                                         <input type="text" class="form-control" name="search"
                                         value="{{$search}}" placeholder="Buscar">
@@ -59,27 +59,24 @@
                             <thead>
                             <tr>
                                 <th style="width: 10%;">ID</th>
-                                <th style="width: 40%;">Nombre</th>
-                                <th style="width: 30%;">Correo electrónico</th>
+                                <th style="width: 40%;">Marca</th>
                                 <th style="width: 20%;">Acciones</th>
                             </tr>
                             </thead>
                             <tbody>
                             @foreach($data as $row)
                             <tr>
-                                <td>{{ $row->id }}</td>
-                                <td>{{ $row->name }}</td>
-                                <td>{{ $row->email }}</td>
+                                <td>{{ $row->id_vehiculo }}</td>
+                                <td>{{ $row->marca }}</td>
                                 <td>
-                                    <a class="btn btn-outline-light" href="{{route('users.show',$row->id)}}" title="Detalle de usuario/empleado"><i class="fas fa-solid fa-eye"></i></a>
-                                    <a class="btn btn-outline-warning" href="{{route('users.edit',$row->id)}}" title="Editar empleado"><i class="fas fa-solid fa-pen"></i></a>
-                                    <a class="btn btn-outline-danger" href="{{route('users.delete',$row->id)}}" title="Eliminar empleado"><i class="fas fa-solid fa-trash"></i></a>
+                                    <a class="btn btn-outline-warning" href="{{route('datosv.edit',$row->id_vehiculo)}}" title="Editar empleado"><i class="fas fa-solid fa-pen"></i></a>
+                                    <a class="btn btn-outline-danger" href="{{route('datosv.delete',$row->id_vehiculo)}}" title="Eliminar empleado"><i class="fas fa-solid fa-trash"></i></a>
                                 </td>
                             </tr>
                             @endforeach
                             </tbody>
                         </table>
-                       {{ $data->setPath(route('users.index'))->appends(Request::except('page'))->render('pagination::bootstrap-4') }}
+                       {{ $data->setPath(route('datosv.index'))->appends(Request::except('page'))->render('pagination::bootstrap-4') }}
                     </div>
                 </div>
             </div>

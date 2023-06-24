@@ -17,18 +17,19 @@
     @endif
 
     <div class="card">
-        <div class="card-header">
-            <ul>
-                <b>Visualizar</b> <i class="fas fa-solid fa-eye"></i>
-            </ul>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-lg-12 col-sm-12 col-12">
-                    <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Información Requerida</h3>
-                        </div>
+    <div class="card-header">
+        <ul>
+            <b>Visualizar</b> <i class="fas fa-solid fa-eye"></i>
+        </ul>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h2 class="card-title">Información Requerida</h2>
+                    </div>
+                    <div class="card-body">
                         <div class="form-group">
                             <label for="name">Nombre del usuario</label>
                             {!! Form::UTTextOnly('name', '', 'Nombre del usuario', $user->name, $errors, 40, true, true) !!}
@@ -49,27 +50,25 @@
                             </div>
                         </div>
                     </div>
-                    
-                    <script>
-                        function togglePasswordVisibility(fieldId) {
-                            var field = document.getElementById(fieldId);
-                            if (field.type === "password") {
-                                field.type = "text";
-                            } else {
-                                field.type = "password";
-                            }
-                        }
-                        </script>
-
-                <div class="card-footer text-center">
-                    <a type="button" href="{{ route('users.index') }}" class="btn btn-primary">Regresar</a>
-                <div class="form-group">
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
+        <div class="card-footer text-center">
+            <a type="button" href="{{ route('users.index') }}" class="btn btn-primary">Regresar</a>
+        </div>
     </div>
+</div>
+
+<script>
+function togglePasswordVisibility(fieldId) {
+    var field = document.getElementById(fieldId);
+    if (field.type === "password") {
+        field.type = "text";
+    } else {
+        field.type = "password";
+    }
+}
+</script>
 @stop
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>

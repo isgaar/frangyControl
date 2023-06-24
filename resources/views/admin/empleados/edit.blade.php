@@ -19,7 +19,7 @@
     <div class="card">
         <div class="card-header">
             <ul>
-                <b>Editando empleado</b>
+                <b>Editando empleado</b> <i class="fa-solid fa-user-pen"></i>
             </ul>
         </div>
         <div class="card-body">

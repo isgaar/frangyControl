@@ -81,7 +81,7 @@
 
                         </div>
 
-                    <div class="card-footer text-center">
+                        <div class="card-footer text-center">
                             <div class="float-child">
                             <a type="button" href="{{ route('users.index') }}" class="btn btn-danger">Cancelar</a>
                             <button type="submit" class="btn btn-primary">Guardar</button>

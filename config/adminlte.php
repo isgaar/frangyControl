@@ -218,14 +218,14 @@ return [
     |
     */
 
-    'sidebar_mini' => 'false',
+    'sidebar_mini' => 'true',
     'sidebar_collapse' => false,
-    'sidebar_collapse_auto_size' => false,
+    'sidebar_collapse_auto_size' => true,
     'sidebar_collapse_remember' => false,
-    'sidebar_collapse_remember_no_transition' => true,
+    'sidebar_collapse_remember_no_transition' => false,
     'sidebar_scrollbar_theme' => 'os-theme-light',
     'sidebar_scrollbar_auto_hide' => 'l',
-    'sidebar_nav_accordion' => true,
+    'sidebar_nav_accordion' => false,
     'sidebar_nav_animation_speed' => 300,
 
     /*
@@ -242,7 +242,7 @@ return [
 
     'right_sidebar' => false,
     'right_sidebar_icon' => 'fas fa-cogs',
-    'right_sidebar_theme' => 'dark',
+    'right_sidebar_theme' => 'light',
     'right_sidebar_slide' => true,
     'right_sidebar_push' => true,
     'right_sidebar_scrollbar_theme' => 'os-theme-light',
@@ -315,7 +315,7 @@ return [
 
         ],
 
-        // Sidebar items:
+        // Sidebar items: <i class="></i>
         
         [
             'text' => 'blog',
@@ -325,16 +325,14 @@ return [
 
         ['header' => ' Vista Órdenes'],
         [
-            'text'        => 'Nueva orden',
+            'text'        => 'Ordenes',
             'url'         => 'admin/#',
-            'icon' => 'fas fa-fw fa-shopping-bag',
-            'label'       => 4,
-            'label_color' => 'success',
+            'icon'        => 'fas fa-clipboard-list',
         ],
         [
-            'text'        => 'Consultar',
+            'text'        => 'Clientes',
             'url'         => 'admin/#',
-            'icon'        => 'far fa-fw fa-file',
+            'icon'        => 'fas fa-user-tie',
         ],
     
         // [
@@ -395,19 +393,17 @@ return [
         //     'text'       => 'information',
         //     'icon_color' => 'cyan',
         //     'url'        => '#',
-        // ],
+        // ],<i class=""></i>
 
         [
-            'text'        => 'Agregar datos generales',
-            'url'         => 'admin/#',
-            'icon'        => 'fas fa-fw fa-lock',
-            'label'       => 4,
-            'label_color' => 'success',
+            'text'        => 'Datos generales',
+            'url'         => '/admin/datosv/vehiculosnom',
+            'icon'        => 'fas fa-pencil-ruler',
         ],
         [
             'text'        => 'Empleados',
             'url'         => '/admin/users/usuarios',
-            'icon' => 'fas fa-fw fa-users',
+            'icon'        => 'fas fa-fw fa-users',
             //'label'       => 0,
             //'label_color' => 'success',
         ],

@@ -4390,6 +4390,7 @@ input[type="button"].btn-block {
 .navbar {
   position: relative;
   display: -ms-flexbox;
+  background-color: red;
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;

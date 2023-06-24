@@ -9,20 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
-        Schema::create('datos_vehiculo', function (Blueprint $table) {
-            $table->increments('id_vehiculo');
-            $table->string('marca');
-            $table->timestamps();
+        Schema::table('datos_vehiculo', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('datos_vehiculo');
+        Schema::table('datos_vehiculo', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

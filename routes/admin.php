@@ -16,3 +16,13 @@ Route::group(['prefix' => 'users'], function(){
     Route::get('/delete/{id}',[App\Http\Controllers\Admin\UserController::class, 'delete'])->name('users.delete');
     Route::get('{id}/destroy',[App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('users.destroy');
 });
+Route::group(['prefix' => 'datosv'], function(){
+    Route::get('/vehiculosnom',[App\Http\Controllers\Admin\DatovController::class, 'index'])->name('datosv.index');
+    Route::get('/nuevo',[App\Http\Controllers\Admin\DatovController::class, 'create'])->name('datosv.create');
+    Route::post('/store',[App\Http\Controllers\Admin\DatovController::class, 'store'])->name('datosv.store');
+    Route::get('/edit/{id}',[App\Http\Controllers\Admin\DatovController::class, 'edit'])->name('datosv.edit');
+    Route::put('/{id}',[App\Http\Controllers\Admin\DatovController::class, 'update'])->name('datosv.update');
+    Route::get('/show/{id_vehiculo}',[App\Http\Controllers\Admin\DatovController::class, 'show'])->name('datosv.show');
+    Route::get('/delete/{id}',[App\Http\Controllers\Admin\DatovController::class, 'delete'])->name('datosv.delete');
+    Route::get('/{id}/destroy',[App\Http\Controllers\Admin\DatovController::class, 'destroy'])->name('datosv.destroy');
+});
