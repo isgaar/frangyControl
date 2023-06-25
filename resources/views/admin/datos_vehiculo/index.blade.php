@@ -34,12 +34,8 @@
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-lg-12 col-sm-12 col-12">
-                
-
-                <div class="row">
     <div class="col-md-4">
-        <h3>Marcas de vehículos</h3>
+        <h5 class="text-center">Marcas de vehículos</h5>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -62,7 +58,7 @@
     </div>
 
     <div class="col-md-4">
-        <h3>Tipos de vehículos</h3>
+        <h5 class="text-center">Tipos de vehículos</h5>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -85,7 +81,7 @@
     </div>
 
     <div class="col-md-4">
-        <h3>Nombres de servicios</h3>
+        <h5 class="text-center">Nombres de servicios</h5>
         <table class="table table-hover">
             <thead>
                 <tr>
