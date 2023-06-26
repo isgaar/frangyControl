@@ -82,10 +82,11 @@
                         </div>
 
                         <div class="card-footer text-center">
-                            <div class="float-child">
-                            <a type="button" href="{{ route('users.index') }}" class="btn btn-danger">Cancelar</a>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        <div class="d-flex justify-content-between">
+                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-light">Retroceder</a>
+                            <button type="submit" class="btn btn-outline-success">Guardar</button>
                         </div>
+                    </div>
 
                         {!! Form::close() !!}
                     </div>

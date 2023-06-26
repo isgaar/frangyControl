@@ -50,35 +50,41 @@ class TipoVehiculoController extends Controller
         ]);
 
         try {
+            DB::beginTransaction();
             $tipoVehiculo = new TipoVehiculo([
                 'tipo' => $request['tipo']
             ]);
 
             $tipoVehiculo->save();
 
-            return redirect(route('tipo_vehiculo.index'))->with('status', 'Se ha agregado correctamente el tipo de vehículo')->with('status_type', 'success');
+            DB::commit();
+            Session::flash('status', 'Se ha agregado correctamente el tipo de vehiculo');
+            Session::flash('status_type', 'success');
+            return redirect(route('datosv.index'));
+
         } catch (\Illuminate\Database\QueryException $ex) {
-            return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
+            DB::rollBack();
+            Session::flash('status', $ex->getMessage());
+            Session::flash('status_type', 'error-Query');
+            return back();
+
         } catch (\Exception $e) {
-            return back()->with('status', $e->getMessage())->with('status_type', 'error');
+            DB::rollBack();
+            Session::flash('status', $e->getMessage());
+            Session::flash('status_type', 'error');
+            return back();
         }
     }
 
-    public function show($id)
+    public function edit($id_tvehiculo)
     {
-        $tipoVehiculo = TipoVehiculo::findOrFail($id);
-        return view('tipo_vehiculo.show', ['tipoVehiculo' => $tipoVehiculo]);
+        $tipoVehiculo = TipoVehiculo::findOrFail($id_tvehiculo);
+        return view('admin.tipo_vehiculo.edit', ['tipoVehiculo' => $tipoVehiculo]);
     }
 
-    public function edit($id)
+    public function update(Request $request, $id_tvehiculo)
     {
-        $tipoVehiculo = TipoVehiculo::findOrFail($id);
-        return view('tipo_vehiculo.edit', ['tipoVehiculo' => $tipoVehiculo]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $tipoVehiculo = TipoVehiculo::findOrFail($id);
+        $tipoVehiculo = TipoVehiculo::findOrFail($id_tvehiculo);
 
         $request->validate([
             'tipo' => 'required'
@@ -89,7 +95,7 @@ class TipoVehiculoController extends Controller
 
             $tipoVehiculo->save();
 
-            return redirect(route('tipo_vehiculo.index'))->with('status', 'Se ha editado correctamente el tipo de vehículo')->with('status_type', 'success');
+            return redirect(route('datosv.index'))->with('status', 'Se ha editado correctamente el tipo de vehículo')->with('status_type', 'success');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
         } catch (\Exception $e) {
@@ -97,20 +103,20 @@ class TipoVehiculoController extends Controller
         }
     }
 
-    public function delete($id)
+    public function delete($id_tvehiculo)
     {
-        $tipoVehiculo = TipoVehiculo::findOrFail($id);
-        return view('tipo_vehiculo.delete', ['tipoVehiculo' => $tipoVehiculo]);
+        $tipoVehiculo = TipoVehiculo::findOrFail($id_tvehiculo);
+        return view('admin.tipo_vehiculo.delete', ['tipoVehiculo' => $tipoVehiculo]);
     }
 
-    public function destroy($id)
+    public function destroy($id_tvehiculo)
     {
-        $tipoVehiculo = TipoVehiculo::findOrFail($id);
+        $tipoVehiculo = TipoVehiculo::findOrFail($id_tvehiculo);
 
         try {
             $tipoVehiculo->delete();
 
-            return redirect(route('tipo_vehiculo.index'))->with('status', 'Se ha eliminado correctamente el tipo de vehículo')->with('status_type', 'success');
+            return redirect(route('datosv.index'))->with('status', 'Se ha eliminado correctamente el tipo de vehículo')->with('status_type', 'warning');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
         } catch (\Exception $e) {

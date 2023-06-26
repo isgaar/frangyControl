@@ -52,6 +52,45 @@ class DatovController extends Controller
     {
         return view('admin.datos_vehiculo.create');
     }
+    
+    public function createunique()
+    {
+        return view('admin.datos_vehiculo.createunique');
+    }
+
+    public function storeunique(Request $request)
+    {
+        $request->validate([
+            'marca' => 'required'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            $datosVehiculo = new DatosVehiculo([
+                'marca' => $request['marca']
+            ]);
+
+            $datosVehiculo->save();
+
+            DB::commit();
+            Session::flash('status', 'Se ha guardado correctamente la marca');
+            Session::flash('status_type', 'success');
+            return redirect(route('datosv.index'));
+
+        } catch (\Illuminate\Database\QueryException $ex) {
+            DB::rollBack();
+            Session::flash('status', $ex->getMessage());
+            Session::flash('status_type', 'error-Query');
+            return back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Session::flash('status', $e->getMessage());
+            Session::flash('status_type', 'error');
+            return back();
+        }
+    }
 
     public function store(Request $request)
     {
@@ -68,10 +107,23 @@ class DatovController extends Controller
 
             $datosVehiculo->save();
 
+            $tipoServicio = new TipoServicio([
+                
+                'nombreServicio' => $request['nombre_servicio']
+            ]);
+
+            $tipoServicio->save();
+
+            $tipoVehiculo = new TipoVehiculo([
+                'tipo' => $request['tipo']
+            ]);
+
+            $tipoVehiculo->save();
+
             DB::commit();
-            Session::flash('status', 'Se ha agregado correctamente el nombre');
+            Session::flash('status', 'Se han cargado correctamente los datos a las tablas');
             Session::flash('status_type', 'success');
-            return redirect(route('datos.index'));
+            return redirect(route('datosv.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -93,15 +145,15 @@ class DatovController extends Controller
         return view('admin.datos_vehiculo.show', ['datoVehiculo' => $datoVehiculo]);
     }
 
-    public function edit($id)
+    public function edit($id_vehiculo)
     {
-        $datoVehiculo = DatosVehiculo::findOrFail($id);
+        $datoVehiculo = DatosVehiculo::findOrFail($id_vehiculo);
         return view('admin.datos_vehiculo.edit', ['datoVehiculo' => $datoVehiculo]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_vehiculo)
     {
-        $datoVehiculo = DatosVehiculo::findOrFail($id);
+        $datoVehiculo = DatosVehiculo::findOrFail($id_vehiculo);
 
         $request->validate([
             'marca' => 'required'
@@ -111,14 +163,13 @@ class DatovController extends Controller
             DB::beginTransaction();
 
             $datoVehiculo->marca = $request['marca'];
-            $datoVehiculo->tipo = $request['tipo'];
 
             $datoVehiculo->save();
 
             DB::commit();
-            Session::flash('status', 'Se ha editado correctamente el registro');
+            Session::flash('status', 'Se ha editado correctamente la marca');
             Session::flash('status_type', 'success');
-            return redirect(route('datos.index'));
+            return redirect(route('datosv.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -134,24 +185,24 @@ class DatovController extends Controller
         }
     }
 
-    public function delete($id)
+    public function delete($id_vehiculo)
     {
-        $datoVehiculo = DatosVehiculo::findOrFail($id);
+        $datoVehiculo = DatosVehiculo::findOrFail($id_vehiculo);
         return view('admin.datos_vehiculo.delete', ['datoVehiculo' => $datoVehiculo]);
     }
 
-    public function destroy($id)
+    public function destroy($id_vehiculo)
     {
         try {
             DB::beginTransaction();
 
-            $datoVehiculo = DatosVehiculo::findOrFail($id);
+            $datoVehiculo = DatosVehiculo::findOrFail($id_vehiculo);
             $datoVehiculo->delete();
 
             DB::commit();
-            Session::flash('status', 'Se ha eliminado correctamente el registro');
-            Session::flash('status_type', 'success');
-            return redirect(route('datos.index'));
+            Session::flash('status', 'Se ha eliminado correctamente el nombre', 1);
+            Session::flash('status_type', 'warning', 1);
+            return redirect(route('datosv.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -165,6 +216,7 @@ class DatovController extends Controller
             Session::flash('status_type', 'error');
             return back();
         }
+        
     }
 
 }

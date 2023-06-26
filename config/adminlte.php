@@ -31,7 +31,7 @@ return [
     */
 
     'use_ico_only' => true,
-    'use_full_favicon' => false,
+    'use_full_favicon' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +65,8 @@ return [
 
     'logo' => 'Bienvenido',
     'logo_img' => 'icon.svg',
-    // 'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'usermenu' => true,
+// 'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
@@ -131,10 +132,10 @@ return [
     */
 
     'usermenu_enabled' => true,
-    'usermenu_header' => false,
+    'usermenu_header' => true,
     'usermenu_header_class' => 'bg-dark',
-    'usermenu_image' => false,
-    'usermenu_desc' => false,
+    'usermenu_image' => true,
+    'usermenu_desc' => true,
     'usermenu_profile_url' => false,
 
     /*
@@ -151,10 +152,11 @@ return [
 
     'layout_topnav' => null,
     'layout_boxed' => null,
-    'layout_fixed_sidebar' => null,
-    'layout_fixed_navbar' => true,
-    'layout_fixed_footer' => null,
+    'layout_fixed_sidebar' => false,
+    'layout_fixed_navbar' => false,
+    'layout_fixed_footer' => true,
     'layout_dark_mode' => true,
+
 
     /*
     |--------------------------------------------------------------------------
@@ -168,19 +170,19 @@ return [
     |
     */
 
+     'classes_auth_card' => 'card-outline card-primary',
+     'classes_auth_header' => '',
+     'classes_auth_body' => '',
+     'classes_auth_footer' => '',
+     'classes_auth_icon' => '',
+     'classes_auth_btn' => 'btn-flat btn-primary',
+
     // 'classes_auth_card' => 'card-outline card-primary',
     // 'classes_auth_header' => '',
-    // 'classes_auth_body' => '',
-    // 'classes_auth_footer' => '',
-    // 'classes_auth_icon' => '',
+    // 'classes_auth_body' => 'bg-gradient-dark',
+    // 'classes_auth_footer' => 'text-center',
+    // 'classes_auth_icon' => 'fa-fw text-light',
     // 'classes_auth_btn' => 'btn-flat btn-primary',
-
-    'classes_auth_card' => 'card-outline card-primary',
-    'classes_auth_header' => '',
-    'classes_auth_body' => 'bg-gradient-dark',
-    'classes_auth_footer' => 'text-center',
-    'classes_auth_icon' => 'fa-fw text-dark',
-    'classes_auth_btn' => 'btn-flat btn-light',
     /*
 
     |--------------------------------------------------------------------------
@@ -194,17 +196,18 @@ return [
     |
     */
 
-    'classes_body' => '',
-    'classes_brand' => '',
-    'classes_brand_text' => '',
-    'classes_content_wrapper' => '',
-    'classes_content_header' => '',
+    'classes_body' => 'bg-light',
+    'classes_brand' => 'bg-danger',
+    'classes_brand_text' => 'text-white',
+    'classes_content_wrapper' => 'bg-light',
+    'classes_content_header' => 'bg-dark',
     'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
+    'classes_sidebar' => 'sidebar-dark-danger elevation-4',
     'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-white navbar-light',
+    'classes_topnav' => 'navbar-dark',
     'classes_topnav_nav' => 'navbar-expand',
     'classes_topnav_container' => 'container',
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -218,7 +221,7 @@ return [
     |
     */
 
-    'sidebar_mini' => 'true',
+    'sidebar_mini' => false,
     'sidebar_collapse' => false,
     'sidebar_collapse_auto_size' => true,
     'sidebar_collapse_remember' => false,
@@ -227,6 +230,7 @@ return [
     'sidebar_scrollbar_auto_hide' => 'l',
     'sidebar_nav_accordion' => false,
     'sidebar_nav_animation_speed' => 300,
+
 
     /*
     |--------------------------------------------------------------------------
@@ -300,22 +304,12 @@ return [
     'menu' => [
         // Navbar items:
         [
-            'type'         => 'navbar-search',
-            'text'         => 'search',
-            'topnav_right' => true,
-        ],
-        [
             'type'         => 'fullscreen-widget',
-            'topnav_right' => false,
-        ],
-        [
-            'text' => 'Inicio',
-            'url' => 'home',
-            'topnav' => true,
-
+            'topnav_right' => true,
         ],
 
         // Sidebar items: <i class="></i>
+        
         
         [
             'text' => 'blog',
@@ -393,7 +387,7 @@ return [
         //     'text'       => 'information',
         //     'icon_color' => 'cyan',
         //     'url'        => '#',
-        // ],<i class=""></i>
+        // ],<i class=""></i> <i class=""></i>
 
         [
             'text'        => 'Datos generales',
@@ -401,9 +395,9 @@ return [
             'icon'        => 'fas fa-pencil-ruler',
         ],
         [
-            'text'        => 'Empleados',
+            'text'        => 'Sesiones de Empleados',
             'url'         => '/admin/users/usuarios',
-            'icon'        => 'fas fa-fw fa-users',
+            'icon'        => 'fas fa-id-card',
             //'label'       => 0,
             //'label_color' => 'success',
         ],
@@ -563,5 +557,5 @@ return [
     |
     */
 
-    'livewire' => false,
+    'livewire' => true,
 ];

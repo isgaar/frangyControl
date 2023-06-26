@@ -44,47 +44,80 @@ class TiposController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
-            'nombreServicio' => 'required'
-        ]);
+{
+    $request->validate([
+        'nombreServicio' => 'required'
+    ]);
 
-        try {
-            DB::beginTransaction();
+    try {
+        DB::beginTransaction();
+        
+        $tipoServicio = new TipoServicio();
+        $tipoServicio->nombreServicio = $request->input('nombreServicio');
+        $tipoServicio->save();
 
-            $tipoServicio = new TipoServicio([
-                'nombreServicio' => $request['nombreServicio']
-            ]);
+        DB::commit();
+        Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
+        Session::flash('status_type', 'success');
+        return redirect(route('datosv.index'));
 
-            $tipoServicio->save();
+    } catch (\Illuminate\Database\QueryException $ex) {
+        DB::rollBack();
+        Session::flash('status', $ex->getMessage());
+        Session::flash('status_type', 'error-Query');
+        return back();
 
-            DB::commit();
-            Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
-            Session::flash('status_type', 'success');
-            return redirect(route('tipo_servicio.index'));
-
-        } catch (\Illuminate\Database\QueryException $ex) {
-            DB::rollBack();
-            Session::flash('status', $ex->getMessage());
-            Session::flash('status_type', 'error-Query');
-            return back();
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Session::flash('status', $e->getMessage());
-            Session::flash('status_type', 'error');
-            return back();
-        }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Session::flash('status', $e->getMessage());
+        Session::flash('status_type', 'error');
+        return back();
     }
-    public function edit($id)
+}
+
+
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'nombreServicio' => 'required'
+    //     ]);
+
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $tipoServicio = new TipoServicio([
+    //             'nombreServicio' => $request['nombreServicio']
+    //         ]);
+
+    //         $tipoServicio->save();
+
+    //         DB::commit();
+    //         Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
+    //         Session::flash('status_type', 'success');
+    //         return redirect(route('tipo_servicio.index'));
+
+    //     } catch (\Illuminate\Database\QueryException $ex) {
+    //         DB::rollBack();
+    //         Session::flash('status', $ex->getMessage());
+    //         Session::flash('status_type', 'error-Query');
+    //         return back();
+
+    //     } catch (\Exception $e) {
+    //         DB::rollBack();
+    //         Session::flash('status', $e->getMessage());
+    //         Session::flash('status_type', 'error');
+    //         return back();
+    //     }
+    // }
+    public function edit($id_servicio)
     {
-        $tipoServicio = TipoServicio::findOrFail($id);
+        $tipoServicio = TipoServicio::findOrFail($id_servicio);
         return view('admin.tipo_servicio.edit', ['tipoServicio' => $tipoServicio]);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id_servicio)
     {
-        $tipoServicio = TipoServicio::findOrFail($id);
+        $tipoServicio = TipoServicio::findOrFail($id_servicio);
 
         $request->validate([
             'nombreServicio' => 'required'
@@ -98,9 +131,9 @@ class TiposController extends Controller
             $tipoServicio->save();
 
             DB::commit();
-            Session::flash('status', 'Se ha editado correctamente el tipo de servicio');
+            Session::flash('status', 'Se ha editado correctamente el nombre del servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('tipo_servicio.index'));
+            return redirect(route('datosv.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -116,24 +149,24 @@ class TiposController extends Controller
         }
     }
 
-    public function delete($id)
+    public function delete($id_servicio)
     {
-        $tipoServicio = TipoServicio::findOrFail($id);
+        $tipoServicio = TipoServicio::findOrFail($id_servicio);
         return view('admin.tipo_servicio.delete', ['tipoServicio' => $tipoServicio]);
     }
 
-    public function destroy($id)
+    public function destroy($id_servicio)
     {
         try {
             DB::beginTransaction();
 
-            $tipoServicio = TipoServicio::findOrFail($id);
+            $tipoServicio = TipoServicio::findOrFail($id_servicio);
             $tipoServicio->delete();
 
             DB::commit();
-            Session::flash('status', 'Se ha eliminado correctamente el tipo de servicio');
-            Session::flash('status_type', 'success');
-            return redirect(route('tipo_servicio.index'));
+            Session::flash('status', 'Se ha eliminado correctamente el nombre del servicio');
+            Session::flash('status_type', 'warning');
+            return redirect(route('datosv.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
