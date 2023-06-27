@@ -372,7 +372,6 @@ return [
         //         ],
         //     ],
         // ],
-        ['header' => 'Administrador'],
         // [
         //     'text'       => 'important',
         //     'icon_color' => 'red',
@@ -393,11 +392,13 @@ return [
             'text'        => 'Datos generales',
             'url'         => '/admin/datosv/vehiculosnom',
             'icon'        => 'fas fa-pencil-ruler',
+            'can'         => 'admin.datosv.vehiculosnom',
         ],
         [
             'text'        => 'Sesiones de Empleados',
             'url'         => '/admin/users/usuarios',
             'icon'        => 'fas fa-id-card',
+            'can'         => 'admin.users.usuarios',
             //'label'       => 0,
             //'label_color' => 'success',
         ],

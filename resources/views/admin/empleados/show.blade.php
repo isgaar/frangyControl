@@ -17,26 +17,27 @@
     @endif
 
     <div class="card">
-    <div class="card-header">
-        <ul>
-            <b>Visualizar</b> <i class="fas fa-solid fa-eye"></i>
-        </ul>
+        <div class="card-header">
+            <ul>
+                <b>Visualizar</b> <i class="fas fa-solid fa-eye"></i>
+            </ul>
+        </div>
     </div>
+@stop
+
+@section('content')
     <div class="card-body">
         <div class="row">
             <div class="col-lg-12 col-sm-12 col-12">
                 <div class="card card-primary">
-                    <div class="card-header">
-                        <h2 class="card-title">Información Requerida</h2>
-                    </div>
                     <div class="card-body">
                         <div class="form-group">
                             <label for="name">Nombre del usuario</label>
-                            {!! Form::UTTextOnly('name', '', 'Nombre del usuario', $user->name, $errors, 40, true, true) !!}
+                            {!! Form::text('name', $user->name, ['class' => 'form-control', 'placeholder' => 'Nombre del usuario', 'readonly' => true]) !!}
                         </div>
                         <div class="form-group">
                             <label for="email">Correo electrónico</label>
-                            {!! Form::UTEmail('email', '', 'Correo electrónico', $user->email, $errors, 50, true, true) !!}
+                            {!! Form::email('email', $user->email, ['class' => 'form-control', 'placeholder' => 'Correo electrónico', 'readonly' => true]) !!}
                         </div>
                         <div class="form-group">
                             <label for="password">Contraseña</label>
@@ -49,27 +50,38 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="roles">Privilegio</label>
+                            @if ($user->roles->isNotEmpty())
+                                <input type="text" name="roles" class="form-control" value="{{ $user->roles->first()->name }}" readonly>
+                            @else
+                                <input type="text" name="roles" class="form-control" value="Sin privilegio" readonly>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         <div class="card-footer text-center">
-            <a type="button" href="{{ route('users.index') }}" class="btn btn-primary">Regresar</a>
+            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-light btn-lg btn-block">Regresar</a>
         </div>
     </div>
-</div>
-
-<script>
-function togglePasswordVisibility(fieldId) {
-    var field = document.getElementById(fieldId);
-    if (field.type === "password") {
-        field.type = "text";
-    } else {
-        field.type = "password";
-    }
-}
-</script>
 @stop
+
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
-<@endsection()
+@endsection
+
+<script>
+    function togglePasswordVisibility(fieldId) {
+        var field = document.getElementById(fieldId);
+        if (field.type === "password") {
+            field.type = "text";
+        } else {
+            field.type = "password";
+        }
+    }
+</script>
+
+
+

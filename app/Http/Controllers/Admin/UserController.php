@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -10,80 +9,90 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-
     public function index(Request $request)
     {
         $search = "";
-        $limit = 10;
+        $limit = 5;
         if ($request->has('search')) {
             $search = $request->input('search');
 
             if (trim($search) != '') {
                 $data = User::where('name', 'like', "%$search%")
-                    ->orwhere('email', 'like', "%$search%")->get();
+                    ->orWhere('email', 'like', "%$search%")->get();
             } else {
                 $data = User::all();
             }
         } else {
             $data = User::all();
         }
+
         $currentPage = Paginator::resolveCurrentPage() - 1;
         $perPage = $limit;
         $currentPageSearchResults = $data->slice($currentPage * $perPage, $perPage)->all();
         $data = new LengthAwarePaginator($currentPageSearchResults, count($data), $perPage);
-        return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
+
+        if ($data->isEmpty()) {
+            $message = "No hay registros de \"$search\"";
+            return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'page' => $currentPage, 'message' => $message]);
+        } else {
+            return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
+        }
     }
 
     public function create()
-    {
-        return view('admin.empleados.create');
-    }
+{
+    $roles = Role::all();
+    return view('admin.empleados.create', compact('roles'));
+}
+
     public function store(Request $request)
-    {
-        // dd($request);
-        try {
-            // DB::beginTransaction();
-            // dd($request);
+{
+    try {
+        DB::beginTransaction();
 
-            DB::beginTransaction();
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:40'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['required', 'string', 'min:8'],
-            ]);
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:40'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+        ]);
 
+        $user = User::create([
+            'name' => $request['name'],
+            'email' => $request['email'],
+            'password' => Hash::make($request['password']),
+        ]);
 
-            User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => Hash::make($request['password']),
-            ]);
-
-
-            DB::commit();
-            Session::flash('status', "Se ha agregado correctamente el registro");
-            Session::flash('status_type', 'success');
-            return redirect(route('users.index'));
-        } catch (\Illuminate\Database\QueryException $ex) {
-            DB::rollBack();
-            Session::flash('status', $ex->getMessage());
-            Session::flash('status_type', 'error-Query');
-            return back();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Session::flash('status', $e->getMessage());
-            Session::flash('status_type', 'error');
-            return back();
+        if ($request->has('roles')) {
+            $user->roles()->attach($request['roles']);
         }
+
+        DB::commit();
+        Session::flash('status', "Se ha agregado correctamente el usuario");
+        Session::flash('status_type', 'success');
+        return redirect(route('users.index'));
+    } catch (\Illuminate\Database\QueryException $ex) {
+        DB::rollBack();
+        Session::flash('status', $ex->getMessage());
+        Session::flash('status_type', 'error-Query');
+        return back();
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Session::flash('status', $e->getMessage());
+        Session::flash('status_type', 'error');
+        return back();
     }
+}
+
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        // dd($user);
-        return view('admin.empleados.edit', ['user' => $user]);
+        $roles = Role::all();
+
+        return view('admin.empleados.edit', compact('user', 'roles'));
     }
 
     public function update(Request $request, $id)
@@ -91,21 +100,18 @@ class UserController extends Controller
         try {
             DB::beginTransaction();
 
-            /*$validated = $request->validate([
-                'nombre' => ['required', 'string', 'max:100'],
-                'password' => ['required', 'string', 'min:8'],
-            ]);*/
-
             $valida = User::where('email', '=', $request['email'])->first();
             if ($valida != null && $valida->id == $id) {
                 if ($request['password'] != null) {
                     $data = [
                         'name' => $request['name'],
-                        'password' => Hash::make($request['password'])
+                        'email' => $request['email'],
+                        'password' => Hash::make($request['password']),
                     ];
                 } else {
                     $data = [
                         'name' => $request['name'],
+                        'email' => $request['email'],
                     ];
                 }
             } elseif ($valida == null) {
@@ -113,21 +119,26 @@ class UserController extends Controller
                     $data = [
                         'name' => $request['name'],
                         'email' => $request['email'],
-                        'password' => Hash::make($request['password'])
+                        'password' => Hash::make($request['password']),
                     ];
                 } else {
                     $data = [
                         'name' => $request['name'],
-                        'email' => $request['email']
+                        'email' => $request['email'],
                     ];
                 }
             } else {
-                Session::flash('status', "Correo electrónico ya asignado ");
+                Session::flash('status', "Correo electrónico ya asignado");
                 Session::flash('status_type', 'warning');
                 return back();
             }
+
             $user = User::findOrFail($id);
             $user->update($data);
+
+            // Actualizar roles
+            $user->roles()->sync($request->input('roles'));
+
             DB::commit();
             Session::flash('status', "Se ha editado correctamente el registro");
             Session::flash('status_type', 'success');
@@ -148,7 +159,9 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return view('admin.empleados.show', ['user' => $user]);
+        $roles = Role::all();
+
+        return view('admin.empleados.show', compact('user', 'roles'));
     }
 
     public function delete($id)
@@ -156,7 +169,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         return view('admin.empleados.delete', ['user' => $user]);
     }
-
 
     public function destroy($id)
     {
@@ -167,7 +179,7 @@ class UserController extends Controller
             DB::commit();
             Session::flash('status', "Se ha eliminado correctamente el registro");
             Session::flash('status_type', 'success');
-            return redirect(route('user.index'));
+            return redirect(route('users.index'));
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());

@@ -46,3 +46,13 @@ Route::group(['prefix' => 'tipos'], function(){
     Route::get('/delete/{id}',[App\Http\Controllers\Admin\TiposController::class, 'delete'])->name('tipo_servicio.delete');
     Route::get('/{id}/destroy',[App\Http\Controllers\Admin\TiposController::class, 'destroy'])->name('tipo_servicio.destroy');
 });
+Route::group(['prefix' => 'cliente'], function(){
+    Route::get('/clientes',[App\Http\Controllers\Admin\ClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/nuevo',[App\Http\Controllers\Admin\ClienteController::class, 'create'])->name('clientes.create');
+    Route::post('/store',[App\Http\Controllers\Admin\ClienteController::class, 'store'])->name('clientes.store');
+    Route::get('/edit/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'edit'])->name('clientes.edit');
+    Route::put('/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'update'])->name('clientes.update');
+    Route::get('/show/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'show'])->name('clientes.show');
+    Route::get('/delete/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'delete'])->name('clientes.delete');
+    Route::get('{id}/destroy',[App\Http\Controllers\Admin\ClienteController::class, 'destroy'])->name('clientes.destroy');
+});
