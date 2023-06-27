@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Panel\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TiposController;
+use App\Http\Controllers\ClienteController;
 
 Route::get('', [HomeController::class, 'index']);
 
@@ -47,7 +48,7 @@ Route::group(['prefix' => 'tipos'], function(){
     Route::get('/{id}/destroy',[App\Http\Controllers\Admin\TiposController::class, 'destroy'])->name('tipo_servicio.destroy');
 });
 Route::group(['prefix' => 'cliente'], function(){
-    Route::get('/clientes',[App\Http\Controllers\Admin\ClienteController::class, 'index'])->name('clientes.index');
+    Route::get('/nuevos',[App\Http\Controllers\Admin\ClienteController::class, 'index'])->name('clientes.index');
     Route::get('/nuevo',[App\Http\Controllers\Admin\ClienteController::class, 'create'])->name('clientes.create');
     Route::post('/store',[App\Http\Controllers\Admin\ClienteController::class, 'store'])->name('clientes.store');
     Route::get('/edit/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'edit'])->name('clientes.edit');

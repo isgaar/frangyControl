@@ -325,7 +325,7 @@ return [
         ],
         [
             'text'        => 'Clientes',
-            'url'         => 'admin/#',
+            'url'         => 'admin/cliente/nuevos',
             'icon'        => 'fas fa-user-tie',
         ],
     
@@ -395,7 +395,7 @@ return [
             'can'         => 'admin.datosv.vehiculosnom',
         ],
         [
-            'text'        => 'Sesiones de Empleados',
+            'text'        => 'Sesiones de empleados',
             'url'         => '/admin/users/usuarios',
             'icon'        => 'fas fa-id-card',
             'can'         => 'admin.users.usuarios',
