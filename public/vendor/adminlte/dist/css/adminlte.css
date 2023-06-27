@@ -10644,14 +10644,45 @@ a.text-dark:hover, a.text-dark:focus {
   --dark: #343a40;
 }
 
-.animation__shake {
-  -webkit-animation: shake 1500ms;
-  animation: shake 1500ms;
+@keyframes shake {
+  0% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
+  25% {
+    -webkit-transform: translateX(-5px);
+    transform: translateX(-5px);
+  }
+  50% {
+    -webkit-transform: translateX(5px);
+    transform: translateX(5px);
+  }
+  75% {
+    -webkit-transform: translateX(-2px);
+    transform: translateX(-2px);
+  }
+  100% {
+    -webkit-transform: translateX(0);
+    transform: translateX(0);
+  }
 }
+
+.animation__shake {
+  -webkit-animation: shake 1500ms infinite;
+  animation: shake 1500ms infinite;
+  -webkit-animation-timing-function: ease-in-out;
+  animation-timing-function: ease-in-out;
+}
+
 
 .animation__wobble {
   -webkit-animation: wobble 1500ms;
   animation: wobble 1500ms;
+}
+
+.animation__bounce {
+  -webkit-animation: bounce 1s infinite;
+  animation: bounce 1s infinite;
 }
 
 .preloader {
@@ -12517,10 +12548,10 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 }
 
 .brand-link .brand-image-xs {
-  float: left;
-  line-height: .8;
+  float: right;
+  line-height: .10;
   margin-top: -.1rem;
-  max-height: 33px;
+  max-height: 500px;
   width: auto;
 }
 
@@ -12561,7 +12592,7 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 }
 
 .main-sidebar a:-moz-focusring {
-  border: 0;
+  border: 89;
   outline: none;
 }
 
@@ -45803,7 +45834,7 @@ blockquote.quote-gray-dark h6 {
 }
 
 .elevation-4 {
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22) !important;
+  box-shadow: 0 14px 28px rgba(1, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22) !important;
 }
 
 .elevation-5 {

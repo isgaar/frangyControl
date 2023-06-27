@@ -1,6 +1,7 @@
 @extends('adminlte::page')
 
 @section('content_header')
+
     @if(Session::has('status'))
         <div class="col-md-12 alert-section">
             <div class="alert alert-{{ Session::get('status_type') }}" style="text-align: center; padding: 5px; margin-bottom: 5px;">
@@ -45,6 +46,7 @@
             </div>
         </div>
     </div>
+
 @stop
 
 @section('content')
