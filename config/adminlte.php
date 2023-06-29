@@ -200,10 +200,9 @@ return [
         'topnav_right' => true,
     ],
 
-    ['header' => ' Vista Órdenes'],
     [
         'text' => 'Ordenes',
-        'url' => 'admin/#',
+        'url' => 'admin/orden/listado',
         'icon' => 'fas fa-clipboard-list',
     ],
     [

@@ -5,6 +5,7 @@ use App\Http\Controllers\Panel\HomeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TiposController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\OrdenController;
 
 Route::get('', [HomeController::class, 'index']);
 
@@ -56,4 +57,15 @@ Route::group(['prefix' => 'cliente'], function(){
     Route::get('/show/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'show'])->name('clientes.show');
     Route::get('/delete/{id}',[App\Http\Controllers\Admin\ClienteController::class, 'delete'])->name('clientes.delete');
     Route::get('{id}/destroy',[App\Http\Controllers\Admin\ClienteController::class, 'destroy'])->name('clientes.destroy');
+});
+
+Route::group(['prefix' => 'orden'], function(){
+    Route::get('/listado',[App\Http\Controllers\Admin\OrdenController::class, 'index'])->name('ordenes.index');
+    Route::get('/nuevo',[App\Http\Controllers\Admin\OrdenController::class, 'create'])->name('ordenes.create');
+    Route::post('/store',[App\Http\Controllers\Admin\OrdenController::class, 'store'])->name('ordenes.store');
+    Route::get('/edit/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'edit'])->name('ordenes.edit');
+    Route::put('/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'update'])->name('ordenes.update');
+    Route::get('/show/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'show'])->name('ordenes.show');
+    Route::get('/delete/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'delete'])->name('ordenes.delete');
+    Route::get('{id}/destroy',[App\Http\Controllers\Admin\OrdenController::class, 'destroy'])->name('ordenes.destroy');
 });

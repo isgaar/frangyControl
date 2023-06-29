@@ -63,15 +63,16 @@
                         
                     </div>
 
-                    <div class="card-footer text-center">
+                    
+                </div>
+            </div>
+            <div class="card-footer text-center">
                         <div class="d-flex justify-content-between">
                             <a type="button" href="{{ route('clientes.index') }}" class="btn btn-outline-light">Retroceder</a>
                             <button type="submit" class="btn btn-success">Guardar</button>
                         </div>
                     </div>
                     {!! Form::close() !!}
-                </div>
-            </div>
         </div>
     </div>
 @stop
