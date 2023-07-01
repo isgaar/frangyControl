@@ -63,6 +63,11 @@ Route::group(['prefix' => 'orden'], function(){
     Route::get('/listado',[App\Http\Controllers\Admin\OrdenController::class, 'index'])->name('ordenes.index');
     Route::get('/nuevo',[App\Http\Controllers\Admin\OrdenController::class, 'create'])->name('ordenes.create');
     Route::post('/store',[App\Http\Controllers\Admin\OrdenController::class, 'store'])->name('ordenes.store');
+    Route::get('/cliente',[App\Http\Controllers\Admin\OrdenController::class, 'clienteList'])->name('cliente.list');
+    Route::get('/marca',[App\Http\Controllers\Admin\OrdenController::class, 'marcaList'])->name('marca.list');
+    Route::get('/tipov',[App\Http\Controllers\Admin\OrdenController::class, 'tipovList'])->name('tipov.list');
+    Route::get('/tipos',[App\Http\Controllers\Admin\OrdenController::class, 'tiposList'])->name('tipos.list');
+    Route::get('/user',[App\Http\Controllers\Admin\OrdenController::class, 'userList'])->name('user.list');
     Route::get('/edit/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'edit'])->name('ordenes.edit');
     Route::put('/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'update'])->name('ordenes.update');
     Route::get('/show/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'show'])->name('ordenes.show');

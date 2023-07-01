@@ -5,49 +5,40 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Orden extends Model
+class Ordenes extends Model
 {
-    use HasFactory;
-
-    protected $table = 'orden';
-    protected $primaryKey = 'no_orden';
+    protected $table = 'ordenes';
+    protected $primaryKey = 'id';
     public $timestamps = true;
 
     protected $fillable = [
-        'id',
         'cliente_id',
         'vehiculo_id',
         'servicio_id',
         'tvehiculo_id',
+        'id',
+        'nombreCompleto',
+        'telefono',
+        'correo',
+        'marca',
+        'tipo',
         'yearVehiculo',
-        'noSerievehiculo',
-        'modeloVehiculo',
-        'placas',
         'color',
+        'placas',
         'kilometraje',
         'motor',
         'cilindros',
+        'noSerievehiculo',
+        'fechaRegistro',
         'observacionesInt',
         'recomendacionesCliente',
         'detallesOrden',
         'retiroRefacciones',
-        'fechaRegistro',
-        'fechaEntrega',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'id');
-    }
 
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'cliente_id');
-    }
-
-    public function servicio()
-    {
-        return $this->belongsTo(TipoServicio::class, 'servicio_id');
     }
 
     public function vehiculo()
@@ -55,8 +46,18 @@ class Orden extends Model
         return $this->belongsTo(DatosVehiculo::class, 'vehiculo_id');
     }
 
+    public function servicio()
+    {
+        return $this->belongsTo(TipoServicio::class, 'servicio_id');
+    }
+
     public function tipoVehiculo()
     {
         return $this->belongsTo(TipoVehiculo::class, 'tvehiculo_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id');
     }
 }
