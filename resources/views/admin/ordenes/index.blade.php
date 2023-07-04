@@ -14,6 +14,61 @@
         </div>
     @endif
 
+    <style>
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 0 auto;
+  margin-top: 10%;
+  padding: 20px;
+  border: 1px solid #888;
+  max-width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  text-align: center;
+  animation: modal-show 0.3s ease-out;
+}
+
+@keyframes modal-show {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.close {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+
     <div class="card">
         <div class="card-header">
             <li style="display: inline-block;">
@@ -35,11 +90,34 @@
                         </form>
                     </div>
                     <div class="col-lg-5 col-sm-5 col-5" style="text-align: right;">
-                        <a type="button" href="{{ route('ordenes.create') }}" class="btn btn-dark" title="Crear una orden">
-                        <i class="fas fa-sd-card"></i> Registrar Orden
+                        <a type="button" href="#" class="btn btn-dark" title="Crear una orden" onclick="mostrarModal()">
+                            <i class="fas fa-sd-card"></i> Registrar Orden
                         </a>
                     </div>
                 </div>
+
+                <!-- Modal -->
+                <div id="myModal" class="modal">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <div class="modal-body">
+        <div class="user-icon">
+          <i class="fas fa-user"></i>
+        </div>
+        <p id="deleteConfirmationText">¿El cliente ya está registrado?</p>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex justify-content-between w-100">
+            <button type="button" class="btn btn-outline-warning" onclick="redirigirANo()">No</button>
+            <button type="button" class="btn btn-outline-success" onclick="redirigirASi()">Sí</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
                 
             </ul>
 
@@ -93,7 +171,24 @@
         </div>
     </div>  
     
-    
+    <script>
+function mostrarModal() {
+  var modal = document.getElementById("myModal");
+  modal.style.display = "block";
+}
+
+function cerrarModal() {
+  var modal = document.getElementById("myModal");
+  modal.style.display = "none";
+}
+
+function redirigirASi() {
+}
+
+function redirigirANo() {
+  window.location.href = "{{ route('ordenes.registro') }}";
+}
+</script>
 
 
 

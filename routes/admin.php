@@ -62,6 +62,7 @@ Route::group(['prefix' => 'cliente'], function(){
 Route::group(['prefix' => 'orden'], function(){
     Route::get('/listado',[App\Http\Controllers\Admin\OrdenController::class, 'index'])->name('ordenes.index');
     Route::get('/nuevo',[App\Http\Controllers\Admin\OrdenController::class, 'create'])->name('ordenes.create');
+    Route::get('/registro',[App\Http\Controllers\Admin\OrdenController::class, 'registro'])->name('ordenes.registro');
     Route::post('/store',[App\Http\Controllers\Admin\OrdenController::class, 'store'])->name('ordenes.store');
     Route::get('/cliente',[App\Http\Controllers\Admin\OrdenController::class, 'clienteList'])->name('cliente.list');
     Route::get('/marca',[App\Http\Controllers\Admin\OrdenController::class, 'marcaList'])->name('marca.list');

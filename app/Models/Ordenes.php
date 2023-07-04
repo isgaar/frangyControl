@@ -29,7 +29,7 @@ class Ordenes extends Model
         'motor',
         'cilindros',
         'noSerievehiculo',
-        'fechaRegistro',
+        'fechaEntrega',
         'observacionesInt',
         'recomendacionesCliente',
         'detallesOrden',

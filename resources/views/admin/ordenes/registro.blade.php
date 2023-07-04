@@ -67,15 +67,6 @@
             <span class="text-danger">{{ $message }}</span>
         @enderror
 </div>
-
-<div class="form-group">
-    <label for="marca">¿El cliente ya está registrado?</label>
-    <input type="checkbox" id="deshabilitarCampos" checked> Seleccione el cliente
-    <select class="form-control" id="selectCliente" disabled data-url="{{ route('cliente.list') }}">
-        <option value="">--seleccione cliente--</option>
-    </select>
-    {!! Form::hidden('cliente_id', null, ['id' => 'clienteId']) !!}
-</div>
                 </div>
             </div>
         </div>
@@ -89,16 +80,14 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="marca">Marca</label>
-                                <select class="form-control" id="selectMarca">
-                                    <option value="" selected>--seleccione una marca--</option>
-                                </select>
+                            <div class="form-group">
+                                <label for="marcas">Marca</label>
+                                {!! Form::select('datos_vehiculo', $marcas->pluck('marca', 'id_vehiculo'), null, ['class' => 'form-control']) !!}
+                            </div>
                             </div>
                             <div class="form-group">
-                                <label for="tipoVehiculo" id="selectTipo">Tipo de vehículo</label>
-                                <select class="form-control" id="selectTipoVehiculo">
-                                    <option value="">--seleccione un tipo--</option>
-                                </select>
+                                <label for="tipoVehiculo">Tipo de vehículo</label>
+                                {!! Form::select('tipo_vehiculo', $tipov->pluck('tipo', 'id_tvehiculo'), null, ['class' => 'form-control']) !!}
                             </div>
                         </div>
 
@@ -179,17 +168,13 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="tipoServicio">Tipo de servicio</label>
-                                    <select class="form-control" id="selectTipoServicio">
-                                        <option value="">--seleccione el servicio--</option>
-                                    </select>
+                                    {!! Form::select('datos_servicio', $tipos->pluck('nombreServicio', 'id_servicio'), null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="atiende">Atiende</label>
-                                    <select class="form-control" id="selectAtiende">
-                                        <option value="">--seleccione el empleado--</option>
-                                    </select>
+                                    {!! Form::select('users', $empleado->pluck('name', 'id'), null, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                         </div>
@@ -272,212 +257,6 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-    var deshabilitarCampos = $('#deshabilitarCampos');
-    var nombreCompletoInput = $('#nombreCompleto');
-    var telefonoInput = $('#telefono');
-    var correoInput = $('#correo');
-    var selectCliente = $('#selectCliente');
-    var clienteIdInput = $('#clienteId');
-    var urlClientes = selectCliente.data('url');
-
-    // Obtener los datos de los clientes mediante AJAX
-    function loadClientes() {
-        $.ajax({
-            url: urlClientes,
-            dataType: 'json',
-            success: function(data) {
-                // Limpiar el select antes de llenarlo nuevamente
-                selectCliente.empty();
-                // Llenar el select con los datos de los clientes
-                for (var i = 0; i < data.length; i++) {
-                    var option = $('<option>').val(data[i].id_cliente).text(data[i].nombreCompleto);
-                    option.data('cliente', data[i]); // Guardar los datos del cliente en el elemento option
-                    selectCliente.append(option);
-                }
-                saveSelectedCliente(); // Guardar el cliente seleccionado si existe
-            },
-            error: function(error) {
-                console.error('Error:', error);
-            }
-        });
-    }
-
-    // Habilitar o deshabilitar los campos
-    function toggleCampos() {
-        var isChecked = deshabilitarCampos.prop('checked');
-        nombreCompletoInput.prop('disabled', isChecked);
-        telefonoInput.prop('disabled', isChecked);
-        correoInput.prop('disabled', isChecked);
-        toggleErrorMessages();
-    }
-
-    // Habilitar o deshabilitar el select en función del checkbox
-    function toggleSelectCliente() {
-        selectCliente.prop('disabled', !this.checked);
-        clienteIdInput.val(""); // Limpiar el valor del ID del cliente
-        if (this.checked) {
-            loadClientes();
-        } else {
-            // Limpiar el select
-            selectCliente.empty();
-            selectCliente.append($('<option>').val("").text("--seleccione cliente--"));
-            toggleErrorMessages(); // Mostrar u ocultar mensajes de error
-        }
-        toggleSubmitButton();
-    }
-
-    // Guardar el ID del cliente seleccionado
-    function saveSelectedCliente() {
-        clienteIdInput.val(selectCliente.val());
-        if (selectCliente.val()) {
-            // Asignar los valores del cliente a los campos correspondientes
-            var cliente = selectCliente.find(':selected').data('cliente');
-            nombreCompletoInput.val(cliente.nombreCompleto);
-            telefonoInput.val(cliente.telefono);
-            correoInput.val(cliente.correo);
-        } else {
-            // Limpiar los campos
-            nombreCompletoInput.val('');
-            telefonoInput.val('');
-            correoInput.val('');
-        }
-        toggleErrorMessages(); // Mostrar u ocultar mensajes de error
-    }
-
-    // Mostrar u ocultar mensajes de error
-    function toggleErrorMessages() {
-        if (selectCliente.prop('disabled')) {
-            // Si el select está deshabilitado, ocultar los mensajes de error
-            $('#nombreCompleto-error').hide();
-            $('#telefono-error').hide();
-            $('#correo-error').hide();
-        } else {
-            // Si el select está habilitado, mostrar los mensajes de error según corresponda
-            $('#nombreCompleto-error').toggle(!nombreCompletoInput.val());
-            $('#telefono-error').toggle(!telefonoInput.val());
-            $('#correo-error').toggle(!correoInput.val());
-        }
-    }
-
-    // Escuchar los eventos de cambio del checkbox y del select
-    deshabilitarCampos.on('change', toggleCampos);
-    selectCliente.on('change', saveSelectedCliente);
-    deshabilitarCampos.on('change', toggleSelectCliente);
-
-    // Mostrar u ocultar mensajes de error al cargar la página
-    toggleErrorMessages();
-});
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectMarca = document.getElementById('selectMarca');
-        var urlMarcas = '{{ route("marca.list") }}';
-
-        // Obtener los datos de las marcas mediante AJAX
-        function loadMarcas() {
-            fetch(urlMarcas)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectMarca.innerHTML = '';
-
-                    // Llenar el select con los datos de las marcas
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id_vehiculo;
-                        option.textContent = data[i].marca;
-                        selectMarca.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar las marcas al cargar la página
-        loadMarcas();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectTipoVehiculo = document.getElementById('selectTipoVehiculo');
-        var urlTiposVehiculo = '{{ route("tipov.list") }}';
-
-        // Obtener los tipos de vehículo mediante AJAX
-        function loadTiposVehiculo() {
-            fetch(urlTiposVehiculo)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectTipoVehiculo.innerHTML = '';
-
-                    // Llenar el select con los tipos de vehículo
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id_tvehiculo;
-                        option.textContent = data[i].tipo;
-                        selectTipoVehiculo.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar los tipos de vehículo al cargar la página
-        loadTiposVehiculo();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectTipoServicio = document.getElementById('selectTipoServicio');
-        var urlTiposServicio = '{{ route("tipos.list") }}';
-
-        // Obtener los tipos de servicio mediante AJAX
-        function loadTiposServicio() {
-            fetch(urlTiposServicio)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectTipoServicio.innerHTML = '';
-
-                    // Llenar el select con los tipos de servicio
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id_servicio;
-                        option.textContent = data[i].nombreServicio;
-                        selectTipoServicio.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar los tipos de servicio al cargar la página
-        loadTiposServicio();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectAtiende = document.getElementById('selectAtiende');
-        var urlEmpleados = '{{ route("user.list") }}';
-
-        // Obtener los empleados mediante AJAX
-        function loadEmpleados() {
-            fetch(urlEmpleados)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectAtiende.innerHTML = '';
-
-                    // Llenar el select con los empleados
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id;
-                        option.textContent = data[i].name;
-                        selectAtiende.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar los empleados al cargar la página
-        loadEmpleados();
-    });
-
     flatpickr("#fechaEntrega", {
         enableTime: false,
         minDate: "today",

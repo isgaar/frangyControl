@@ -30,7 +30,7 @@ return new class extends Migration
             $table->double('motor');
             $table->double('cilindros');
             $table->string('noSerievehiculo', 11);
-            $table->date('fechaRegistro');
+            $table->date('fechaEntrega');
             $table->text('observacionesInt')->nullable();
             $table->text('recomendacionesCliente')->nullable();
             $table->text('detallesOrden')->nullable();

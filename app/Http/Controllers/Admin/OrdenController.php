@@ -58,6 +58,28 @@ class OrdenController extends Controller
         return view('admin.ordenes.create');
     }
 
+    public function registro()
+    {
+        $marcas = DatosVehiculo::all();
+        $marcas->prepend(['id_vehiculo' => '', 'marca' => '--seleccione una marca--']);
+
+        $tipov = TipoVehiculo::all();
+        $tipov->prepend(['id_vehiculo' => '', 'tipo' => '--seleccione un tipo--']);
+
+        $tipos = TipoServicio::all();
+        $tipos->prepend(['id_servicio' => '', 'nombreServicio' => '--seleccione el servicio--']);
+
+        $empleado = User::all();
+        $empleado->prepend(['id' => '', 'name' => '--seleccione el empleado--']);
+
+        return view('admin.ordenes.registro', [
+            'marcas' => $marcas,
+            'tipov' => $tipov,
+            'tipos' => $tipos,
+            'empleado' => $empleado
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -66,9 +88,6 @@ class OrdenController extends Controller
             'servicio_id' => 'required',
             'tvehiculo_id' => 'required',
             'id' => 'required',
-            'nombreCompleto' => 'required',
-            'telefono' => 'required',
-            'correo' => 'required',
             'marca' => 'required',
             'tipo' => 'required',
             'yearVehiculo' => 'required',
@@ -78,7 +97,12 @@ class OrdenController extends Controller
             'motor' => 'required',
             'cilindros' => 'required',
             'noSerievehiculo' => 'required',
-            'fechaRegistro' => 'required',
+            'fechaEntrega' => 'required',
+            'observacionesInt' => 'required',
+            'recomendacionesCliente' => 'required',
+            'detallesOrden'=> 'required',
+            'retiroRefacciones' => 'required',
+    
         ]);
 
         try {
@@ -92,7 +116,7 @@ class OrdenController extends Controller
             $orden->id = $request->id;
             $orden->nombreCompleto = $request->nombreCompleto;
             $orden->telefono = $request->telefono;
-            $orden->correo = $request->correo;
+            $orden->correo = $request->input('correo');
             $orden->marca = $request->marca;
             $orden->tipo = $request->tipo;
             $orden->yearVehiculo = $request->yearVehiculo;
@@ -102,7 +126,11 @@ class OrdenController extends Controller
             $orden->motor = $request->motor;
             $orden->cilindros = $request->cilindros;
             $orden->noSerievehiculo = $request->noSerievehiculo;
-            $orden->fechaRegistro = $request->fechaRegistro;
+            $orden->fechaEntrega = $request->fechaEntrega;
+            $orden->observacionesInt = $request->observacionesInt;
+            $orden->recomendacionesCliente = $request->recomendacionesCliente;
+            $orden->detallesOrden = $request->detallesOrden;
+            $orden->retiroRefacciones = $request->retiroRefacciones;
             $orden->save();
     
             DB::commit();
@@ -123,48 +151,5 @@ class OrdenController extends Controller
             return back();
         }
     }
-
-    public function clienteList(Request $request)
-    {
-        $clientes = Cliente::select('id_cliente', 'nombreCompleto')->get();
-
-        $clientes->prepend(['id_cliente' => '', 'nombreCompleto' => '--seleccione cliente--']);
-        return response()->json($clientes);
-    }
-
-    public function marcaList(Request $request)
-    {
-        $marca = DatosVehiculo::select('id_vehiculo', 'marca')->get();
-
-        $marca->prepend(['id_vehiculo' => '', 'marca' => '--seleccione una marca--']);
-
-        return response()->json($marca);
-    }
-
-    public function tipovList(Request $request)
-    {
-        $tiposVehiculo = TipoVehiculo::select('id_tvehiculo', 'tipo')->get();
-        $tiposVehiculo->prepend(['id_vehiculo' => '', 'tipo' => '--seleccione un tipo--']);
-
-        return response()->json($tiposVehiculo);
-    }
-
-    public function tiposList(Request $request)
-    {
-        $tiposServicio = TipoServicio::select('id_servicio', 'nombreServicio')->get();
-        $tiposServicio->prepend(['id_servicio' => '', 'nombreServicio' => '--seleccione el servicio--']);
-
-        return response()->json($tiposServicio);
-    }
-
-    public function userList(Request $request)
-    {
-        $user = User::select('id', 'name')->get();
-        $user->prepend(['id' => '', 'name' => '--seleccione el empleado--']);
-
-        return response()->json($user);
-    }
-
-    
 
 }
