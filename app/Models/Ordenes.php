@@ -12,16 +12,6 @@ class Ordenes extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'cliente_id',
-        'vehiculo_id',
-        'servicio_id',
-        'tvehiculo_id',
-        'id',
-        'nombreCompleto',
-        'telefono',
-        'correo',
-        'marca',
-        'tipo',
         'yearVehiculo',
         'color',
         'placas',
@@ -33,27 +23,31 @@ class Ordenes extends Model
         'observacionesInt',
         'recomendacionesCliente',
         'detallesOrden',
-        'retiroRefacciones',
+        'retiroRefacciones','cliente_id',
+        'vehiculo_id',
+        'servicio_id',
+        'tvehiculo_id',
+        'id',
     ];
 
     public function cliente()
     {
-        return $this->belongsTo(Cliente::class, 'cliente_id');
+        return $this->belongsTo(Cliente::class, 'cliente_id', 'id_cliente');
     }
 
     public function vehiculo()
     {
-        return $this->belongsTo(DatosVehiculo::class, 'vehiculo_id');
+        return $this->belongsTo(DatosVehiculo::class, 'vehiculo_id', 'id_vehiculo');
     }
 
     public function servicio()
     {
-        return $this->belongsTo(TipoServicio::class, 'servicio_id');
+        return $this->belongsTo(TipoServicio::class, 'servicio_id', 'id_servicio');
     }
 
     public function tipoVehiculo()
     {
-        return $this->belongsTo(TipoVehiculo::class, 'tvehiculo_id');
+        return $this->belongsTo(TipoVehiculo::class, 'tvehiculo_id', 'id_tvehiculo');
     }
 
     public function user()

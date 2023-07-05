@@ -18,11 +18,6 @@ return new class extends Migration
             $table->unsignedInteger('servicio_id');
             $table->unsignedInteger('tvehiculo_id');
             $table->unsignedBigInteger('id');
-            $table->string('nombreCompleto');
-            $table->string('telefono');
-            $table->string('correo');
-            $table->string('marca');
-            $table->string('tipo');
             $table->integer('yearVehiculo');
             $table->string('color');
             $table->string('placas', 7);
@@ -31,10 +26,10 @@ return new class extends Migration
             $table->double('cilindros');
             $table->string('noSerievehiculo', 11);
             $table->date('fechaEntrega');
-            $table->text('observacionesInt')->nullable();
-            $table->text('recomendacionesCliente')->nullable();
-            $table->text('detallesOrden')->nullable();
-            $table->boolean('retiroRefacciones')->default(0);
+            $table->text('observacionesInt');
+            $table->text('recomendacionesCliente');
+            $table->text('detallesOrden');
+            $table->boolean('retiroRefacciones');
             $table->timestamps();
 
             $table->foreign('cliente_id')->references('id_cliente')->on('clientes');

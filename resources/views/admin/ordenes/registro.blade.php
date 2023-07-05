@@ -6,7 +6,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section('content_header')
-
     @if (Session::has('status'))
         <div class="col-md-12 alert-section">
             <div class="alert alert-{{ Session::get('status_type') }}"
@@ -21,9 +20,6 @@
         </div>
     @endif
 
-    <div class="card">
-
-    </div>
 @stop
 
 @section('content')
@@ -42,33 +38,45 @@
         <div class="col-md-6">
             <div class="card card-primary">
                 {!! Form::open(['route' => 'ordenes.store', 'method' => 'post', 'enctype' => 'multipart/form-data', 'id' => 'formulario']) !!}
+                @csrf
                 <div class="card-header bg-white">
                     <h3 class="card-title">Información del cliente</h3>
                 </div>
                 <div class="card-body">
-                <div class="form-group">
+                
+
+                <input type="hidden" name="cliente_id" value="{{ $cliente_id }}">
+
+
+
+
+<div class="form-group">
     <label for="nombreCompleto">Nombre completo</label>
-    {!! Form::text('nombreCompleto', null, ['class' => 'form-control', 'id' => 'nombreCompleto']) !!}
-        @error('nombreCompleto')
-            <span class="text-danger">{{ $message }}</span>
-        @enderror
+    <input type="text" name="nombreCompleto" class="form-control" id="nombreCompleto">
+    @error('nombreCompleto')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
 </div>
+
 <div class="form-group">
     <label for="telefono">Teléfono</label>
-    {!! Form::text('telefono', null, ['class' => 'form-control', 'id' => 'telefono']) !!}
-        @error('telefono')
-            <span class="text-danger">{{ $message }}</span>
-        @enderror
+    <input type="text" name="telefono" class="form-control" id="telefono">
+    @error('telefono')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
 </div>
+
 <div class="form-group">
     <label for="correo">Correo electrónico</label>
-    {!! Form::text('correo', null, ['class' => 'form-control', 'id' => 'correo']) !!}
-        @error('correo')
-            <span class="text-danger">{{ $message }}</span>
-        @enderror
+    <input type="text" name="correo" class="form-control" id="correo">
+    @error('correo')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
 </div>
-                </div>
-            </div>
+
+
+        </div>
+        </div>
         </div>
 
         <div class="col-md-6">
@@ -81,13 +89,29 @@
                         <div class="col-md-6">
                             <div class="form-group">
                             <div class="form-group">
-                                <label for="marcas">Marca</label>
-                                {!! Form::select('datos_vehiculo', $marcas->pluck('marca', 'id_vehiculo'), null, ['class' => 'form-control']) !!}
-                            </div>
+
+                            <label for="vehiculo_id">Marca</label>
+<select name="vehiculo_id" class="form-control" id="vehiculo_id">
+    <option value="">-- Seleccione una marca --</option>
+    @foreach ($datosVehiculo as $vehiculo)
+        <option value="{{ $vehiculo->id_vehiculo }}">{{ $vehiculo->marca }}</option>
+    @endforeach
+</select>
+
+
+
+</div>
+
                             </div>
                             <div class="form-group">
-                                <label for="tipoVehiculo">Tipo de vehículo</label>
-                                {!! Form::select('tipo_vehiculo', $tipov->pluck('tipo', 'id_tvehiculo'), null, ['class' => 'form-control']) !!}
+                            <label for="tvehiculo_id">Tipo de Vehículo</label>
+<select name="tvehiculo_id" class="form-control" id="tvehiculo_id">
+<option value="">-- Seleccione un tipo --</option>
+    @foreach ($tiposVehiculo as $tipoVehiculo)
+        <option value="{{ $tipoVehiculo->id_tvehiculo }}">{{ $tipoVehiculo->tipo }}</option>
+    @endforeach
+</select>
+
                             </div>
                         </div>
 
@@ -167,35 +191,48 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="tipoServicio">Tipo de servicio</label>
-                                    {!! Form::select('datos_servicio', $tipos->pluck('nombreServicio', 'id_servicio'), null, ['class' => 'form-control']) !!}
+                                <label for="servicio_id">Tipo de Servicio</label>
+<select name="servicio_id" class="form-control" id="servicio_id">
+<option value="">-- Seleccione un servicio --</option>
+    @foreach ($tiposServicio as $tipoServicio)
+        <option value="{{ $tipoServicio->id_servicio }}">{{ $tipoServicio->nombreServicio }}</option>
+    @endforeach
+</select>
+
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="atiende">Atiende</label>
-                                    {!! Form::select('users', $empleado->pluck('name', 'id'), null, ['class' => 'form-control']) !!}
+                                <label for="user_id">Atiende</label>
+<select name="user_id" class="form-control" id="user_id">
+<option value="">-- Seleccione empleado --</option>
+    @foreach ($users as $user)
+        <option value="{{ $user->id }}">{{ $user->name }}</option>
+    @endforeach
+</select>
+
                                 </div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="observacionesInt">Observaciones internas (Recepción)</label>
+                                    {!! Form::text('observacionesInt', null, ['class' => 'form-control', 'id' => 'observacionesInt']) !!}
+                                </div>
+
+                            </div>
+                            <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="exampleFormControlTextarea1">Observaciones internas (Recepción)</label>
-                                    <textarea class="form-control" ></textarea>
+                                    <label for="recomendacionesCliente">Recomendaciones del cliente</label>
+                                    {!! Form::text('recomendacionesCliente', null, ['class' => 'form-control', 'id' => 'recomendacionesCliente']) !!}
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="exampleFormControlTextarea1">Recomendaciones del cliente</label>
-                                    <textarea class="form-control"></textarea>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="exampleFormControlTextarea1">Detalles del servicio</label>
-                                    <textarea class="form-control"></textarea>
+                                    <label for="detallesOrden">Detalles del servicio</label>
+                                    {!! Form::text('detallesOrden', null, ['class' => 'form-control', 'id' => 'detallesOrden']) !!}
                                 </div>
                             </div>
                         </div>
@@ -203,18 +240,15 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="marca">Refacciones</label>
-                                    <select class="form-control">
-                                        <option>Retira</option>
-                                        <option>No retira</option>
-                                    </select>
+                                    <label for="retiroRefacciones">Refacciones</label>
+                                    {!! Form::select('retiroRefacciones', [false => 'No retira', true => 'Retira'], null, ['class' => 'form-control', 'id' => 'retiroRefacciones']) !!}
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fechaEntrega">Fecha de entrega</label>
-                                    <input type="text" id="fechaEntrega" class="form-control" placeholder="Fecha de entrega">
+                                        {!! Form::text('fechaEntrega', null, ['class' => 'form-control', 'id' => 'fechaEntrega', 'placeholder' => 'Fecha de entrega']) !!}
                                 </div>
                             </div>
                         </div>
@@ -260,7 +294,7 @@
     flatpickr("#fechaEntrega", {
         enableTime: false,
         minDate: "today",
-        dateFormat: "d/m/Y",
+        dateFormat: "Y/m/d",
         plugins: [
             new minMaxTimePlugin({
                 minTime: "12:00",

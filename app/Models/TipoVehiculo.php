@@ -15,10 +15,4 @@ class TipoVehiculo extends Model
     protected $fillable = [
         'tipo',
     ];
-
-    // Aquí puedes definir relaciones con otras tablas, por ejemplo:
-    // public function vehiculos()
-    // {
-    //     return $this->hasMany(Vehiculo::class, 'tipo_vehiculo_id');
-    // }
 }

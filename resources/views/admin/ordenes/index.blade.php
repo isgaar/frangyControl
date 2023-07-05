@@ -133,18 +133,21 @@
             </tr>
         </thead>
         <tbody class="tbody-light">
-            <tr>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center"></td>
-                <td class="text-center">
-                    <a class="btn btn-outline-light" title="Visualizar"><i class="fas fa-solid fa-eye"></i></a>
-                    <a class="btn btn-outline-light" title="Editar orden"><i class="fas fa-undo-alt"></i></a>
-                    <a class="btn btn-outline-light" title="Exportar a pdf"><i class="fas fa-file-pdf"></i></a>
-                </td>
-            </tr>
-        </tbody>
+    @foreach ($ordenes as $row)
+        <tr>
+            <td class="text-center"> {{ $row->cliente->nombreCompleto }}</td>
+            <td class="text-center">{{ $row->vehiculo->marca }}</td>
+            <td class="text-center">{{ $row->placas }}</td>
+            <td class="text-center">{{ $row->servicio->nombreServicio }}</td>
+            <td class="text-center">
+                <a class="btn btn-outline-light" title="Visualizar"><i class="fas fa-solid fa-eye"></i></a>
+                <a class="btn btn-outline-light" title="Editar orden"><i class="fas fa-undo-alt"></i></a>
+                <a class="btn btn-outline-light" title="Exportar a pdf"><i class="fas fa-file-pdf"></i></a>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
+
         <tfoot>
     <tr>
         <td colspan="5" class="text-center">
