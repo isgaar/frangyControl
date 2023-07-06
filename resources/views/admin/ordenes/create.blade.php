@@ -234,19 +234,20 @@
                             </div>
                         </div>
                         <div id="photoFieldsContainer" class="input-group mb-3" style="display: none;">
-                            <div class="photoField input-group" id="photoField1">
-                                <label class="input-group-text" for="photo1">Tomar fotografía:</label>
-                                <input type="file" class="form-control" accept="image/*" capture="camera" id="photo1" name="photos[]" onchange="previewPhoto(event, 'photoPreview1', 1); toggleAddMorePhotosButton();">
-                                <div class="mt-2">
-                                    <img id="photoPreview1" src="#" alt="Previsualización" style="max-width: 200px; max-height: 200px;">
-                                    <button type="button" class="btn btn-outline-danger" onclick="deletePhotoField(1); toggleAddMorePhotosButton();">Eliminar</button>
-                                </div>
-                            </div>
-                        </div>
+    <div class="photoField input-group" id="photoField1">
+        <label class="input-group-text" for="photo1">Tomar fotografía:</label>
+        <input type="file" class="form-control" accept="image/*" capture="camera" id="photo1" name="photos[]" onchange="previewPhoto(event, 'photoPreview1', 1); toggleAddMorePhotosButton();">
+        <div class="mt-2">
+            <img id="photoPreview1" src="#" alt="Previsualización" style="max-width: 200px; max-height: 200px;">
+            <button type="button" class="btn btn-outline-danger" onclick="deletePhotoField(1); toggleAddMorePhotosButton();">Eliminar</button>
+        </div>
+    </div>
+</div>
 
-                        <div id="addMorePhotosContainer" class="mt-2" style="display: none;">
-                            <button type="button" class="btn btn-outline-light" onclick="addPhotoField()">Agregar más fotos</button>
-                        </div>
+<div id="addMorePhotosContainer" class="mt-2" style="display: none;">
+    <button type="button" class="btn btn-outline-light" onclick="addPhotoField()">Agregar más fotos</button>
+</div>
+
                         <div class="form-group">
                             <input type="checkbox" id="myCheckbox">
                             <label for="myCheckbox">El cliente acepta</label>
@@ -272,212 +273,6 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-    var deshabilitarCampos = $('#deshabilitarCampos');
-    var nombreCompletoInput = $('#nombreCompleto');
-    var telefonoInput = $('#telefono');
-    var correoInput = $('#correo');
-    var selectCliente = $('#selectCliente');
-    var clienteIdInput = $('#clienteId');
-    var urlClientes = selectCliente.data('url');
-
-    // Obtener los datos de los clientes mediante AJAX
-    function loadClientes() {
-        $.ajax({
-            url: urlClientes,
-            dataType: 'json',
-            success: function(data) {
-                // Limpiar el select antes de llenarlo nuevamente
-                selectCliente.empty();
-                // Llenar el select con los datos de los clientes
-                for (var i = 0; i < data.length; i++) {
-                    var option = $('<option>').val(data[i].id_cliente).text(data[i].nombreCompleto);
-                    option.data('cliente', data[i]); // Guardar los datos del cliente en el elemento option
-                    selectCliente.append(option);
-                }
-                saveSelectedCliente(); // Guardar el cliente seleccionado si existe
-            },
-            error: function(error) {
-                console.error('Error:', error);
-            }
-        });
-    }
-
-    // Habilitar o deshabilitar los campos
-    function toggleCampos() {
-        var isChecked = deshabilitarCampos.prop('checked');
-        nombreCompletoInput.prop('disabled', isChecked);
-        telefonoInput.prop('disabled', isChecked);
-        correoInput.prop('disabled', isChecked);
-        toggleErrorMessages();
-    }
-
-    // Habilitar o deshabilitar el select en función del checkbox
-    function toggleSelectCliente() {
-        selectCliente.prop('disabled', !this.checked);
-        clienteIdInput.val(""); // Limpiar el valor del ID del cliente
-        if (this.checked) {
-            loadClientes();
-        } else {
-            // Limpiar el select
-            selectCliente.empty();
-            selectCliente.append($('<option>').val("").text("--seleccione cliente--"));
-            toggleErrorMessages(); // Mostrar u ocultar mensajes de error
-        }
-        toggleSubmitButton();
-    }
-
-    // Guardar el ID del cliente seleccionado
-    function saveSelectedCliente() {
-        clienteIdInput.val(selectCliente.val());
-        if (selectCliente.val()) {
-            // Asignar los valores del cliente a los campos correspondientes
-            var cliente = selectCliente.find(':selected').data('cliente');
-            nombreCompletoInput.val(cliente.nombreCompleto);
-            telefonoInput.val(cliente.telefono);
-            correoInput.val(cliente.correo);
-        } else {
-            // Limpiar los campos
-            nombreCompletoInput.val('');
-            telefonoInput.val('');
-            correoInput.val('');
-        }
-        toggleErrorMessages(); // Mostrar u ocultar mensajes de error
-    }
-
-    // Mostrar u ocultar mensajes de error
-    function toggleErrorMessages() {
-        if (selectCliente.prop('disabled')) {
-            // Si el select está deshabilitado, ocultar los mensajes de error
-            $('#nombreCompleto-error').hide();
-            $('#telefono-error').hide();
-            $('#correo-error').hide();
-        } else {
-            // Si el select está habilitado, mostrar los mensajes de error según corresponda
-            $('#nombreCompleto-error').toggle(!nombreCompletoInput.val());
-            $('#telefono-error').toggle(!telefonoInput.val());
-            $('#correo-error').toggle(!correoInput.val());
-        }
-    }
-
-    // Escuchar los eventos de cambio del checkbox y del select
-    deshabilitarCampos.on('change', toggleCampos);
-    selectCliente.on('change', saveSelectedCliente);
-    deshabilitarCampos.on('change', toggleSelectCliente);
-
-    // Mostrar u ocultar mensajes de error al cargar la página
-    toggleErrorMessages();
-});
-
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectMarca = document.getElementById('selectMarca');
-        var urlMarcas = '{{ route("marca.list") }}';
-
-        // Obtener los datos de las marcas mediante AJAX
-        function loadMarcas() {
-            fetch(urlMarcas)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectMarca.innerHTML = '';
-
-                    // Llenar el select con los datos de las marcas
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id_vehiculo;
-                        option.textContent = data[i].marca;
-                        selectMarca.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar las marcas al cargar la página
-        loadMarcas();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectTipoVehiculo = document.getElementById('selectTipoVehiculo');
-        var urlTiposVehiculo = '{{ route("tipov.list") }}';
-
-        // Obtener los tipos de vehículo mediante AJAX
-        function loadTiposVehiculo() {
-            fetch(urlTiposVehiculo)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectTipoVehiculo.innerHTML = '';
-
-                    // Llenar el select con los tipos de vehículo
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id_tvehiculo;
-                        option.textContent = data[i].tipo;
-                        selectTipoVehiculo.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar los tipos de vehículo al cargar la página
-        loadTiposVehiculo();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectTipoServicio = document.getElementById('selectTipoServicio');
-        var urlTiposServicio = '{{ route("tipos.list") }}';
-
-        // Obtener los tipos de servicio mediante AJAX
-        function loadTiposServicio() {
-            fetch(urlTiposServicio)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectTipoServicio.innerHTML = '';
-
-                    // Llenar el select con los tipos de servicio
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id_servicio;
-                        option.textContent = data[i].nombreServicio;
-                        selectTipoServicio.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar los tipos de servicio al cargar la página
-        loadTiposServicio();
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        var selectAtiende = document.getElementById('selectAtiende');
-        var urlEmpleados = '{{ route("user.list") }}';
-
-        // Obtener los empleados mediante AJAX
-        function loadEmpleados() {
-            fetch(urlEmpleados)
-                .then(response => response.json())
-                .then(data => {
-                    // Limpiar el select antes de llenarlo nuevamente
-                    selectAtiende.innerHTML = '';
-
-                    // Llenar el select con los empleados
-                    for (var i = 0; i < data.length; i++) {
-                        var option = document.createElement('option');
-                        option.value = data[i].id;
-                        option.textContent = data[i].name;
-                        selectAtiende.appendChild(option);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        }
-
-        // Cargar los empleados al cargar la página
-        loadEmpleados();
-    });
-
     flatpickr("#fechaEntrega", {
         enableTime: false,
         minDate: "today",

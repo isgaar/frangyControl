@@ -54,4 +54,9 @@ class Ordenes extends Model
     {
         return $this->belongsTo(User::class, 'id');
     }
+
+    public function fotografias()
+    {
+        return $this->hasMany(Fotografia::class, 'ordenes_id', 'id_ordenes');
+    }
 }

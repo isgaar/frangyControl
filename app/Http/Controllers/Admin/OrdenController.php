@@ -15,6 +15,9 @@ use App\Models\DatosVehiculo;
 use App\Models\TipoVehiculo;
 use App\Models\TipoServicio;
 use App\Models\User;
+use App\Models\Fotografia;
+use Illuminate\Support\Facades\Storage;
+
 
 class OrdenController extends Controller
 {
@@ -97,6 +100,8 @@ public function servicio()
 
 public function store(Request $request)
 {
+
+
     try {
         DB::beginTransaction();
 
@@ -141,6 +146,70 @@ public function store(Request $request)
 
         $ordenes->cliente()->associate($cliente); // Asocia el cliente a la orden
         $ordenes->save(); // Guarda la orden en la tabla 'ordenes'
+
+
+        if ($request->hasFile('photos')) {
+    $photos = $request->file('photos');
+
+    foreach ($photos as $photo) {
+        $destinoRuta = 'images/photos/';
+
+        // Validar la imagen
+        $validatedData = $request->validate([
+            'photos.*' => 'required|image|mimes:png,jpg,jpeg|max:2048'
+        ]);
+
+        try {
+            $filename = time() . '-' . $photo->getClientOriginalName();
+            $uploadSuccess = $photo->move($destinoRuta, $filename);
+            $ruta = $destinoRuta . $filename;
+
+            // Crear una nueva instancia de Fotografia
+            $fotografia = new Fotografia();
+            $fotografia->ruta = $ruta;
+            $fotografia->ordenes_id = $ordenes->id;
+
+            // Guardar la fotografia
+            $fotografia->save();
+        } catch (\Exception $e) {
+            // Capturar y manejar la excepción
+            dd($e->getMessage());
+        }
+    }
+}
+
+// Capturar imágenes desde la cámara
+if ($request->has('capturedPhotos')) {
+    $capturedPhotos = $request->input('capturedPhotos');
+
+    foreach ($capturedPhotos as $capturedPhoto) {
+        $destinoRuta = 'images/photos/';
+
+        // Validar la imagen
+        $validatedData = $request->validate([
+            'capturedPhotos.*' => 'required|string' // Ajusta la validación según tus necesidades
+        ]);
+
+        try {
+            $filename = time() . '-' . Str::random(10) . '.jpg'; // Nombre de archivo aleatorio
+            $photoData = base64_decode($capturedPhoto);
+            $uploadSuccess = file_put_contents($destinoRuta . $filename, $photoData);
+            $ruta = $destinoRuta . $filename;
+
+            // Crear una nueva instancia de Fotografia
+            $fotografia = new Fotografia();
+            $fotografia->ruta = $ruta;
+            $fotografia->ordenes_id = $ordenes->id;
+
+            // Guardar la fotografia
+            $fotografia->save();
+        } catch (\Exception $e) {
+            // Capturar y manejar la excepción
+            dd($e->getMessage());
+        }
+    }
+}
+
 
         DB::commit();
         session()->flash('status', 'Se ha agregado correctamente la orden.');

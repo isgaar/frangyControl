@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('ordenes_id');
             $table->string('ruta');
-            // Otros campos que puedas necesitar
             $table->timestamps();
 
             $table->foreign('ordenes_id')->references('id_ordenes')->on('ordenes');
