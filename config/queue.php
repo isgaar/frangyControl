@@ -51,6 +51,15 @@ return [
             'after_commit' => false,
         ],
 
+        'pdf' => [
+            'driver' => 'database',
+            'connection' => 'mysql',
+            'table' => 'jobs',
+            'queue' => 'pdf', // Nombre de la cola dedicada para los trabajos de generación de PDF
+            'retry_after' => 90,
+            'after_commit' => false,
+        ],
+        
         'sqs' => [
             'driver' => 'sqs',
             'key' => env('AWS_ACCESS_KEY_ID'),

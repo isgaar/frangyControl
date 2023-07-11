@@ -114,7 +114,9 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                         <input type="text" class="form-control" name="search" value="{{ $search }}"
                             placeholder="Buscar">
                         <div class="input-group-append">
-                            <button class="btn btn-outline-info" type="submit"  title="Busque un nombre de cliente, carro, placas, servicio o encargado/a"><i class="fas fa-search"></i></button>
+                            <button class="btn btn-outline-info" type="submit"
+                                title="Busque un nombre de cliente, carro, placas, servicio o encargado/a"><i
+                                    class="fas fa-search"></i></button>
                         </div>
                     </div>
             </div>
@@ -143,7 +145,8 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <button type="submit" class="btn btn-outline-info"  title="Aplica cambios para ordenamiento">Aplicar</button>
+                            <button type="submit" class="btn btn-outline-info"
+                                title="Aplica cambios para ordenamiento">Aplicar</button>
                         </div>
                     </div>
                 </div>
@@ -158,7 +161,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                         <th scope="col" class="text-center"># en sistema</th>
                         <th scope="col" class="text-center">Cliente</th>
                         <th scope="col" class="text-center">Tipo de Servicio</th>
-                        
+
                         <th scope="col" class="text-center">Vehículo</th>
                         <th scope="col" class="text-center">Placas</th>
                         <th scope="col" class="text-center">Encargado/a</th>
@@ -171,7 +174,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                         <th scope="row">{{ $row->id_ordenes }}</th>
                         <td class="text-center">{{ ucwords($row->cliente->nombreCompleto) }}</td>
                         <td class="text-center">{{ $row->servicio->nombreServicio }}</td>
-                        
+
                         <td class="text-center">{{ $row->vehiculo->marca }}</td>
                         <td class="text-center">{{ $row->placas }}</td>
                         <td class="text-center">{{ $row->user->name }}</td>
@@ -180,7 +183,11 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                                 title="Visualizar a detalle"><i class="fas fa-solid fa-eye"></i></a>
                             <a class="btn btn-outline-dark" href="{{route('ordenes.edit',$row->id_ordenes)}}"
                                 title="Actualizar o editar orden"><i class="fas fa-undo-alt"></i></a>
-                            <a class="btn btn-outline-dark" title="Exportar a pdf"><i class="fas fa-file-pdf"></i></a>
+                            <a class="btn btn-outline-dark" title="Exportar a PDF"
+                                href="{{ route('ordenes.export', $row->id_ordenes) }}">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+
                         </td>
                     </tr>
                     @endforeach

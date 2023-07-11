@@ -73,6 +73,7 @@ Route::group(['prefix' => 'orden'], function(){
     Route::get('/user',[App\Http\Controllers\Admin\OrdenController::class, 'userList'])->name('user.list');
     Route::get('/edit/{id_ordenes}',[App\Http\Controllers\Admin\OrdenController::class, 'edit'])->name('ordenes.edit');
     Route::put('/{id_ordenes}',[App\Http\Controllers\Admin\OrdenController::class, 'update'])->name('ordenes.update');
+    Route::get('/ordenes/exportToPDF/{id_ordenes}', [App\Http\Controllers\Admin\OrdenController::class, 'exportToPDF'])->name('ordenes.export');
     Route::get('/show/{id_ordenes}',[App\Http\Controllers\Admin\OrdenController::class, 'show'])->name('ordenes.show');
     Route::get('/delete/{id}',[App\Http\Controllers\Admin\OrdenController::class, 'delete'])->name('ordenes.delete');
     Route::get('{id}/destroy',[App\Http\Controllers\Admin\OrdenController::class, 'destroy'])->name('ordenes.destroy');

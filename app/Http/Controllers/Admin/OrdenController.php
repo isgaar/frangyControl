@@ -17,7 +17,8 @@ use App\Models\TipoServicio;
 use App\Models\User;
 use App\Models\Fotografia;
 use Illuminate\Support\Facades\Storage;
-
+use PDF;
+use Carbon\Carbon;
 
 
 class OrdenController extends Controller
@@ -360,38 +361,31 @@ class OrdenController extends Controller
     }
 
     public function edit($id_ordenes)
-{
-    $orden = Ordenes::findOrFail($id_ordenes); // Obtén la orden según el ID proporcionado
-    $datosVehiculo = DatosVehiculo::all();
-    $tiposServicio = TipoServicio::all();
-    $tiposVehiculo = TipoVehiculo::all();
-    $users = User::all();
-    $cliente = Cliente::all(); // Obtén el cliente asociado a la orden
+    {
+        $orden = Ordenes::findOrFail($id_ordenes); // Obtén la orden según el ID proporcionado
+        $datosVehiculo = DatosVehiculo::all();
+        $tiposServicio = TipoServicio::all();
+        $tiposVehiculo = TipoVehiculo::all();
+        $users = User::all();
+        $cliente = Cliente::all(); // Obtén el cliente asociado a la orden
 
-    return view('admin.ordenes.edit', [
-        'orden' => $orden,
-        'datosVehiculo' => $datosVehiculo,
-        'tiposVehiculo' => $tiposVehiculo,
-        'tiposServicio' => $tiposServicio,
-        'users' => $users,
-        'cliente' => $cliente
-    ]);
-}
+        return view('admin.ordenes.edit', [
+            'orden' => $orden,
+            'datosVehiculo' => $datosVehiculo,
+            'tiposVehiculo' => $tiposVehiculo,
+            'tiposServicio' => $tiposServicio,
+            'users' => $users,
+            'cliente' => $cliente
+        ]);
+    }
 
 
-public function update(Request $request, $id_ordenes)
+    public function update(Request $request, $id_ordenes)
 {
     try {
         DB::beginTransaction();
 
-        $rules = [
-            'nombreCompleto' => 'required',
-            'telefono' => 'required',
-            'correo' => 'required',
-        ];
-
         $ordenes = Ordenes::findOrFail($id_ordenes); // Obtén la instancia de Orden existente
-
         // Actualiza los campos de la orden
         $ordenes->yearVehiculo = $request->input('yearVehiculo');
         $ordenes->color = $request->input('color');
@@ -411,40 +405,6 @@ public function update(Request $request, $id_ordenes)
         $ordenes->tvehiculo_id = $request->input('tvehiculo_id');
         $ordenes->id = $request->input('user_id');
 
-        $cliente = $ordenes->cliente;
-        $cliente->nombreCompleto = $request->nombreCompleto;
-        $cliente->telefono = $request->telefono;
-        $cliente->correo = $request->correo;
-
-        $customMessages = [
-            'nombreCompleto.required' => 'El campo Nombre es requerido.',
-            'telefono.required' => 'El campo Teléfono es requerido.',
-            'correo.required' => 'El campo Correo electrónico es requerido.',
-        ];
-
-        $ordenes = Ordenes::findOrFail($id_ordenes); // Obtén la instancia de Orden existente
-
-        // if ($ordenes->cliente_id != $request->input('cliente_id')) {
-        //     $rules['nombreCompleto'] .= '|unique:clientes,nombreCompleto';
-        //     $rules['telefono'] .= '|unique:clientes,telefono';
-        //     $rules['correo'] .= '|unique:clientes,correo';
-
-        //     $customMessages['nombreCompleto.unique'] = 'Ya existe un cliente con este nombre.';
-        //     $customMessages['telefono.unique'] = 'Ya existe un cliente con este teléfono.';
-        //     $customMessages['correo.unique'] = 'Ya existe un cliente con este correo electrónico.';
-        // } else {
-        //     unset($rules['nombreCompleto']);
-        //     unset($rules['telefono']);
-        //     unset($rules['correo']);
-        // }
-
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, $customMessages);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-        $cliente->save(); // Actualiza los datos del cliente
-
         $ordenes->save(); // Guarda los cambios en la tabla 'ordenes'
 
         DB::commit();
@@ -463,6 +423,24 @@ public function update(Request $request, $id_ordenes)
         return back();
     }
 }
+
+    public function exportToPDF($id_ordenes)
+    {
+        $orden = Ordenes::findOrFail($id_ordenes);
+        $datosVehiculo = DatosVehiculo::all();
+        $tiposServicio = TipoServicio::all();
+        $tiposVehiculo = TipoVehiculo::all();
+        $users = User::all();
+        $cliente_id = Cliente::all();
+
+        $html = view('admin.ordenes.export', compact('orden', 'datosVehiculo', 'tiposServicio', 'tiposVehiculo', 'users', 'cliente_id'))->render();
+
+        $pdf = PDF::loadHTML($html);
+
+        $filename = 'orden_' . Carbon::now()->format('Ymd_His') . '.pdf';
+
+        return $pdf->download($filename);
+    }
 
 
 

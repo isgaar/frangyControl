@@ -155,8 +155,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="kilometraje">Kilometraje</label>
-                                {!! Form::text('kilometraje', null, ['class' => 'form-control', 'id' => 'kilometraje',
-                                'maxlength' => '8', 'oninput' => 'formatKilometrajeInput(this)']) !!}
+                                <div class="input-group">
+                                    {!! Form::text('kilometraje', null, ['class' => 'form-control', 'id' =>
+                                    'kilometraje',
+                                    'maxlength' => '8', 'oninput' => 'formatKilometrajeInput(this)']) !!}
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Km</span>
+                                    </div>
+                                </div>
                                 @error('kilometraje')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
