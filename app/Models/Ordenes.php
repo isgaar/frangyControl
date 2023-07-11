@@ -8,13 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Ordenes extends Model
 {
     protected $table = 'ordenes';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_ordenes';
     public $timestamps = true;
 
     protected $fillable = [
         'yearVehiculo',
         'color',
         'placas',
+        'modelo',
         'kilometraje',
         'motor',
         'cilindros',

@@ -44,48 +44,48 @@ class UserController extends Controller
     }
 
     public function create()
-{
-    $roles = Role::all();
-    return view('admin.empleados.create', compact('roles'));
-}
+    {
+        $roles = Role::all();
+        return view('admin.empleados.create', compact('roles'));
+    }
 
     public function store(Request $request)
-{
-    try {
-        DB::beginTransaction();
+    {
+        try {
+            DB::beginTransaction();
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:40'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
-        ]);
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:40'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:8'],
+            ]);
 
-        $user = User::create([
-            'name' => $request['name'],
-            'email' => $request['email'],
-            'password' => Hash::make($request['password']),
-        ]);
+            $user = User::create([
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'password' => Hash::make($request['password']),
+            ]);
 
-        if ($request->has('roles')) {
-            $user->roles()->attach($request['roles']);
+            if ($request->has('roles')) {
+                $user->roles()->attach($request['roles']);
+            }
+
+            DB::commit();
+            Session::flash('status', "Se ha agregado correctamente el usuario");
+            Session::flash('status_type', 'success');
+            return redirect(route('users.index'));
+        } catch (\Illuminate\Database\QueryException $ex) {
+            DB::rollBack();
+            Session::flash('status', $ex->getMessage());
+            Session::flash('status_type', 'error-Query');
+            return back();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Session::flash('status', $e->getMessage());
+            Session::flash('status_type', 'error');
+            return back();
         }
-
-        DB::commit();
-        Session::flash('status', "Se ha agregado correctamente el usuario");
-        Session::flash('status_type', 'success');
-        return redirect(route('users.index'));
-    } catch (\Illuminate\Database\QueryException $ex) {
-        DB::rollBack();
-        Session::flash('status', $ex->getMessage());
-        Session::flash('status_type', 'error-Query');
-        return back();
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Session::flash('status', $e->getMessage());
-        Session::flash('status_type', 'error');
-        return back();
     }
-}
 
     public function edit($id)
     {

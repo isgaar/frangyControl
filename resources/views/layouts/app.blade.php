@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg+xml" href="{{ asset('icon.svg') }}">
-    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
 
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <link href="{{ asset('css/bootstrap.css') }}" rel="stylesheet">
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.bunny.net">
@@ -80,4 +81,6 @@
         </main>
     </div>
 </body>
+<script src="{{ asset('js/app.js') }}"></script>
+
 </html>

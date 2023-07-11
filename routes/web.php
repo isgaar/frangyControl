@@ -30,3 +30,7 @@ Route::group(['prefix' => 'landing'], function () {
         Route::get('/welcome', [App\Http\Controllers\LandingController::class, 'welcome']) -> name('landing.pages.welcome');
     });
 
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

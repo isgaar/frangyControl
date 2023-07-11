@@ -15,16 +15,18 @@
             </div>
         </div>
     @endif
-    <div class="card">
+    
+@endsection
+
+@section('content')
+
+<div class="card">
         <div class="card-header">
             <ul>
                 <b>Creando registro único</b>
             </ul>
         </div>
     </div>
-@endsection
-
-@section('content')
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card card-warning">
@@ -49,8 +51,8 @@
 
                     <div class="card-footer text-center">
                         <div class="d-flex justify-content-between">
-                            <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-light">Retroceder</a>
-                            <button type="submit" class="btn btn-outline-success">Guardar</button>
+                            <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Retroceder</a>
+                            <button type="submit" class="btn btn-success">Guardar</button>
                         </div>
                     </div>
                     {!! Form::close() !!}

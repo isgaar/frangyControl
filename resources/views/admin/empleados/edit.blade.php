@@ -28,7 +28,7 @@
     <div class="card-body">
         <div class="row">
             <div class="col-lg-12 col-sm-12 col-12">
-                <div class="card card-primary">
+                <div class="card card-danger">
                     <div class="card-header">
                         <h3 class="card-title">Información Requerida</h3>
                     </div>
@@ -36,7 +36,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="name">Nombre del usuario</label>
-                            {!! Form::text('name', $user->name, ['class' => 'form-control', 'placeholder' => 'Nombre del usuario']) !!}
+                            {!! Form::text('name', $user->name, ['class' => 'form-control', 'placeholder' => 'Nombre del usuario', 'oninput' => 'capitalizeInput(this)']) !!}
                             @if ($errors->has('name'))
                                 <span class="text-danger">{{ $errors->first('name') }}</span>
                             @endif
@@ -78,8 +78,8 @@
 
                     <div class="card-footer text-center">
                         <div class="d-flex justify-content-between">
-                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-light">Retroceder</a>
-                            <button type="submit" class="btn btn-outline-warning">Actualizar</button>
+                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-dark">Retroceder</a>
+                            <button type="submit" class="btn btn-warning">Actualizar</button>
                         </div>
                     </div>
                     {!! Form::close() !!}
@@ -88,6 +88,12 @@
         </div>
     </div>
 @stop
+<script>
+function capitalizeInput(input) {
+    var value = input.value;
+    input.value = value.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+}
+</script>
 
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>

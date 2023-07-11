@@ -10,7 +10,21 @@
 @section('content')
 
 
+@php
+        $userAgent = $_SERVER['HTTP_USER_AGENT'];
+    @endphp
 
+    @if (strpos($userAgent, 'Firefox') === false)
+        <div class="card">
+        <div class="card-body" style="background-color: #FF7139; color: #fff;">
+                <h5 class="card-title">
+                <img src="https://play-lh.googleusercontent.com/l6ftn6BTu7Kfe8OdE4Itrdw5bTRVO3F_mTZH8xDa-FHO4m-lZAXmz5GxkXTMhqcF_y0" alt="Firefox Logo" width="30" height="30">
+                    Utiliza Firefox para una mejor experiencia gráfica
+                </h5>
+                <p class="card-text">Se recomienda utilizar el navegador Mozilla Firefox para aprovechar al máximo las características visuales de este sitio.</p>
+            </div>
+        </div>
+    @endif
 
 <div data-tor-slider="indicators(true)">
     <div class="h-15rem bg-primary"></div>

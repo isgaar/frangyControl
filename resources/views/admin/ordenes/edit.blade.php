@@ -37,42 +37,50 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card card-primary">
-                {!! Form::open(['route' => 'ordenes.store', 'method' => 'post', 'enctype' => 'multipart/form-data', 'id'
-                => 'formulario']) !!}
+                {!! Form::model($orden, ['route' => ['ordenes.update', $orden->id_ordenes], 'method' => 'put', 'enctype'
+                => 'multipart/form-data']) !!}
+
+
+
                 @csrf
                 <div class="card-header bg-danger">
                     <h3 class="card-title">Información del cliente</h3>
                 </div>
                 <div class="card-body">
 
-
-                    <input type="hidden" name="cliente_id" value="{{ $cliente_id }}">
                     <div class="form-group">
                         <label for="nombreCompleto">Nombre completo</label>
                         <input type="text" name="nombreCompleto" class="form-control" maxlength="100"
-                            id="nombreCompleto" oninput="formatNameInput(this)">
+                            id="nombreCompleto" oninput="formatNameInput(this)"
+                            value="{{ $orden->cliente->nombreCompleto }}">
                         @error('nombreCompleto')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
+
                     <div class="form-group">
                         <label for="telefono">Teléfono</label>
                         <input type="text" name="telefono" class="form-control" id="telefono" pattern="[0-9]{0,10}"
-                            onkeypress="return isNumberKey(event)" oninput="truncatePhoneNumber(this)">
+                            onkeypress="return isNumberKey(event)" oninput="truncatePhoneNumber(this)"
+                            value="{{ $orden->cliente->telefono ?? '' }}">
                         @error('telefono')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
 
+
                     <div class="form-group">
                         <label for="correo">Correo electrónico</label>
                         <input type="text" name="correo" class="form-control" maxlength="30" id="correo"
-                            oninput="validateEmail(this)">
+                            oninput="validateEmail(this)" value="{{ $orden->cliente->correo ?? '' }}">
                         @error('correo')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+
+
+
 
 
                 </div>
@@ -94,12 +102,12 @@
                                     <select name="vehiculo_id" class="form-control" id="vehiculo_id">
                                         <option value="">-- Seleccione una marca --</option>
                                         @foreach ($datosVehiculo as $vehiculo)
-                                        <option value="{{ $vehiculo->id_vehiculo }}">{{ $vehiculo->marca }}</option>
+                                        <option value="{{ $vehiculo->id_vehiculo }}" @if ($vehiculo->id_vehiculo ==
+                                            $orden->vehiculo_id) selected @endif>
+                                            {{ $vehiculo->marca }}
+                                        </option>
                                         @endforeach
                                     </select>
-
-
-
                                 </div>
 
                             </div>
@@ -108,9 +116,13 @@
                                 <select name="tvehiculo_id" class="form-control" id="tvehiculo_id">
                                     <option value="">-- Seleccione un tipo --</option>
                                     @foreach ($tiposVehiculo as $tipoVehiculo)
-                                    <option value="{{ $tipoVehiculo->id_tvehiculo }}">{{ $tipoVehiculo->tipo }}</option>
+                                    <option value="{{ $tipoVehiculo->id_tvehiculo }}" @if ($tipoVehiculo->id_tvehiculo
+                                        == $orden->tipoVehiculo->id_tvehiculo) selected @endif>
+                                        {{ $tipoVehiculo->tipo }}
+                                    </option>
                                     @endforeach
                                 </select>
+
 
                             </div>
                             <div class="form-group">
@@ -155,8 +167,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="kilometraje">Kilometraje</label>
-                                {!! Form::text('kilometraje', null, ['class' => 'form-control', 'id' => 'kilometraje',
-                                'maxlength' => '8', 'oninput' => 'formatKilometrajeInput(this)']) !!}
+
+                                <div class="input-group">
+                                    {!! Form::text('kilometraje', null, ['class' => 'form-control', 'id' =>
+                                    'kilometraje', 'maxlength' => '8', 'oninput' => 'formatKilometrajeInput(this)']) !!}
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">Km</span>
+                                    </div>
+                                </div>
                                 @error('kilometraje')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -217,10 +235,13 @@
                                     <select name="servicio_id" class="form-control" id="servicio_id">
                                         <option value="">-- Seleccione un servicio --</option>
                                         @foreach ($tiposServicio as $tipoServicio)
-                                        <option value="{{ $tipoServicio->id_servicio }}">
-                                            {{ $tipoServicio->nombreServicio }}</option>
+                                        <option value="{{ $tipoServicio->id_servicio }}" @if ($tipoServicio->id_servicio
+                                            == $orden->servicio->id_servicio) selected @endif>
+                                            {{ $tipoServicio->nombreServicio }}
+                                        </option>
                                         @endforeach
                                     </select>
+
 
                                 </div>
                             </div>
@@ -230,9 +251,13 @@
                                     <select name="user_id" class="form-control" id="user_id">
                                         <option value="">-- Seleccione empleado --</option>
                                         @foreach ($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        <option value="{{ $user->id }}" @if ($user->id == $orden->user->id) selected
+                                            @endif>
+                                            {{ $user->name }}
+                                        </option>
                                         @endforeach
                                     </select>
+
 
                                 </div>
                             </div>
@@ -274,7 +299,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fechaEntrega">Fecha estimada de entrega</label>
+                                    <label for="fechaEntrega">Fecha de entrega</label>
                                     {!! Form::text('fechaEntrega', null, ['class' => 'form-control', 'id' =>
                                     'fechaEntrega', 'placeholder' => 'Fecha de entrega']) !!}
                                 </div>
@@ -309,7 +334,7 @@
                 <div class="card-footer text-center">
                     <div class="d-flex justify-content-between">
                         <a type="button" href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                        <button type="submit" class="btn btn-info" id="submitButton" disabled>Guardar orden</button>
+                        <button type="submit" class="btn btn-info" id="submitButton" disabled>Actualizar orden</button>
                     </div>
                 </div>
 
@@ -558,6 +583,7 @@
                     kilometraje = kilometraje.slice(0, 8);
                     input.value = kilometraje;
                 }
+
 
                 function limitInputLength(input, maxLength) {
                     if (input.value.length > maxLength) {

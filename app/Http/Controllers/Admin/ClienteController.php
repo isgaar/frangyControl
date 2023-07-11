@@ -10,39 +10,47 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Collection;
 
 class ClienteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+
     public function index(Request $request)
     {
-    $search = "";
-    $limit = 10;
-
-    if ($request->has('search')) {
         $search = $request->input('search');
+        $limit = $request->input('limit', 10); // Obtén el valor seleccionado del número de resultados por página
+        $sortBy = $request->input('sort_by', 'id_cliente'); // Campo de ordenamiento predeterminado
+        $sortOrder = $request->input('sort_order', 'asc'); // Orden predeterminado
 
-        if (trim($search) != '') {
-            $data = Cliente::where('nombreCompleto', 'like', "%$search%")
+        // Obtener los registros según el campo de búsqueda y los parámetros de ordenamiento
+        $dataQuery = Cliente::query();
+
+        if ($search) {
+            $dataQuery->where('nombreCompleto', 'like', "%$search%")
                 ->orWhere('telefono', 'like', "%$search%")
-                ->orWhere('correo', 'like', "%$search%")
-                ->get();
-        } else {
-            $data = Cliente::all();
+                ->orWhere('correo', 'like', "%$search%");
         }
-    } else {
-        $data = Cliente::all();
+
+        $dataQuery->orderBy($sortBy, $sortOrder);
+
+        // Obtener una colección paginada con los registros ordenados
+        $data = $dataQuery->paginate($limit);
+
+        // Enviar los datos a la vista
+        return view('admin.clientes.index', [
+            'data' => $data,
+            'search' => $search,
+            'sortBy' => $sortBy,
+            'sortOrder' => $sortOrder,
+        ]);
     }
 
-    $currentPage = LengthAwarePaginator::resolveCurrentPage() - 1;
-    $perPage = $limit;
-    $currentPageSearchResults = $data->slice($currentPage * $perPage, $perPage)->all();
-    $data = new LengthAwarePaginator($currentPageSearchResults, count($data), $perPage);
 
-    return view('admin.clientes.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
-    }
+
 
 
     public function create()
@@ -56,34 +64,41 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombreCompleto' => 'required',
-            'telefono' => 'required',
-            'correo' => 'required'
+            'nombreCompleto' => 'required|unique:clientes,nombreCompleto',
+            'telefono' => 'required|unique:clientes,telefono',
+            'correo' => 'required|unique:clientes,correo'
+        ], [
+            'nombreCompleto.required' => 'El campo Nombre es requerido.',
+            'nombreCompleto.unique' => 'Este nombre ya existe, porfavor ingrese uno nuevo.',
+            'telefono.required' => 'El campo Teléfono es requerido.',
+            'correo.required' => 'El campo Correo electrónico es requerido.'
         ]);
-    
+
+
         try {
             DB::beginTransaction();
-    
+
             $cliente = Cliente::create([
                 'nombreCompleto' => $request->input('nombreCompleto'),
+                'nombreCompleto.unique' => 'Este nombre ya existe, porfavor ingrese uno nuevo.',
                 'telefono' => $request->input('telefono'),
                 'correo' => $request->input('correo')
             ]);
 
             $cliente->save();
-    
+
             DB::commit();
-    
+
             Session::flash('status', 'Se ha agregado exitosamente el cliente');
             Session::flash('status_type', 'success');
             return redirect()->route('clientes.index');
-    
+
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
             Session::flash('status_type', 'error-Query');
             return back();
-    
+
         } catch (\Exception $e) {
             DB::rollBack();
             Session::flash('status', $e->getMessage());
@@ -91,7 +106,7 @@ class ClienteController extends Controller
             return back();
         }
     }
-    
+
 
     public function show($id_cliente)
     {
@@ -111,20 +126,20 @@ class ClienteController extends Controller
     public function update(Request $request, $id_cliente)
     {
         $cliente = Cliente::findOrFail($id_cliente);
-    
+
         $request->validate([
             'nombreCompleto' => 'required',
             'telefono' => 'required',
             'correo' => 'required'
         ]);
-    
+
         try {
             $cliente->nombreCompleto = $request->input('nombreCompleto');
             $cliente->telefono = $request->input('telefono');
             $cliente->correo = $request->input('correo');
-    
+
             $cliente->save();
-    
+
             return redirect(route('clientes.index'))->with('status', 'Se ha editado correctamente el cliente')->with('status_type', 'success');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
@@ -132,7 +147,7 @@ class ClienteController extends Controller
             return back()->with('status', $e->getMessage())->with('status_type', 'error');
         }
     }
-    
+
 
     public function delete($id_cliente)
     {
@@ -147,13 +162,13 @@ class ClienteController extends Controller
         $cliente = Cliente::findOrFail($id_cliente);
 
         // Eliminar el cliente
-    try {
-        $cliente->delete();
-        return redirect(route('clientes.index'))->with('status', 'Se ha eliminado correctamente el cliente')->with('status_type', 'warning');
-    } catch (\Illuminate\Database\QueryException $ex) {
-        return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
-    } catch (\Exception $e) {
-        return back()->with('status', $e->getMessage())->with('status_type', 'error');
-    }
+        try {
+            $cliente->delete();
+            return redirect(route('clientes.index'))->with('status', 'Se ha eliminado correctamente el cliente')->with('status_type', 'warning');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
+        } catch (\Exception $e) {
+            return back()->with('status', $e->getMessage())->with('status_type', 'error');
+        }
     }
 }

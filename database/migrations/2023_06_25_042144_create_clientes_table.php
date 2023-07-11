@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->increments('id_cliente');
-            $table->string('nombreCompleto', 80);
+            $table->string('nombreCompleto', 100);
             $table->unsignedBigInteger('telefono');
             $table->string('correo', 30);
             $table->timestamps();

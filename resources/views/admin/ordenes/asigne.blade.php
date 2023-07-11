@@ -37,42 +37,22 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card card-primary">
-                {!! Form::open(['route' => 'ordenes.store', 'method' => 'post', 'enctype' => 'multipart/form-data', 'id'
-                => 'formulario']) !!}
+                {!! Form::open(['route' => 'ordenes.store2', 'method' => 'post', 'enctype' => 'multipart/form-data',
+                'id' => 'formulario']) !!}
                 @csrf
                 <div class="card-header bg-danger">
                     <h3 class="card-title">Información del cliente</h3>
                 </div>
                 <div class="card-body">
 
+                    <label for="cliente_id">Cliente</label>
+                    <select name="cliente_id" class="form-control" id="cliente_id" required>
+                        <option value="">-- Seleccione cliente --</option>
+                        @foreach ($cliente as $clientes)
+                        <option value="{{ $clientes->id_cliente }}">{{ $clientes->nombreCompleto }}</option>
+                        @endforeach
+                    </select>
 
-                    <input type="hidden" name="cliente_id" value="{{ $cliente_id }}">
-                    <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" name="nombreCompleto" class="form-control" maxlength="100"
-                            id="nombreCompleto" oninput="formatNameInput(this)">
-                        @error('nombreCompleto')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="text" name="telefono" class="form-control" id="telefono" pattern="[0-9]{0,10}"
-                            onkeypress="return isNumberKey(event)" oninput="truncatePhoneNumber(this)">
-                        @error('telefono')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="correo">Correo electrónico</label>
-                        <input type="text" name="correo" class="form-control" maxlength="30" id="correo"
-                            oninput="validateEmail(this)">
-                        @error('correo')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
 
 
                 </div>
@@ -558,6 +538,7 @@
                     kilometraje = kilometraje.slice(0, 8);
                     input.value = kilometraje;
                 }
+
 
                 function limitInputLength(input, maxLength) {
                     if (input.value.length > maxLength) {

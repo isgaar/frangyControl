@@ -236,7 +236,8 @@
                         <div id="photoFieldsContainer" class="input-group mb-3" style="display: none;">
     <div class="photoField input-group" id="photoField1">
         <label class="input-group-text" for="photo1">Tomar fotografía:</label>
-        <input type="file" class="form-control" accept="image/*" capture="camera" id="photo1" name="photos[]" onchange="previewPhoto(event, 'photoPreview1', 1); toggleAddMorePhotosButton();">
+        <input type="button" class="form-control" value="Tomar foto" onclick="openCamera(1);">
+        <input type="file" class="form-control" accept="image/*" style="display: none;" id="photoInput1" name="photos[]" onchange="previewPhoto(event, 'photoPreview1', 1); toggleAddMorePhotosButton();">
         <div class="mt-2">
             <img id="photoPreview1" src="#" alt="Previsualización" style="max-width: 200px; max-height: 200px;">
             <button type="button" class="btn btn-outline-danger" onclick="deletePhotoField(1); toggleAddMorePhotosButton();">Eliminar</button>
@@ -247,6 +248,7 @@
 <div id="addMorePhotosContainer" class="mt-2" style="display: none;">
     <button type="button" class="btn btn-outline-light" onclick="addPhotoField()">Agregar más fotos</button>
 </div>
+
 
                         <div class="form-group">
                             <input type="checkbox" id="myCheckbox">
@@ -312,6 +314,41 @@
             }
         }
     });
+
+    // Función para abrir la cámara y capturar una foto
+function openCamera(fieldIndex) {
+    var input = document.getElementById('photoInput' + fieldIndex);
+    input.style.display = 'block';
+
+    // Solicitar acceso a la cámara del dispositivo
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function (stream) {
+            // Cuando se permite el acceso a la cámara, mostrar el flujo de video en el input de archivo
+            input.captureStream = stream;
+            input.captureStream.getTracks().forEach(function (track) {
+                track.stop();
+            });
+            var videoTrack = stream.getVideoTracks()[0];
+            var imageCapture = new ImageCapture(videoTrack);
+            imageCapture.takePhoto()
+                .then(function (blob) {
+                    // Convertir la foto capturada en un objeto File para asignarlo al input de archivo
+                    var file = new File([blob], 'photo.jpg', { type: 'image/jpeg' });
+                    input.files = [file];
+                    previewPhoto(event, 'photoPreview' + fieldIndex, fieldIndex);
+                    toggleAddMorePhotosButton();
+                })
+                .catch(function (error) {
+                    console.log('Error al capturar la foto: ' + error.message);
+                    input.style.display = 'none';
+                });
+        })
+        .catch(function (error) {
+            console.log('Error al acceder a la cámara: ' + error.message);
+            input.style.display = 'none';
+        });
+}
+
 
     var isMobile = window.matchMedia("only screen and (max-width: 1080px)").matches;
 

@@ -1,5 +1,4 @@
 @extends('adminlte::page')
-@include('landing.include.head')
 
 @section('content_header')
     @if (Session::has('status'))
@@ -15,14 +14,6 @@
             </div>
         </div>
     @endif
-
-    <div class="card">
-        <div class="card-header">
-            <ul>
-                <b>Agregando usuario</b> <i class="fas fa-user-plus"></i>
-            </ul>
-        </div>
-    </div>
 @stop
 
 @section('content')
@@ -30,7 +21,7 @@
         <div class="row">
             <div class="col-lg-12 col-sm-12 col-12">
                 <div class="card card-primary">
-                    <div class="card-header bg-white">
+                    <div class="card-header bg-danger">
                         <h3 class="card-title">Información Requerida</h3>
                     </div>
 
@@ -38,7 +29,7 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label for="name">Nombre del usuario</label>
-                            {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'name']) !!}
+                            {!! Form::text('name', null, ['class' => 'form-control', 'id' => 'name', 'oninput' => 'capitalizeInput(this)']) !!}
                             @error('name')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -97,7 +88,7 @@
 
                     <div class="card-footer text-center">
                         <div class="d-flex justify-content-between">
-                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-light">Retroceder</a>
+                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-dark">Retroceder</a>
                             <button type="submit" class="btn btn-success">Guardar</button>
                         </div>
                     </div>
@@ -107,6 +98,13 @@
         </div>
     </div>
 @stop
+
+<script>
+function capitalizeInput(input) {
+    var value = input.value;
+    input.value = value.replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+}
+</script>
 
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>

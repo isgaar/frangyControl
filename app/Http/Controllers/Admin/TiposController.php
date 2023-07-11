@@ -44,36 +44,36 @@ class TiposController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'nombreServicio' => 'required'
-    ]);
+    {
+        $request->validate([
+            'nombreServicio' => 'required'
+        ]);
 
-    try {
-        DB::beginTransaction();
-        
-        $tipoServicio = new TipoServicio();
-        $tipoServicio->nombreServicio = $request->input('nombreServicio');
-        $tipoServicio->save();
+        try {
+            DB::beginTransaction();
 
-        DB::commit();
-        Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
-        Session::flash('status_type', 'success');
-        return redirect(route('datosv.index'));
+            $tipoServicio = new TipoServicio();
+            $tipoServicio->nombreServicio = $request->input('nombreServicio');
+            $tipoServicio->save();
 
-    } catch (\Illuminate\Database\QueryException $ex) {
-        DB::rollBack();
-        Session::flash('status', $ex->getMessage());
-        Session::flash('status_type', 'error-Query');
-        return back();
+            DB::commit();
+            Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
+            Session::flash('status_type', 'success');
+            return redirect(route('datosv.index'));
 
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Session::flash('status', $e->getMessage());
-        Session::flash('status_type', 'error');
-        return back();
+        } catch (\Illuminate\Database\QueryException $ex) {
+            DB::rollBack();
+            Session::flash('status', $ex->getMessage());
+            Session::flash('status_type', 'error-Query');
+            return back();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Session::flash('status', $e->getMessage());
+            Session::flash('status_type', 'error');
+            return back();
+        }
     }
-}
 
 
     // public function store(Request $request)

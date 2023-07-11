@@ -52,7 +52,7 @@
                     </div>
                     <div class="card-footer text-center">
                         <div class="d-flex justify-content-between">
-                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-light">Retroceder</a>
+                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-dark">Retroceder</a>
                             <button type="submit" class="btn btn-danger">Eliminar</button>
                         </div>
                     </div>

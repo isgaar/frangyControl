@@ -63,7 +63,7 @@
             </div>
         </div>
         <div class="card-footer text-center">
-            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-light btn-lg btn-block">Regresar</a>
+            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-dark btn-lg btn-block">Regresar</a>
         </div>
     </div>
 @stop

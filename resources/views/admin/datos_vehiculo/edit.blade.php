@@ -15,6 +15,7 @@
             </div>
         </div>
     @endif
+    @section('content')
 
     <div class="card">
         <div class="card-header">
@@ -49,8 +50,8 @@
                             </div>
                             <div class="card-footer text-center">
                                 <div class="d-flex justify-content-between">
-                                    <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-light">Retroceder</a>
-                                    <button type="submit" class="btn btn-outline-warning">Actualizar</button>
+                                    <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Retroceder</a>
+                                    <button type="submit" class="btn btn-warning">Actualizar</button>
                                 </div>
                             </div>
                         </fieldset>

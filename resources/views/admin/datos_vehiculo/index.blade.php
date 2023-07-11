@@ -5,7 +5,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-    
+
+
     <style>
         .flex{
             display: flex;
@@ -23,6 +24,8 @@
         </div>
     </div>
 @endif
+
+@section('content')
     <div class="card">
         <div class="card-header">
         <ul>
@@ -30,7 +33,7 @@
                 <h1 style="display: inline-block;">Datos generales</h1>
             </li>
             <li style="display: inline-block; float: right;">
-                <a type="button" href="{{ route('datosv.create') }}" class="btn btn-dark" title="Agregar datos de manera general en las distintas tablas">
+                <a type="button" href="{{ route('datosv.create') }}" class="btn btn-info" title="Agregar datos de manera general en las distintas tablas">
                     <i class="fas fa-save"></i> Guardado general
                 </a>
             </li>
@@ -43,7 +46,7 @@
         <div style="display: flex; align-items: center;">
             <h5 style="flex: 1;">Marcas de vehículos</h5>
             <li style="list-style: none;">
-                    <a type="button" href="{{ route('datosv.createunique') }}" class="btn btn-dark" title="Agregar datos por separado">
+                    <a type="button" href="{{ route('datosv.createunique') }}" class="btn btn-info" title="Agregar datos por separado">
                         <i class="fas fa-plus"></i>
                     </a>
             </li>
@@ -61,8 +64,8 @@
                 <tr>
                     <td>{{ $row->marca }}</td>
                     <td>
-                        <a class="btn btn-outline-warning" href="{{ route('datosv.edit', $row->id_vehiculo) }}" title="Editar marca"><i class="fas fa-solid fa-pen"></i></a>
-                        <a class="btn btn-outline-danger" href="{{ route('datosv.delete', $row->id_vehiculo) }}" title="Eliminar marca"><i class="fas fa-solid fa-trash"></i></a>
+                        <a class="btn btn-outline-dark" href="{{ route('datosv.edit', $row->id_vehiculo) }}" title="Editar marca"><i class="fas fa-solid fa-pen"></i></a>
+                        <a class="btn btn-outline-dark" href="{{ route('datosv.delete', $row->id_vehiculo) }}" title="Eliminar marca"><i class="fas fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
                 @endforeach
@@ -74,7 +77,7 @@
         <div style="display: flex; align-items: center;">
             <h5 style="flex: 1;">Tipos de vehículos</h5>
             <li style="list-style: none;">
-                    <a type="button" href="{{ route('tipo_vehiculo.create') }}" class="btn btn-dark" title="Agregar datos por separado">
+                    <a type="button" href="{{ route('tipo_vehiculo.create') }}" class="btn btn-info" title="Agregar datos por separado">
                         <i class="fas fa-plus"></i>
                     </a>
             </li>
@@ -91,8 +94,8 @@
                 <tr>
                     <td>{{ $row->tipo }}</td>
                     <td>
-                        <a class="btn btn-outline-warning" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo"><i class="fas fa-solid fa-pen"></i></a>
-                        <a class="btn btn-outline-danger" href="{{ route('tipo_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo"><i class="fas fa-solid fa-trash"></i></a>
+                        <a class="btn btn-outline-dark" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo"><i class="fas fa-solid fa-pen"></i></a>
+                        <a class="btn btn-outline-dark" href="{{ route('tipo_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo"><i class="fas fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
                 @endforeach
@@ -104,7 +107,7 @@
     <div style="display: flex; align-items: center;">
             <h5 style="flex: 1;">Nombres de servicios</h5>
             <li style="list-style: none;">
-                    <a type="button" href="{{ route('tipo_servicio.create') }}" class="btn btn-dark" title="Agregar datos por separado">
+                    <a type="button" href="{{ route('tipo_servicio.create') }}" class="btn btn-info" title="Agregar datos por separado">
                         <i class="fas fa-plus"></i>
                     </a>
             </li>
@@ -121,8 +124,8 @@
                 <tr>
                     <td>{{ $row->nombreServicio }}</td>
                     <td>
-                        <a class="btn btn-outline-warning" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar nombre"><i class="fas fa-solid fa-pen"></i></a>
-                        <a class="btn btn-outline-danger" href="{{ route('tipo_servicio.delete', $row->id_servicio) }}" title="Eliminar nombre"><i class="fas fa-solid fa-trash"></i></a>
+                        <a class="btn btn-outline-dark" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar nombre"><i class="fas fa-solid fa-pen"></i></a>
+                        <a class="btn btn-outline-dark" href="{{ route('tipo_servicio.delete', $row->id_servicio) }}" title="Eliminar nombre"><i class="fas fa-solid fa-trash"></i></a>
                     </td>
                 </tr>
                 @endforeach

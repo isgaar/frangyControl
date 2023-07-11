@@ -14,6 +14,9 @@
         </div>
     @endif
 
+    @endsection
+
+@section('content')
     <div class="card">
         <div class="card-header">
             <ul class="flex">
@@ -21,7 +24,7 @@
                     <h1 style="display: inline-block;">Empleados</h1>
                 </li>
                 <li style="display: inline-block; float: right;">
-                    <a type="button" href="{{ route('users.create') }}" class="btn btn-dark" title="Agregar empleado">
+                    <a type="button" href="{{ route('users.create') }}" class="btn btn-info" title="Agregar empleado">
                         <i class="fas fa-user-plus"></i> Nuevo empleado
                     </a>
                 </li>
@@ -44,7 +47,7 @@
                         <div class="input-group">
                             <input type="text" class="form-control" name="search" value="{{$search}}" placeholder="Buscar">
                             <div class="input-group-append">
-                                <button class="btn btn-outline-light" type="submit">Buscar </button>
+                                <button class="btn btn-outline-info" type="submit">Buscar </button>
                             </div>
                         </div>
                     </form>
@@ -55,10 +58,10 @@
             <table class="table table-hover">
                 <thead class="thead-light">
                     <tr>
-                        <th style="width: 10%;"></th>
-                        <th style="width: 40%;">Nombre</th>
-                        <th style="width: 30%;">Correo electrónico</th>
-                        <th style="width: 20%;">Acciones</th>
+                        <th></th>
+                        <th>Nombre</th>
+                        <th>Correo electrónico</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,9 +71,9 @@
                         <td>{{ $row->name }}</td>
                         <td>{{ $row->email }}</td>
                         <td>
-                            <a class="btn btn-outline-light" href="{{route('users.show',$row->id)}}" title="Detalle de usuario/empleado"><i class="fas fa-solid fa-eye"></i></a>
-                            <a class="btn btn-outline-warning" href="{{route('users.edit',$row->id)}}" title="Editar empleado"><i class="fas fa-solid fa-pen"></i></a>
-                            <a class="btn btn-outline-danger" href="{{route('users.delete',$row->id)}}" title="Eliminar empleado"><i class="fas fa-solid fa-trash"></i></a>
+                            <a class="btn btn-outline-dark" href="{{route('users.show',$row->id)}}" title="Detalle de usuario/empleado"><i class="fas fa-solid fa-eye"></i></a>
+                            <a class="btn btn-outline-dark" href="{{route('users.edit',$row->id)}}" title="Editar empleado"><i class="fas fa-solid fa-pen"></i></a>
+                            <a class="btn btn-outline-dark" href="{{route('users.delete',$row->id)}}" title="Eliminar empleado"><i class="fas fa-solid fa-trash"></i></a>
                         </td>
                     </tr>
                     @endforeach

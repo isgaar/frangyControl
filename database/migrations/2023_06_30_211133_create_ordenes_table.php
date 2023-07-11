@@ -24,7 +24,8 @@ return new class extends Migration
             $table->double('kilometraje');
             $table->double('motor');
             $table->double('cilindros');
-            $table->string('noSerievehiculo', 11);
+            $table->string('noSerievehiculo', 17);
+            $table->string('modelo', 100);
             $table->date('fechaEntrega');
             $table->text('observacionesInt');
             $table->text('recomendacionesCliente');

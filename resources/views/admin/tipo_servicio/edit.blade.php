@@ -1,5 +1,4 @@
 @extends('adminlte::page')
-@include('landing.include.head')
 
 @section('content_header')
     @if (Session::has('status'))
@@ -14,6 +13,10 @@
             </div>
         </div>
     @endif
+
+    @endsection
+
+@section('content')
 
     <div class="card">
         <div class="card-header">
@@ -48,8 +51,8 @@
                                     </div>
                                     <div class="card-footer text-center">
                                         <div class="d-flex justify-content-between">
-                                            <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-light">Retroceder</a>
-                                            <button type="submit" class="btn btn-outline-warning">Actualizar</button>
+                                            <a type="button" href="{{ route('datosv.index') }}" class="btn btn-light">Retroceder</a>
+                                            <button type="submit" class="btn btn-warning">Actualizar</button>
                                         </div>
                                     </div>
                                 </fieldset>
