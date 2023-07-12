@@ -46,27 +46,40 @@ class TiposController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombreServicio' => 'required'
+            'tipos.*' => 'required' // Validar todos los campos de tipo de servicio
         ]);
-
+    
         try {
             DB::beginTransaction();
-
-            $tipoServicio = new TipoServicio();
-            $tipoServicio->nombreServicio = $request->input('nombreServicio');
+    
+            // Guardar el tipo de servicio principal
+            $tipoServicio = new TipoServicio([
+                'nombreServicio' => $request->input('tipos.0') // Obtener el primer valor del arreglo de tipos
+            ]);
             $tipoServicio->save();
-
+    
+            // Guardar los tipos de servicio adicionales
+            $tiposAdicionales = $request->input('tipos');
+            unset($tiposAdicionales[0]); // Eliminar el primer valor, ya que ya se guardó anteriormente
+    
+            foreach ($tiposAdicionales as $tipo) {
+                $tipoServicioAdicional = new TipoServicio([
+                    'nombreServicio' => $tipo
+                ]);
+                $tipoServicioAdicional->save();
+            }
+    
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
             Session::flash('status_type', 'success');
             return redirect(route('datosv.index'));
-
+    
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
             Session::flash('status_type', 'error-Query');
             return back();
-
+    
         } catch (\Exception $e) {
             DB::rollBack();
             Session::flash('status', $e->getMessage());
@@ -74,6 +87,7 @@ class TiposController extends Controller
             return back();
         }
     }
+    
 
 
     // public function store(Request $request)

@@ -23,13 +23,25 @@ class Ordenes extends Model
         'fechaEntrega',
         'observacionesInt',
         'recomendacionesCliente',
+        'status',
         'detallesOrden',
-        'retiroRefacciones','cliente_id',
+        'retiroRefacciones',
+        'cliente_id',
         'vehiculo_id',
         'servicio_id',
         'tvehiculo_id',
         'id',
     ];
+
+    public function getCreatedAtAttribute($value)
+    {
+        // Formatear el valor de created_at como desees
+        return date('Y-m-d H:i:s', strtotime($value));
+    }
+    public function getUpdatedAtAttribute($value)
+    {
+        return date('Y-m-d H:i:s', strtotime($value));
+    }
 
     public function cliente()
     {

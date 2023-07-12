@@ -54,6 +54,13 @@
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+                        <div class="form-group">
+                            <label for="correo">RFC</label>
+                            {!! Form::text('rfc', null, ['class' => 'form-control', 'id_cliente' => 'rfc', 'oninput' => 'formatRFC(event)']) !!}
+                            @error('rfc')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
 
                         
                     </div>
@@ -72,6 +79,30 @@
 @stop
 
 <script>
+
+function formatRFC(event) {
+    var input = event.target;
+    var value = input.value;
+
+    if (value.length > 13) {
+    input.value = value.slice(0, 13); // Limitar a 13 caracteres
+  }
+        // Obtén el campo de entrada del RFC
+        const rfcInput = event.target;
+
+        // Obtén el valor actual del campo de entrada
+        let rfcValue = rfcInput.value;
+
+        // Elimina los caracteres especiales utilizando una expresión regular
+        rfcValue = rfcValue.replace(/[^\w\s]/gi, '');
+
+        // Convierte las letras a mayúsculas
+        rfcValue = rfcValue.toUpperCase();
+
+        // Asigna el valor modificado al campo de entrada
+        rfcInput.value = rfcValue;
+    }
+
     function cambiarNombre(nombre) {
   let regex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1][a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/g;
   return regex.exec(nombre)[0];

@@ -195,9 +195,15 @@ return [
 'laravel_mix_js_path' => 'js/app.js',
 
 'menu' => [
+    
     [
         'type' => 'fullscreen-widget',
         'topnav_right' => true,
+    ],
+    [
+        'text' => 'Inicio',
+        'url' => '/home',
+        'icon' => 'fas fa-home',
     ],
 
     [

@@ -94,9 +94,9 @@
 
                             </div>
                             <div class="form-group">
-                                <label for="motor">Modelo</label>
+                                <label for="modelo">Línea</label>
                                 {!! Form::text('modelo', null, ['class' => 'form-control', 'id' => 'modelo', 'maxlength'
-                                => '100']) !!}
+                                => '100', 'oninput' => 'capitalizeFirstLetter(event)']) !!}
                                 @error('modelo')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -304,12 +304,23 @@
 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
+                    function capitalizeFirstLetter(event) {
+                    var input = event.target;
+                    var value = input.value;
+
+                    // Verificar si hay al menos un carácter y convertir la primera letra en mayúscula
+                    if (value.length > 0) {
+                        input.value = value.charAt(0).toUpperCase() + value.slice(1);
+                    }
+                }
                 function validateYearInput(input) {
                     var year = input.value;
                     year = year.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
                     year = year.slice(0, 4); // Limitar a 4 dígitos
                     input.value = year;
                 }
+
+                
 
                 function cambiarNombre(nombre) {
                     let regex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1][a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/g;
@@ -373,8 +384,10 @@
 
                 function formatMotorInput(input) {
                     var motor = input.value;
-                    // Reemplazar cualquier carácter que no sea número o punto decimal
-                    motor = motor.replace(/[^0-9.]/g, '');
+                    // Reemplazar cualquier carácter que no sea número, letra o punto decimal
+                    motor = motor.replace(/[^A-Za-z0-9.]/g, '');
+                    // Convertir a mayúsculas
+                    motor = motor.toUpperCase();
                     // Limitar el número de dígitos a 8
                     motor = motor.slice(0, 8);
                     input.value = motor;

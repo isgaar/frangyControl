@@ -79,7 +79,14 @@
                         @enderror
                     </div>
 
-
+                    <div class="form-group">
+                        <label for="rfc">RFC</label>
+                        <input type="text" name="rfc" class="form-control" maxlength="13" id="rfc"
+                            oninput="formatRFC(event)" value="{{ $orden->cliente->rfc ?? '' }}">
+                        @error('rfc')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
 
 
 
@@ -126,9 +133,9 @@
 
                             </div>
                             <div class="form-group">
-                                <label for="motor">Modelo</label>
+                                <label for="modelo">Línea</label>
                                 {!! Form::text('modelo', null, ['class' => 'form-control', 'id' => 'modelo', 'maxlength'
-                                => '100']) !!}
+                                => '100', 'oninput' => 'capitalizeFirstLetter(event)']) !!}
                                 @error('modelo')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -412,8 +419,10 @@
 
                 function formatMotorInput(input) {
                     var motor = input.value;
-                    // Reemplazar cualquier carácter que no sea número o punto decimal
-                    motor = motor.replace(/[^0-9.]/g, '');
+                    // Reemplazar cualquier carácter que no sea número, letra o punto decimal
+                    motor = motor.replace(/[^A-Za-z0-9.]/g, '');
+                    // Convertir a mayúsculas
+                    motor = motor.toUpperCase();
                     // Limitar el número de dígitos a 8
                     motor = motor.slice(0, 8);
                     input.value = motor;
@@ -612,6 +621,38 @@
                     }
                     // Actualizar el valor del campo de entrada
                     input.value = value;
+                }
+                function formatRFC(event) {
+                    var input = event.target;
+                    var value = input.value;
+
+                    // Verificar la longitud del valor y ajustar si es necesario
+                    if (value.length > 13) {
+                        input.value = value.slice(0, 13); // Limitar a 13 caracteres
+                    }
+                    // Obtén el campo de entrada del RFC
+                    const rfcInput = event.target;
+
+                    // Obtén el valor actual del campo de entrada
+                    let rfcValue = rfcInput.value;
+
+                    // Elimina los caracteres especiales utilizando una expresión regular
+                    rfcValue = rfcValue.replace(/[^\w\s]/gi, '');
+
+                    // Convierte las letras a mayúsculas
+                    rfcValue = rfcValue.toUpperCase();
+
+                    // Asigna el valor modificado al campo de entrada
+                    rfcInput.value = rfcValue;
+                }
+                function capitalizeFirstLetter(event) {
+                    var input = event.target;
+                    var value = input.value;
+
+                    // Verificar si hay al menos un carácter y convertir la primera letra en mayúscula
+                    if (value.length > 0) {
+                        input.value = value.charAt(0).toUpperCase() + value.slice(1);
+                    }
                 }
                 </script>
 

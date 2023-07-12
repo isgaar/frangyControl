@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -22,9 +21,10 @@ return new class extends Migration
             $table->string('color');
             $table->string('placas', 7);
             $table->double('kilometraje');
-            $table->double('motor');
+            $table->string('motor', 10);
             $table->double('cilindros');
             $table->string('noSerievehiculo', 17);
+            $table->string('status', 15);
             $table->string('modelo', 100);
             $table->date('fechaEntrega');
             $table->text('observacionesInt');

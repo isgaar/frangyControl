@@ -24,10 +24,10 @@
 
 @section('content')
 <style>
-    .form-control[disabled] {
-        opacity: 9.7;
-        cursor: not-allowed;
-    }
+.form-control[disabled] {
+    opacity: 9.7;
+    cursor: not-allowed;
+}
 </style>
 
 
@@ -55,6 +55,11 @@
                         <label for="correo">Correo electrónico</label>
                         <input type="text" name="correo" class="form-control" value="{{ $orden->cliente->correo }}"
                             disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correo">RFC</label>
+                        <input type="text" name="rfc" class="form-control" value="{{ $orden->cliente->rfc }}" disabled>
                     </div>
 
 
@@ -95,7 +100,7 @@
 
                             </div>
                             <div class="form-group">
-                                <label for="motor">Modelo</label>
+                                <label for="motor">Línea</label>
                                 {!! Form::text('modelo', $orden->modelo, ['class' => 'form-control', 'id' => 'modelo',
                                 'disabled']) !!}
 
@@ -273,12 +278,16 @@
                 <div class="card-footer text-center">
                     <div class="d-flex justify-content-between">
                         <a type="button" href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                        <button type="button" class="btn btn-warning" onclick="window.location.href = '{{ route('ordenes.edit', ['id_ordenes' => $orden->id_ordenes]) }}'">
-    <i class="fas fa-undo-alt"></i> Editar o actualizar esta orden
-</button>
+                        <button type="button" class="btn btn-warning"
+                            onclick="window.location.href = '{{ route('ordenes.edit', ['id_ordenes' => $orden->id_ordenes]) }}'">
+                            <i class="fas fa-undo-alt"></i> Editar o actualizar esta orden
+                        </button>
 
-                        <button type="button" class="btn btn-info"> <i class="fas fa-file-pdf"></i>Exportar a
-                            PDF</button>
+                        <button type="button" class="btn btn-info"
+                            onclick="window.location.href = '{{ route('ordenes.export', ['id_ordenes' => $orden->id_ordenes]) }}'">
+                            <i class="fas fa-file-pdf"></i>Exportar a PDF
+                        </button>
+
                     </div>
                 </div>
                 @stop

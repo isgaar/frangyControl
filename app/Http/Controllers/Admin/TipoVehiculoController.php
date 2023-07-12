@@ -46,28 +46,40 @@ class TipoVehiculoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo' => 'required'
+            'tipos.*' => 'required' // Validar todos los campos de tipo de vehículo
         ]);
-
+    
         try {
             DB::beginTransaction();
+    
+            // Guardar el tipo de vehículo principal
             $tipoVehiculo = new TipoVehiculo([
-                'tipo' => $request['tipo']
+                'tipo' => $request->input('tipos.0') // Obtener el primer valor del arreglo de tipos
             ]);
-
             $tipoVehiculo->save();
-
+    
+            // Guardar los tipos de vehículo adicionales
+            $tiposAdicionales = $request->input('tipos');
+            unset($tiposAdicionales[0]); // Eliminar el primer valor, ya que ya se guardó anteriormente
+    
+            foreach ($tiposAdicionales as $tipo) {
+                $tipoVehiculoAdicional = new TipoVehiculo([
+                    'tipo' => $tipo
+                ]);
+                $tipoVehiculoAdicional->save();
+            }
+    
             DB::commit();
-            Session::flash('status', 'Se ha agregado correctamente el tipo de vehiculo');
+            Session::flash('status', 'Se ha agregado correctamente el tipo de vehículo');
             Session::flash('status_type', 'success');
             return redirect(route('datosv.index'));
-
+    
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
             Session::flash('status_type', 'error-Query');
             return back();
-
+    
         } catch (\Exception $e) {
             DB::rollBack();
             Session::flash('status', $e->getMessage());
@@ -75,6 +87,7 @@ class TipoVehiculoController extends Controller
             return back();
         }
     }
+
 
     public function edit($id_tvehiculo)
     {

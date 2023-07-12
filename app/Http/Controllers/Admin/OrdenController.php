@@ -33,9 +33,10 @@ class OrdenController extends Controller
 
         if (trim($search) != '') {
             $query->where(function ($query) use ($search) {
-                $query->whereHas('cliente', function ($query) use ($search) {
-                    $query->where('nombreCompleto', 'like', "%$search%");
-                })
+                $query->where('id_ordenes', 'like', "%$search%")
+                    ->orWhereHas('cliente', function ($query) use ($search) {
+                        $query->where('nombreCompleto', 'like', "%$search%");
+                    })
                     ->orWhereHas('vehiculo', function ($query) use ($search) {
                         $query->where('marca', 'like', "%$search%");
                     })
@@ -48,6 +49,7 @@ class OrdenController extends Controller
                     });
             });
         }
+        
 
 
         $ordenes = $query->orderBy('id_ordenes', $order)->paginate($limit);
@@ -106,6 +108,7 @@ class OrdenController extends Controller
                 'telefono.required' => 'El campo teléfono es obligatorio.',
                 'correo.required' => 'El campo correo electrónico es obligatorio.',
                 'correo.email' => 'El campo correo electrónico debe ser una dirección de correo válida.',
+                'rfc.required' => 'El campo correo electrónico debe ser una dirección de correo válida.',
                 // Agrega aquí los mensajes de error para los demás campos
             ];
 
@@ -113,11 +116,13 @@ class OrdenController extends Controller
                 'nombreCompleto' => $request->nombreCompleto,
                 'telefono' => $request->telefono,
                 'correo' => $request->correo,
+                'rfc' => $request->rfc,
 
                 $request->validate([
                     'nombreCompleto' => 'required|unique:clientes,nombreCompleto',
                     'telefono' => 'required|unique:clientes,telefono',
                     'correo' => 'required|unique:clientes,correo',
+                    'rfc' => 'required|unique:clientes,rfc',
                 ], [
                     'nombreCompleto.required' => 'El campo Nombre es requerido.',
                     'nombreCompleto.unique' => 'Ya existe un cliente con este nombre.',
@@ -125,6 +130,7 @@ class OrdenController extends Controller
                     'telefono.unique' => 'Ya existe un cliente con este teléfono.',
                     'correo.required' => 'El campo Correo electrónico es requerido.',
                     'correo.unique' => 'Ya existe un cliente con este correo electrónico.',
+                    'rfc.unique' => 'Ya existe un cliente con este rfc.',
                 ])
             ]);
 
@@ -136,6 +142,7 @@ class OrdenController extends Controller
                 'placas' => $request->input('placas'),
                 'kilometraje' => $request->input('kilometraje'),
                 'motor' => $request->input('motor'),
+                'status' => $request->input('status'),
                 'modelo' => $request->input('modelo'),
                 'cilindros' => $request->input('cilindros'),
                 'noSerievehiculo' => $request->input('noSerievehiculo'),
@@ -157,6 +164,7 @@ class OrdenController extends Controller
                     'placas' => 'required',
                     'kilometraje' => 'required',
                     'motor' => 'required',
+                    'status' => 'required',
                     'modelo' => 'required',
                     'cilindros' => 'required',
                     'noSerievehiculo' => 'required',
@@ -184,6 +192,7 @@ class OrdenController extends Controller
                     'recomendacionesCliente.required' => 'El campo Recomendaciones del Cliente es requerido.',
                     'detallesOrden.required' => 'El campo Detalles de la Orden es requerido.',
                     'retiroRefacciones.required' => 'El campo Retiro de Refacciones es requerido.',
+                    'status.required' => 'Seleccione un estado de orden.',
                     'cliente_id.required' => 'Seleccione el cliente porfavor.',
                     'vehiculo_id.required' => 'Porfavor, seleccione una marca.',
                     'servicio_id.required' => 'Porfavor, seleccione un servicio.',
@@ -304,6 +313,7 @@ class OrdenController extends Controller
                 'placas' => $request->input('placas'),
                 'kilometraje' => $request->input('kilometraje'),
                 'motor' => $request->input('motor'),
+                'status' => $request->input('status'),
                 'modelo' => $request->input('modelo'),
                 'cilindros' => $request->input('cilindros'),
                 'noSerievehiculo' => $request->input('noSerievehiculo'),
@@ -385,27 +395,36 @@ class OrdenController extends Controller
     try {
         DB::beginTransaction();
 
-        $ordenes = Ordenes::findOrFail($id_ordenes); // Obtén la instancia de Orden existente
-        // Actualiza los campos de la orden
-        $ordenes->yearVehiculo = $request->input('yearVehiculo');
-        $ordenes->color = $request->input('color');
-        $ordenes->placas = $request->input('placas');
-        $ordenes->kilometraje = $request->input('kilometraje');
-        $ordenes->motor = $request->input('motor');
-        $ordenes->modelo = $request->input('modelo');
-        $ordenes->cilindros = $request->input('cilindros');
-        $ordenes->noSerievehiculo = $request->input('noSerievehiculo');
-        $ordenes->fechaEntrega = $request->input('fechaEntrega');
-        $ordenes->observacionesInt = $request->input('observacionesInt');
-        $ordenes->recomendacionesCliente = $request->input('recomendacionesCliente');
-        $ordenes->detallesOrden = $request->input('detallesOrden');
-        $ordenes->retiroRefacciones = $request->input('retiroRefacciones');
-        $ordenes->vehiculo_id = $request->input('vehiculo_id');
-        $ordenes->servicio_id = $request->input('servicio_id');
-        $ordenes->tvehiculo_id = $request->input('tvehiculo_id');
-        $ordenes->id = $request->input('user_id');
+        $orden = Ordenes::findOrFail($id_ordenes); // Obtén la instancia de la orden existente
 
-        $ordenes->save(); // Guarda los cambios en la tabla 'ordenes'
+        // Actualiza los campos de la orden
+        $orden->yearVehiculo = $request->input('yearVehiculo');
+        $orden->color = $request->input('color');
+        $orden->placas = $request->input('placas');
+        $orden->kilometraje = $request->input('kilometraje');
+        $orden->motor = $request->input('motor');
+        $orden->modelo = $request->input('modelo');
+        $orden->status = $request->input('status');
+        $orden->cilindros = $request->input('cilindros');
+        $orden->noSerievehiculo = $request->input('noSerievehiculo');
+        $orden->fechaEntrega = $request->input('fechaEntrega');
+        $orden->observacionesInt = $request->input('observacionesInt');
+        $orden->recomendacionesCliente = $request->input('recomendacionesCliente');
+        $orden->detallesOrden = $request->input('detallesOrden');
+        $orden->retiroRefacciones = $request->input('retiroRefacciones');
+        $orden->vehiculo_id = $request->input('vehiculo_id');
+        $orden->servicio_id = $request->input('servicio_id');
+        $orden->tvehiculo_id = $request->input('tvehiculo_id');
+
+        // Actualiza los campos relacionados con el cliente
+        $cliente = $orden->cliente;
+        $cliente->nombreCompleto = $request->input('nombreCompleto');
+        $cliente->telefono = $request->input('telefono');
+        $cliente->correo = $request->input('correo');
+        $cliente->rfc = $request->input('rfc');
+        $cliente->save(); // Guarda los cambios en la tabla 'clientes'
+
+        $orden->save(); // Guarda los cambios en la tabla 'ordenes'
 
         DB::commit();
         session()->flash('status', 'Se ha actualizado correctamente la orden.');
@@ -424,6 +443,7 @@ class OrdenController extends Controller
     }
 }
 
+
     public function exportToPDF($id_ordenes)
     {
         $orden = Ordenes::findOrFail($id_ordenes);
@@ -436,11 +456,13 @@ class OrdenController extends Controller
         $html = view('admin.ordenes.export', compact('orden', 'datosVehiculo', 'tiposServicio', 'tiposVehiculo', 'users', 'cliente_id'))->render();
 
         $pdf = PDF::loadHTML($html);
+        $pdf->setPaper('A4', 'portrait'); // Establecer tamaño de papel A4 y orientación vertical
 
         $filename = 'orden_' . Carbon::now()->format('Ymd_His') . '.pdf';
 
         return $pdf->download($filename);
     }
+
 
 
 

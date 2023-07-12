@@ -66,12 +66,14 @@ class ClienteController extends Controller
         $request->validate([
             'nombreCompleto' => 'required|unique:clientes,nombreCompleto',
             'telefono' => 'required|unique:clientes,telefono',
-            'correo' => 'required|unique:clientes,correo'
+            'correo' => 'required|unique:clientes,correo',
+            'rfc' => 'required|unique:clientes,correo'
         ], [
             'nombreCompleto.required' => 'El campo Nombre es requerido.',
             'nombreCompleto.unique' => 'Este nombre ya existe, porfavor ingrese uno nuevo.',
             'telefono.required' => 'El campo Teléfono es requerido.',
-            'correo.required' => 'El campo Correo electrónico es requerido.'
+            'correo.required' => 'El campo Correo electrónico es requerido.',
+            'rfc.required' => 'El rfc es requerido.'
         ]);
 
 
@@ -82,7 +84,8 @@ class ClienteController extends Controller
                 'nombreCompleto' => $request->input('nombreCompleto'),
                 'nombreCompleto.unique' => 'Este nombre ya existe, porfavor ingrese uno nuevo.',
                 'telefono' => $request->input('telefono'),
-                'correo' => $request->input('correo')
+                'correo' => $request->input('correo'),
+                'rfc' => $request->input('rfc')
             ]);
 
             $cliente->save();
@@ -128,15 +131,17 @@ class ClienteController extends Controller
         $cliente = Cliente::findOrFail($id_cliente);
 
         $request->validate([
-            'nombreCompleto' => 'required',
-            'telefono' => 'required',
-            'correo' => 'required'
+            'nombreCompleto' => 'required|unique:clientes,nombreCompleto',
+            'telefono' => 'required|unique:clientes,telefono',
+            'correo' => 'required|unique:clientes,correo',
+            'rfc' => 'required|unique:clientes,correo'
         ]);
 
         try {
             $cliente->nombreCompleto = $request->input('nombreCompleto');
             $cliente->telefono = $request->input('telefono');
             $cliente->correo = $request->input('correo');
+            $cliente->rfc = $request->input('rfc');
 
             $cliente->save();
 

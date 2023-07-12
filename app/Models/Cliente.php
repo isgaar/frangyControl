@@ -9,6 +9,6 @@ class Cliente extends Model
 {
     protected $table = 'clientes';
     protected $primaryKey = 'id_cliente';
-    protected $fillable = ['nombreCompleto', 'telefono', 'correo'];
+    protected $fillable = ['nombreCompleto', 'telefono', 'correo', 'rfc'];
     public $timestamps = true;
 }

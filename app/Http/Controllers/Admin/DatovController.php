@@ -39,20 +39,20 @@ class DatovController extends Controller
         // $data = new LengthAwarePaginator($currentPageSearchResults, count($data), $perPage);
 
         // return view('admin.datos_vehiculo.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
-    
+
         $dataVehiculos = DatosVehiculo::all(); // Retrieve all data from the Vehiculo model
         $dataServicios = TipoServicio::all();
         $dataTiposVehiculos = TipoVehiculo::all();
 
         return view('admin.datos_vehiculo.index', compact('dataVehiculos', 'dataServicios', 'dataTiposVehiculos'));
-   
+
     }
 
     public function create()
     {
         return view('admin.datos_vehiculo.create');
     }
-    
+
     public function createunique()
     {
         return view('admin.datos_vehiculo.createunique');
@@ -61,20 +61,31 @@ class DatovController extends Controller
     public function storeunique(Request $request)
     {
         $request->validate([
-            'marca' => 'required'
+            'marcas.*' => 'required' // Validar todos los campos de marca
         ]);
 
         try {
             DB::beginTransaction();
 
+            // Guardar la marca principal
             $datosVehiculo = new DatosVehiculo([
-                'marca' => $request['marca']
+                'marca' => $request->input('marcas.0') // Obtener el primer valor del arreglo de marcas
             ]);
-
             $datosVehiculo->save();
 
+            // Guardar las marcas adicionales
+            $marcasAdicionales = $request->input('marcas');
+            unset($marcasAdicionales[0]); // Eliminar el primer valor, ya que ya se guardó anteriormente
+
+            foreach ($marcasAdicionales as $marca) {
+                $datosVehiculoAdicional = new DatosVehiculo([
+                    'marca' => $marca
+                ]);
+                $datosVehiculoAdicional->save();
+            }
+
             DB::commit();
-            Session::flash('status', 'Se ha guardado correctamente la marca');
+            Session::flash('status', 'Se ha agregado correctamente la marca de vehículo');
             Session::flash('status_type', 'success');
             return redirect(route('datosv.index'));
 
@@ -108,7 +119,7 @@ class DatovController extends Controller
             $datosVehiculo->save();
 
             $tipoServicio = new TipoServicio([
-                
+
                 'nombreServicio' => $request['nombre_servicio']
             ]);
 
@@ -216,7 +227,7 @@ class DatovController extends Controller
             Session::flash('status_type', 'error');
             return back();
         }
-        
+
     }
 
 }
