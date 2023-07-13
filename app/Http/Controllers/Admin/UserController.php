@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use JWTAuth;
+
 
 class UserController extends Controller
 {
@@ -70,10 +72,14 @@ class UserController extends Controller
                 $user->roles()->attach($request['roles']);
             }
 
+            $token = JWTAuth::fromUser($user);
+
             DB::commit();
+
             Session::flash('status', "Se ha agregado correctamente el usuario");
             Session::flash('status_type', 'success');
-            return redirect(route('users.index'));
+
+            return redirect(route('users.index'))->with('token', $token);
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
@@ -86,6 +92,7 @@ class UserController extends Controller
             return back();
         }
     }
+
 
     public function edit($id)
     {

@@ -192,13 +192,52 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                                 title="Visualizar a detalle"><i class="fas fa-solid fa-eye"></i></a>
                             <a class="btn btn-outline-dark" href="{{route('ordenes.edit',$row->id_ordenes)}}"
                                 title="Actualizar o editar orden"><i class="fas fa-undo-alt"></i></a>
+                            @if(auth()->user()->can('admin.orden.destroy'))
+                            <button class="btn btn-outline-danger" title="Eliminar orden" data-toggle="modal"
+                                data-target="#deleteConfirmationModal{{ $row->id_ordenes }}">
+                                <i class="fas fa-solid fa-trash"></i>
+                            </button>
+                            @endif
                             <a class="btn btn-outline-dark" title="Exportar a PDF"
                                 href="{{ route('ordenes.export', $row->id_ordenes) }}">
                                 <i class="fas fa-file-pdf"></i>
                             </a>
 
+
                         </td>
                     </tr>
+                    <div class="modal fade" id="deleteConfirmationModal{{ $row->id_ordenes }}" tabindex="-1"
+                        aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title">¡Advertencia!</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <p class="mb-0">¿Está seguro de eliminar la orden número {{ $row->id_ordenes }}?</p>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-outline-dark"
+                                        data-dismiss="modal">Cancelar</button>
+                                    <form id="deleteForm{{ $row->id_ordenes }}" method="POST"
+                                        action="{{ route('ordenes.destroy', $row->id_ordenes) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
                     @endforeach
                 </tbody>
                 <tfoot>
@@ -206,7 +245,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                         <td colspan="5" class="text-center">
                             <div class="d-flex justify-content-between w-100">
                                 @if ($ordenes->isEmpty())
-                                <h5>No hay registros de "{{ $search }}"</h5>
+                                <h5>No hay coincidencias de "{{ $search }}"</h5>
                                 @else
                                 <h7>{{ $ordenes->total() }} registro(s) encontrado(s). Página
                                     {{ ($ordenes->total() == 0) ? '0' : $ordenes->currentPage() }} de
@@ -245,6 +284,8 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
             </div>
         </div>
     </div>
+
+
 
     <script>
     function mostrarModal() {

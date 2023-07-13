@@ -30,6 +30,7 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::middleware('web')
+                ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
 
             Route::prefix('api')
@@ -39,7 +40,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::middleware('web', 'auth')
                 ->prefix('admin')
                 ->group(base_path('routes/admin.php'));
-            
+
         });
     }
 
@@ -48,11 +49,12 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60);
         });
     }
-    
+
 }

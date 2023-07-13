@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -16,6 +17,7 @@ use App\Models\TipoVehiculo;
 use App\Models\TipoServicio;
 use App\Models\User;
 use App\Models\Fotografia;
+use App\Policies\OrdenPolicy;
 use Illuminate\Support\Facades\Storage;
 use PDF;
 use Carbon\Carbon;
@@ -463,7 +465,41 @@ class OrdenController extends Controller
         return $pdf->download($filename);
     }
 
-
-
+    public function destroy($id_ordenes)
+    {
+        $orden = Ordenes::findOrFail($id_ordenes);
+    
+        try {
+            DB::beginTransaction();
+    
+            // Verificar el rol del usuario
+            if (!auth()->user()->hasRole('Administrador')) {
+                throw new AuthorizationException('No tienes permiso para realizar esta acción.');
+            }
+    
+            $orden->delete();
+    
+            // Sincronizar los permisos del usuario
+            $user = auth()->user();
+            $user->syncPermissions();
+    
+            DB::commit();
+    
+            Session::flash('status', "Se ha eliminado correctamente el registro");
+            Session::flash('status_type', 'success');
+    
+            return redirect(route('ordenes.index'));
+        } catch (AuthorizationException $e) {
+            DB::rollBack();
+    
+            Session::flash('status', $e->getMessage());
+            Session::flash('status_type', 'error');
+    
+            return back();
+        }
+    }
+    
+    
+    
 
 }

@@ -23,9 +23,10 @@ date_default_timezone_set('America/Mexico_City');
 }
 
 table {
-        border-collapse: separate;
-        border-spacing: 10% 10%; /* Ajusta el valor de 10px según tus preferencias */
-    }
+    border-collapse: separate;
+    border-spacing: 10% 10%;
+    /* Ajusta el valor de 10px según tus preferencias */
+}
 
 .card-title {
     font-size: 16px;
@@ -37,11 +38,11 @@ label {
     display: block;
     font-weight: bold;
 }
-th
-{
-  text-align:center;
-  vertical-align:bottom;
-  width: 350px;
+
+th {
+    text-align: center;
+    vertical-align: bottom;
+    width: 350px;
 }
 
 input[type="text"],
@@ -86,13 +87,13 @@ textarea {
 .left-column {
     float: left;
     width: 50%;
-    margin: 7px;
+    margin: 5px;
 }
 
 .right-column {
     float: right;
     width: 45%;
-    margin: 7px;
+    margin: 5px;
 }
 
 .limited-textarea {
@@ -252,7 +253,7 @@ textarea {
                     El cliente aceptó
                 </label>
             </div>
-            <table >
+            <table>
                 <tr>
                     <th>
                         <label>Fecha de registro:</label>

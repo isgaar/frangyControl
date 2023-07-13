@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,12 +18,11 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $role1 = Role::create(['name' => 'Administrador']);
-        $role2 = Role::create(['name' => 'Estándar']);
+        $role1 = Role::firstOrCreate(['name' => 'Administrador']);
+        $role2 = Role::firstOrCreate(['name' => 'Estándar']);
 
-
-        Permission::create(['name' => 'admin.datosv.vehiculosnom'])->syncRoles($role1);
-
-        Permission::create(['name' => 'admin.users.usuarios'])->syncRoles($role1);
+        Permission::firstOrCreate(['name' => 'admin.datosv.vehiculosnom'])->syncRoles($role1);
+        Permission::firstOrCreate(['name' => 'admin.users.usuarios'])->syncRoles($role1);
+        Permission::firstOrCreate(['name' => 'admin.orden.destroy'])->syncRoles($role1);
     }
 }
