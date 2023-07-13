@@ -159,9 +159,9 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col" class="text-center"># en sistema</th>
+                        <th scope="col" class="text-center">Estado</th>
                         <th scope="col" class="text-center">Cliente</th>
                         <th scope="col" class="text-center">Tipo de Servicio</th>
-
                         <th scope="col" class="text-center">Vehículo</th>
                         <th scope="col" class="text-center">Placas</th>
                         <th scope="col" class="text-center">Encargado/a</th>
@@ -172,9 +172,18 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                     @foreach ($ordenes as $row)
                     <tr>
                         <th scope="row">{{ $row->id_ordenes }}</th>
+                        <td class="text-center
+                            @if ($row->status == 'cancelada')
+                                text-danger
+                            @elseif ($row->status == 'finalizada')
+                                text-success
+                            @elseif ($row->status == 'en proceso')
+                                text-info
+                            @endif
+                        ">{{ ucwords($row->status) }}</td>
+
                         <td class="text-center">{{ ucwords($row->cliente->nombreCompleto) }}</td>
                         <td class="text-center">{{ $row->servicio->nombreServicio }}</td>
-
                         <td class="text-center">{{ $row->vehiculo->marca }}</td>
                         <td class="text-center">{{ $row->placas }}</td>
                         <td class="text-center">{{ $row->user->name }}</td>

@@ -185,7 +185,8 @@
         <div class="col-md-12">
             <div class="card card-primary">
                 <div class="card-header bg-danger">
-                    <h3 class="card-title">Datos de la orden</h3>
+                    <h3 class="card-title">Datos de la orden #{{$orden->id_ordenes}}
+                    </h3>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
@@ -263,6 +264,19 @@
                                     ?>
                                     {!! Form::text('fechaEntrega', $fechaEntrega, ['class' => 'form-control', 'id' =>
                                     'fechaEntrega', 'disabled']) !!}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status">Estado</label>
+                                    <select name="status" class="form-control" disabled>
+                                        <option value="en proceso"
+                                            {{ $orden->status == 'en proceso' ? 'selected' : '' }}>En proceso</option>
+                                        <option value="cancelada" {{ $orden->status == 'cancelada' ? 'selected' : '' }}>
+                                            Cancelada</option>
+                                        <option value="finalizada"
+                                            {{ $orden->status == 'finalizada' ? 'selected' : '' }}>Finalizada</option>
+                                    </select>
                                 </div>
                             </div>
 

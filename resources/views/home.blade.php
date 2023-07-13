@@ -55,17 +55,14 @@ $username = auth()->user()->name ?? 'Usuario';
     <div class="card-header">
         @if ($timeOfDay === 'morning')
             <img src="{{ asset('sun.svg') }}" alt="Sun" class="greeting-icon">
-            <h5 class="card-title">Buenos días, {{ $username }}</h5>
+            <h5 class="card-title">Buenos días {{ $username }}</h5>
         @elseif ($timeOfDay === 'afternoon')
             <img src="{{ asset('sun.svg') }}" alt="Sun" class="greeting-icon">
-            <h5 class="card-title">Buenas tardes, {{ $username }}</h5>
+            <h5 class="card-title">Buenas tardes {{ $username }}</h5>
         @else
             <img src="{{ asset('moon.svg') }}" alt="Moon" class="greeting-icon">
-            <h5 class="card-title">Buenas noches, {{ $username }}</h5>
+            <h5 class="card-title">Buenas noches {{ $username }}</h5>
         @endif
-    </div>
-    <div class="card-body">
-        <p class="card-text">Contenido de la tarjeta...</p>
     </div>
 </div>
 

@@ -22,6 +22,10 @@ date_default_timezone_set('America/Mexico_City');
     font-size: 8.2px;
 }
 
+table {
+        border-collapse: separate;
+        border-spacing: 10% 10%; /* Ajusta el valor de 10px según tus preferencias */
+    }
 
 .card-title {
     font-size: 16px;
@@ -32,6 +36,12 @@ date_default_timezone_set('America/Mexico_City');
 label {
     display: block;
     font-weight: bold;
+}
+th
+{
+  text-align:center;
+  vertical-align:bottom;
+  width: 350px;
 }
 
 input[type="text"],
@@ -76,13 +86,13 @@ textarea {
 .left-column {
     float: left;
     width: 50%;
-    margin: 10px;
+    margin: 7px;
 }
 
 .right-column {
     float: right;
     width: 45%;
-    margin: 10px;
+    margin: 7px;
 }
 
 .limited-textarea {
@@ -119,17 +129,6 @@ textarea {
     display: flex;
     justify-content: space-between;
 }
-
-.left-col {
-    flex: 1;
-    text-align: left;
-}
-
-.right-col {
-    flex: 1;
-    text-align: right;
-    margin: %;
-}
 </style>
 
 
@@ -143,10 +142,17 @@ textarea {
                 {{ \Carbon\Carbon::now('America/Mexico_City')->locale('es_ES')->isoFormat('LLLL') }}</div>
 
         </div>
+
+        <label class="form-label" for="nombreCompleto">N0. Orden en sistema</label>
+        <div class="form-value">{{ strtoupper($orden->id_ordenes) }}</div>
+
+        @if ($orden->status != 'en proceso')
+
+        <label class="form-label" for="nombreCompleto">Orden</label>
+        <div class="form-value">{{ strtoupper($orden->status) }}</div>
+        @endif
     </div>
     <div class="row">
-    <label class="form-label" for="nombreCompleto">N0. Orden en sistema</label>
-            <div class="form-value">{{ strtoupper($orden->id_ordenes) }}</div>
         <div class="left-column">
             <h3 class="card-title">Datos del propietario</h3>
 
@@ -246,70 +252,72 @@ textarea {
                     El cliente aceptó
                 </label>
             </div>
+            <table >
+                <tr>
+                    <th>
+                        <label>Fecha de registro:</label>
+                        <span>{{ \Carbon\Carbon::parse($orden->created_at)->locale('es_ES')->isoFormat('LLLL') }}</span>
+                    </th>
+                    <th>
+                        <label>Última actualización:</label>
+                        <span>{{ \Carbon\Carbon::parse($orden->updated_at)->locale('es_ES')->isoFormat('LLLL') }}</span>
+                    </th>
+                </tr>
+            </table>
 
-            <div style="clear: both;">
-                <div class="left-col">
-                    <label>Fecha de registro:</label>
-                    <span>{{ \Carbon\Carbon::parse($orden->created_at)->locale('es_ES')->isoFormat('LLLL') }}</span>
-                </div>
-                <div class="right-col">
-                    <label>Última actualización:</label>
-                    <span>{{ \Carbon\Carbon::parse($orden->updated_at)->locale('es_ES')->isoFormat('LLLL') }}</span>
-                </div>
-
-                <div class="footer">
-                    <p class="small-text">
-                        PRESTACIÓN DE SERVICIOS DE REPARACIÓN Y/O MANTENIMIENTO DE VEHÍCULOS QUE CELEBRAN POR UNA PARTE
-                        LLANTERA Y MECÁNICA AUTOMOTRÍZ FRANGY COMO “EL PRESTADOR DEL SERVICIO” Y POR LA OTRA PARTE “EL
-                        CONSUMIDOR”, CUYOS NOMBRES Y DATOS CONSTAN EN LA CARÁTULA DE ESTA ORDEN DE SERVICIO, TOMANDO EN
-                        CUENTA LOS SIGUIENTES:
-                        <br><br>
-                        TERMINOS Y CONDICIONES
-                        <br>
-                        PRIMERA. EL PRESTADOR DEL SERVICIO realizará todas las operaciones y composturas descritas en la
-                        presente ORDEN DE SERVICIO, solicitadas por EL CONSUMIDOR, a las que se someterá el vehículo
-                        para obtener condiciones de funcionamiento de acuerdo al estado en que se encuentra. SEGUNDA. El
-                        precio total de los servicios contratados se establece en el “presupuesto” que forma parte de la
-                        presente y se describe en el anverso, el cual será pagado por EL CONSUMIDOR, de la siguiente
-                        forma: Al momento de celebrar el presente contrato por concepto de anticipo la cantidad que se
-                        indica y el resto en la fecha de entrega del vehículo o cuando reciba su unidad. Todo pago
-                        efectuado por EL CONSUMIDOR deberá realizarse en el establecimiento del PRESTADOR DEL SERVICIO,
-                        al contado y en moneda nacional o bien con tarjeta de débito, crédito o transferencia
-                        electrónica. TERCERA. EL PRESTADOR DEL SERVICIO previo a la realización del servicio presentará
-                        a EL CONSUMIDOR el presupuesto, en caso de presentar adicionales se le informará al cliente con
-                        el fin de que sean aprobadas por el mismo. Una vez aprobado, se procederá a efectuar el servicio
-                        solicitado. Los incrementos que resulten durante la reparación por costos no previsibles en
-                        rubros específicos deberán ser autorizados por EL CONSUMIDOR, en forma escrita. El tiempo, que
-                        transcurra para requisitar esta condición modificará la fecha de entrega. CUARTA: Para el caso
-                        de que EL CONSUMIDOR, sea el que proporcione las refacciones la fecha de entrega cambiara en
-                        tiempo de acuerdo a la rapidez con que el CLIENTE consiga las refacciones. QUINTA: EL PRESTADOR
-                        DEL SERVICIO exclusivamente utilizará para los servicios objeto de este contrato, partes,
-                        refacciones u otros materiales nuevos y apropiados para el vehículo, salvo que EL CONSUMIDOR
-                        autorice expresamente se usen otras. Si EL PRESTADOR DEL SERVICIO lo autoriza, EL CONSUMIDOR
-                        suministrará las partes, refacciones o materiales necesarios para la reparación y/o
-                        mantenimiento del vehículo. En ambos casos, la autorización respectiva se hará constar en el
-                        anverso de la presente. SEXTA.- EL PRESTADOR DEL SERVICIO hará entrega de las refacciones,
-                        partes o piezas sustituidas en la reparación y/o mantenimiento del vehículo al momento de
-                        entrega de éste, salvo en los siguientes casos: A) Cuando EL CONSUMIDOR, exprese lo contrario.
-                        B) Las partes, refacciones o piezas sean cambiadas en uso de garantía; C) Se trate de residuos
-                        considerados peligrosos de acuerdo con las disposiciones legales aplicables. SÉPTIMA.- EL
-                        CONSUMIDOR, autoriza el uso del vehículo en zonas aledañas con un radio de 4 cuadras a la
-                        redonda respecto al área del establecimiento para efectos de pruebas o verificación de las
-                        reparaciones a efectuar o efectuadas, observando que el nivel de combustible de la unidad en
-                        monitoreo, diagnóstico y reparación variará en proporción a las mismas en la evaluación del
-                        correcto funcionamiento del vehículo. EL PRESTADOR DEL SERVICIO no se hace responsable por la
-                        pérdida de objetos dejados en el interior del vehículo, salvo que estos hayan sido notificados y
-                        puestos bajo su resguardo al momento de la recepción del vehículo.
-                        <br><br>
-                        NOTA: EN LA PARTE FRONTAL DEL PRESENTE CONTRATO SE ENCUENTRA EL APARTADO EN EL CUAL SE INDICARÁN
-                        LAS OBSERVACIONES PERTINENTES A LA RECEPCIÓN DEL VEHÍCULO QUE SON ANOTADAS POR EL PERSONAL QUE
-                        RECIBE LA UNIDAD Y SON NOTIFICADAS EN TIEMPO Y FORMA AL CLIENTE QUIEN TENDRÁ A BIEN RECONOCER.
-                        POR TANTO EL CLIENTE ACEPTA LAS CONDICIONES EN LAS QUE DEJA SU VEHÍCULO DESLINDANDO DE CUALQUIER
-                        RESPONSABILIDAD AL RESPECTO AL PRESTADOR DE SERVICIOS POR DESPERFECTOS, ABOYADURAS, FALTA DE
-                        ACCESORIOS, BIRLOS, ETC.
-                    </p>
-                </div>
+            <div class="footer">
+                <p class="small-text">
+                    PRESTACIÓN DE SERVICIOS DE REPARACIÓN Y/O MANTENIMIENTO DE VEHÍCULOS QUE CELEBRAN POR UNA PARTE
+                    LLANTERA Y MECÁNICA AUTOMOTRÍZ FRANGY COMO “EL PRESTADOR DEL SERVICIO” Y POR LA OTRA PARTE “EL
+                    CONSUMIDOR”, CUYOS NOMBRES Y DATOS CONSTAN EN LA CARÁTULA DE ESTA ORDEN DE SERVICIO, TOMANDO EN
+                    CUENTA LOS SIGUIENTES:
+                    <br><br>
+                    TERMINOS Y CONDICIONES
+                    <br>
+                    PRIMERA. EL PRESTADOR DEL SERVICIO realizará todas las operaciones y composturas descritas en la
+                    presente ORDEN DE SERVICIO, solicitadas por EL CONSUMIDOR, a las que se someterá el vehículo
+                    para obtener condiciones de funcionamiento de acuerdo al estado en que se encuentra. SEGUNDA. El
+                    precio total de los servicios contratados se establece en el “presupuesto” que forma parte de la
+                    presente y se describe en el anverso, el cual será pagado por EL CONSUMIDOR, de la siguiente
+                    forma: Al momento de celebrar el presente contrato por concepto de anticipo la cantidad que se
+                    indica y el resto en la fecha de entrega del vehículo o cuando reciba su unidad. Todo pago
+                    efectuado por EL CONSUMIDOR deberá realizarse en el establecimiento del PRESTADOR DEL SERVICIO,
+                    al contado y en moneda nacional o bien con tarjeta de débito, crédito o transferencia
+                    electrónica. TERCERA. EL PRESTADOR DEL SERVICIO previo a la realización del servicio presentará
+                    a EL CONSUMIDOR el presupuesto, en caso de presentar adicionales se le informará al cliente con
+                    el fin de que sean aprobadas por el mismo. Una vez aprobado, se procederá a efectuar el servicio
+                    solicitado. Los incrementos que resulten durante la reparación por costos no previsibles en
+                    rubros específicos deberán ser autorizados por EL CONSUMIDOR, en forma escrita. El tiempo, que
+                    transcurra para requisitar esta condición modificará la fecha de entrega. CUARTA: Para el caso
+                    de que EL CONSUMIDOR, sea el que proporcione las refacciones la fecha de entrega cambiara en
+                    tiempo de acuerdo a la rapidez con que el CLIENTE consiga las refacciones. QUINTA: EL PRESTADOR
+                    DEL SERVICIO exclusivamente utilizará para los servicios objeto de este contrato, partes,
+                    refacciones u otros materiales nuevos y apropiados para el vehículo, salvo que EL CONSUMIDOR
+                    autorice expresamente se usen otras. Si EL PRESTADOR DEL SERVICIO lo autoriza, EL CONSUMIDOR
+                    suministrará las partes, refacciones o materiales necesarios para la reparación y/o
+                    mantenimiento del vehículo. En ambos casos, la autorización respectiva se hará constar en el
+                    anverso de la presente. SEXTA.- EL PRESTADOR DEL SERVICIO hará entrega de las refacciones,
+                    partes o piezas sustituidas en la reparación y/o mantenimiento del vehículo al momento de
+                    entrega de éste, salvo en los siguientes casos: A) Cuando EL CONSUMIDOR, exprese lo contrario.
+                    B) Las partes, refacciones o piezas sean cambiadas en uso de garantía; C) Se trate de residuos
+                    considerados peligrosos de acuerdo con las disposiciones legales aplicables. SÉPTIMA.- EL
+                    CONSUMIDOR, autoriza el uso del vehículo en zonas aledañas con un radio de 4 cuadras a la
+                    redonda respecto al área del establecimiento para efectos de pruebas o verificación de las
+                    reparaciones a efectuar o efectuadas, observando que el nivel de combustible de la unidad en
+                    monitoreo, diagnóstico y reparación variará en proporción a las mismas en la evaluación del
+                    correcto funcionamiento del vehículo. EL PRESTADOR DEL SERVICIO no se hace responsable por la
+                    pérdida de objetos dejados en el interior del vehículo, salvo que estos hayan sido notificados y
+                    puestos bajo su resguardo al momento de la recepción del vehículo.
+                    <br><br>
+                    NOTA: EN LA PARTE FRONTAL DEL PRESENTE CONTRATO SE ENCUENTRA EL APARTADO EN EL CUAL SE INDICARÁN
+                    LAS OBSERVACIONES PERTINENTES A LA RECEPCIÓN DEL VEHÍCULO QUE SON ANOTADAS POR EL PERSONAL QUE
+                    RECIBE LA UNIDAD Y SON NOTIFICADAS EN TIEMPO Y FORMA AL CLIENTE QUIEN TENDRÁ A BIEN RECONOCER.
+                    POR TANTO EL CLIENTE ACEPTA LAS CONDICIONES EN LAS QUE DEJA SU VEHÍCULO DESLINDANDO DE CUALQUIER
+                    RESPONSABILIDAD AL RESPECTO AL PRESTADOR DE SERVICIOS POR DESPERFECTOS, ABOYADURAS, FALTA DE
+                    ACCESORIOS, BIRLOS, ETC.
+                </p>
             </div>
-
         </div>
+
     </div>
+</div>

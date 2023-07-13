@@ -120,14 +120,8 @@
                                 </select>
 
                             </div>
-                            <div class="form-group">
-                                <label for="status">Estado</label>
-                                <select name="status" class="form-control">
-                                    <option value="cancelada">Cancelada</option>
-                                    <option value="finalizada">Finalizada</option>
-                                    <option value="en_proceso">En Proceso</option>
-                                </select>
-                            </div>
+
+
 
                             <div class="form-group">
                                 <label for="modelo">Línea</label>
@@ -300,6 +294,18 @@
                                     <label for="fechaEntrega">Fecha estimada de entrega</label>
                                     {!! Form::text('fechaEntrega', null, ['class' => 'form-control', 'id' =>
                                     'fechaEntrega', 'placeholder' => 'Fecha de entrega']) !!}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status">Estado</label>
+                                    <select name="status" class="form-control">
+                                        <option value="">Seleccione un estado</option>
+                                        <option value="en proceso">En proceso</option>
+                                        <option value="cancelada">Cancelada</option>
+                                        <option value="finalizada">Finalizada</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>

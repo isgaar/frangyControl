@@ -49,7 +49,7 @@ class OrdenController extends Controller
                     });
             });
         }
-        
+
 
 
         $ordenes = $query->orderBy('id_ordenes', $order)->paginate($limit);
@@ -391,57 +391,57 @@ class OrdenController extends Controller
 
 
     public function update(Request $request, $id_ordenes)
-{
-    try {
-        DB::beginTransaction();
+    {
+        try {
+            DB::beginTransaction();
 
-        $orden = Ordenes::findOrFail($id_ordenes); // Obtén la instancia de la orden existente
+            $orden = Ordenes::findOrFail($id_ordenes); // Obtén la instancia de la orden existente
 
-        // Actualiza los campos de la orden
-        $orden->yearVehiculo = $request->input('yearVehiculo');
-        $orden->color = $request->input('color');
-        $orden->placas = $request->input('placas');
-        $orden->kilometraje = $request->input('kilometraje');
-        $orden->motor = $request->input('motor');
-        $orden->modelo = $request->input('modelo');
-        $orden->status = $request->input('status');
-        $orden->cilindros = $request->input('cilindros');
-        $orden->noSerievehiculo = $request->input('noSerievehiculo');
-        $orden->fechaEntrega = $request->input('fechaEntrega');
-        $orden->observacionesInt = $request->input('observacionesInt');
-        $orden->recomendacionesCliente = $request->input('recomendacionesCliente');
-        $orden->detallesOrden = $request->input('detallesOrden');
-        $orden->retiroRefacciones = $request->input('retiroRefacciones');
-        $orden->vehiculo_id = $request->input('vehiculo_id');
-        $orden->servicio_id = $request->input('servicio_id');
-        $orden->tvehiculo_id = $request->input('tvehiculo_id');
+            // Actualiza los campos de la orden
+            $orden->yearVehiculo = $request->input('yearVehiculo');
+            $orden->color = $request->input('color');
+            $orden->placas = $request->input('placas');
+            $orden->kilometraje = $request->input('kilometraje');
+            $orden->motor = $request->input('motor');
+            $orden->modelo = $request->input('modelo');
+            $orden->status = $request->input('status');
+            $orden->cilindros = $request->input('cilindros');
+            $orden->noSerievehiculo = $request->input('noSerievehiculo');
+            $orden->fechaEntrega = $request->input('fechaEntrega');
+            $orden->observacionesInt = $request->input('observacionesInt');
+            $orden->recomendacionesCliente = $request->input('recomendacionesCliente');
+            $orden->detallesOrden = $request->input('detallesOrden');
+            $orden->retiroRefacciones = $request->input('retiroRefacciones');
+            $orden->vehiculo_id = $request->input('vehiculo_id');
+            $orden->servicio_id = $request->input('servicio_id');
+            $orden->tvehiculo_id = $request->input('tvehiculo_id');
 
-        // Actualiza los campos relacionados con el cliente
-        $cliente = $orden->cliente;
-        $cliente->nombreCompleto = $request->input('nombreCompleto');
-        $cliente->telefono = $request->input('telefono');
-        $cliente->correo = $request->input('correo');
-        $cliente->rfc = $request->input('rfc');
-        $cliente->save(); // Guarda los cambios en la tabla 'clientes'
+            // Actualiza los campos relacionados con el cliente
+            $cliente = $orden->cliente;
+            $cliente->nombreCompleto = $request->input('nombreCompleto');
+            $cliente->telefono = $request->input('telefono');
+            $cliente->correo = $request->input('correo');
+            $cliente->rfc = $request->input('rfc');
+            $cliente->save(); // Guarda los cambios en la tabla 'clientes'
 
-        $orden->save(); // Guarda los cambios en la tabla 'ordenes'
+            $orden->save(); // Guarda los cambios en la tabla 'ordenes'
 
-        DB::commit();
-        session()->flash('status', 'Se ha actualizado correctamente la orden.');
-        session()->flash('status_type', 'success');
-        return redirect()->route('ordenes.index');
-    } catch (\Illuminate\Database\QueryException $ex) {
-        DB::rollBack();
-        Session::flash('status', $ex->getMessage());
-        Session::flash('status_type', 'error-Query');
-        return back();
-    } catch (\Exception $e) {
-        DB::rollBack();
-        Session::flash('status', $e->getMessage());
-        Session::flash('status_type', 'error');
-        return back();
+            DB::commit();
+            session()->flash('status', 'Se ha actualizado correctamente la orden.');
+            session()->flash('status_type', 'success');
+            return redirect()->route('ordenes.index');
+        } catch (\Illuminate\Database\QueryException $ex) {
+            DB::rollBack();
+            Session::flash('status', $ex->getMessage());
+            Session::flash('status_type', 'error-Query');
+            return back();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Session::flash('status', $e->getMessage());
+            Session::flash('status_type', 'error');
+            return back();
+        }
     }
-}
 
 
     public function exportToPDF($id_ordenes)

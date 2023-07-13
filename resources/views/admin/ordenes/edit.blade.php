@@ -231,7 +231,7 @@
         <div class="col-md-12">
             <div class="card card-primary">
                 <div class="card-header bg-danger">
-                    <h3 class="card-title">Datos de la orden</h3>
+                <h3 class="card-title">Datos de la orden #{{$orden->id_ordenes}}</h3>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
@@ -264,8 +264,6 @@
                                         </option>
                                         @endforeach
                                     </select>
-
-
                                 </div>
                             </div>
                         </div>
@@ -311,6 +309,22 @@
                                     'fechaEntrega', 'placeholder' => 'Fecha de entrega']) !!}
                                 </div>
                             </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="status">Estado</label>
+                                    <select name="status" class="form-control">
+                                        <option value="">Seleccione un estado</option>
+                                        <option value="en proceso"
+                                            {{ $orden->status == 'en proceso' ? 'selected' : '' }}>En proceso</option>
+                                        <option value="cancelada" {{ $orden->status == 'cancelada' ? 'selected' : '' }}>
+                                            Cancelada</option>
+                                        <option value="finalizada"
+                                            {{ $orden->status == 'finalizada' ? 'selected' : '' }}>Finalizada</option>
+                                    </select>
+                                </div>
+                            </div>
+
                         </div>
                         <div id="photoFieldsContainer" class="input-group mb-3" style="display: none;">
                             <div class="photoField input-group" id="photoField1">
@@ -622,6 +636,7 @@
                     // Actualizar el valor del campo de entrada
                     input.value = value;
                 }
+
                 function formatRFC(event) {
                     var input = event.target;
                     var value = input.value;
@@ -645,6 +660,7 @@
                     // Asigna el valor modificado al campo de entrada
                     rfcInput.value = rfcValue;
                 }
+
                 function capitalizeFirstLetter(event) {
                     var input = event.target;
                     var value = input.value;
