@@ -279,6 +279,18 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-6" id="motivo-field"
+                                style="{{ !is_null($orden->motivo) ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label for="motivo">Motivo</label>
+                                    {!! Form::text('motivo',  $orden->motivo, ['class' => 'form-control', 'id' => 'motivo',
+                                    'disabled' => true]) !!}
+                                    @error('motivo')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+
 
                         </div>
                         <div class="form-group">

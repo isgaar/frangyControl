@@ -274,7 +274,6 @@
                                     <select name="status" class="form-control">
                                         <option value="">Seleccione un estado</option>
                                         <option value="en proceso">En proceso</option>
-                                        <option value="cancelada">Cancelada</option>
                                         <option value="finalizada">Finalizada</option>
                                     </select>
                                 </div>

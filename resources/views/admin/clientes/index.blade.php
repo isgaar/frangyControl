@@ -1,23 +1,5 @@
 @extends('adminlte::page')
 
-@section('content_header')
-
-@if(Session::has('status'))
-<div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 20px; font-weight: bold;">
-            {{ Session::get('status') }}
-            @php
-            Session::forget('status');
-            @endphp
-        </span>
-    </div>
-</div>
-@endif
-
-@stop
-
 @section('content')
 
 <div class="card">
@@ -56,35 +38,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3">
-                            <div>
-                                <label for="limit">Mostrar:</label>
-                                <select name="limit" id="limit" class="form-select">
-                                    <option value="10" {{ $data->perPage() == 10 ? 'selected' : '' }}>10</option>
-                                    <option value="20" {{ $data->perPage() == 20 ? 'selected' : '' }}>20</option>
-                                    <option value="50" {{ $data->perPage() == 50 ? 'selected' : '' }}>50</option>
-                                </select>
-                                <button type="submit" class="btn btn-outline-info"
-                                    onclick="submitForm()">Aplicar</button>
-                            </div>
-                            <div>
-                                <label for="sort">Ordenar por:</label>
-                                <select name="sort_by" id="sort" class="form-select">
-                                    <option value="nombreCompleto" {{ $sortBy == 'nombreCompleto' ? 'selected' : '' }}>
-                                        Nombre</option>
-                                    <option value="telefono" {{ $sortBy == 'telefono' ? 'selected' : '' }}>Teléfono
-                                    </option>
-                                    <option value="correo" {{ $sortBy == 'correo' ? 'selected' : '' }}>Correo</option>
-                                    <option value="id_cliente" {{ $sortBy == 'id_cliente' ? 'selected' : '' }}>ID
-                                    </option>
-                                </select>
-                                <button type="submit" class="btn btn-outline-info"
-                                    onclick="submitForm()">Aplicar</button>
-                            </div>
 
-                            <!-- Resto del código -->
-
-                        </div>
                         <div class="row">
                             @foreach($data as $cliente)
                             <div class="col-md-4 mb-3">
@@ -114,80 +68,30 @@
                                                 title="Editar cliente">
                                                 <i class="fas fa-user-edit"></i>
                                             </a>
-                                            <!-- <button type="button" class="btn btn-outline-dark" title="Eliminar cliente" onclick="showDeleteConfirmation('{{ $cliente->nombreCompleto }}', '{{ route('clientes.destroy', $cliente->id_cliente) }}')">
-                                <i class="fas fa-user-times"></i>
-                            </button> -->
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-
                             @endforeach
                         </div>
+
                         <div class="d-flex justify-content-center mt-3">
-                            {{ $data->appends(['sort_by' => $sortBy, 'sort_order' => $sortOrder])->links() }}
+                            {{ $data->appends(['search' => $search])->links() }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-
-        <div class="container">
-            <div class="row">
-
-            </div>
-            <div class="text-right">
-                {{ $data->appends(Request::except('page'))->links('pagination::bootstrap-4') }}
-            </div>
+    </div>
+</div>
 
 
-        </div>
-
-
-
-        <!-- Modal para confirmación de eliminación -->
-        <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
-            aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header bg-danger">
-                        <div class="card-header d-flex">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            <div>
-                                <h2 class="card-title">¡Advertencia!</h2>
-                                <br>
-                                <h8 class="card-text">Usted está eliminando un cliente.</h8>
-                            </div>
-                        </div>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p id="deleteConfirmationText"></p>
-                    </div>
-                    <div class="modal-footer">
-                        <div class="d-flex justify-content-between w-100">
-                            <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Cancelar</button>
-                            <form id="deleteForm" method="GET" action="">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-outline-danger">Eliminar</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <script>
-        function showDeleteConfirmation(nombreCompleto, id_cliente) {
-            $('#deleteConfirmationText').text(`¿Está seguro que desea eliminar a "${nombreCompleto}"?`);
-            $('#deleteForm').attr('action', id_cliente);
-            $('#deleteConfirmationModal').modal('show');
-        }
-        </script>
-        @endsection
+<script>
+function showDeleteConfirmation(nombreCompleto, id_cliente) {
+    $('#deleteConfirmationText').text(`¿Está seguro que desea eliminar a "${nombreCompleto}"?`);
+    $('#deleteForm').attr('action', id_cliente);
+    $('#deleteConfirmationModal').modal('show');
+}
+</script>
+@endsection

@@ -231,7 +231,7 @@
         <div class="col-md-12">
             <div class="card card-primary">
                 <div class="card-header bg-danger">
-                <h3 class="card-title">Datos de la orden #{{$orden->id_ordenes}}</h3>
+                    <h3 class="card-title">Datos de la orden #{{$orden->id_ordenes}}</h3>
                 </div>
                 <div class="card-body">
                     <div class="form-group">
@@ -313,7 +313,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="status">Estado</label>
-                                    <select name="status" class="form-control">
+                                    <select name="status" class="form-control" id="status">
                                         <option value="">Seleccione un estado</option>
                                         <option value="en proceso"
                                             {{ $orden->status == 'en proceso' ? 'selected' : '' }}>En proceso</option>
@@ -325,6 +325,17 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-6" id="motivo-field"
+                                style="{{ $orden->status == 'cancelada' ? 'display: block;' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label for="motivo">Motivo</label>
+                                    {!! Form::text('motivo', null, ['class' => 'form-control', 'id' => 'motivo']) !!}
+                                    @error('motivo')
+                                    <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                            </div>
                         </div>
                         <div id="photoFieldsContainer" class="input-group mb-3" style="display: none;">
                             <div class="photoField input-group" id="photoField1">
@@ -387,6 +398,18 @@
                     input.value = name;
                 }
 
+                const statusSelect = document.getElementById('status');
+                const motivoField = document.getElementById('motivo-field');
+
+                statusSelect.addEventListener('change', function() {
+                    if (statusSelect.value === 'cancelada') {
+                        motivoField.style.display = 'block';
+                    } else {
+                        motivoField.style.display = 'none';
+                        document.getElementById('motivo').value =
+                        ''; // Establece el campo de motivo como una cadena vacía
+                    }
+                });
 
                 function isNumberKey(evt) {
                     var charCode = (evt.which) ? evt.which : event.keyCode;

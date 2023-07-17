@@ -30,7 +30,7 @@ class OrdenController extends Controller
         $search = $request->input('search', '');
         $limit = $request->input('limit', 5);
         $order = $request->input('order', 'desc');
-
+        $status = $request->input('status', null);
         $query = Ordenes::query()->with('cliente');
 
         if (trim($search) != '') {
@@ -50,7 +50,10 @@ class OrdenController extends Controller
                         $query->where('name', 'like', "%$search%");
                     });
             });
+        }if (!is_null($status)) {
+            $query->where('status', $status);
         }
+    
 
 
 
@@ -63,6 +66,7 @@ class OrdenController extends Controller
                 'search' => $search,
                 'limit' => $limit,
                 'order' => $order,
+                'status' => $status,
             ]);
 
         } else {
@@ -71,6 +75,7 @@ class OrdenController extends Controller
                 'search' => $search,
                 'limit' => $limit,
                 'order' => $order,
+                'status' => $status,
             ]);
 
         }
@@ -405,6 +410,7 @@ class OrdenController extends Controller
             $orden->placas = $request->input('placas');
             $orden->kilometraje = $request->input('kilometraje');
             $orden->motor = $request->input('motor');
+            $orden->motivo = $request->input('motivo');
             $orden->modelo = $request->input('modelo');
             $orden->status = $request->input('status');
             $orden->cilindros = $request->input('cilindros');

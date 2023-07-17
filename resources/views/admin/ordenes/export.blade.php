@@ -53,6 +53,8 @@ textarea {
     border-radius: 4px;
     margin-bottom: 10px;
     resize: none;
+    font-size: 8.7px;
+    font-family: Arial, sans-serif;
     /* Evitar que el usuario pueda redimensionar */
 }
 
@@ -144,14 +146,30 @@ textarea {
 
         </div>
 
-        <label class="form-label" for="nombreCompleto">N0. Orden en sistema</label>
-        <div class="form-value">{{ strtoupper($orden->id_ordenes) }}</div>
+        <table>
+            <tr>
+                <th> <label class="form-label" for="nombreCompleto">N0. Orden en sistema</label>
+                    <div class="form-value">{{ strtoupper($orden->id_ordenes) }}</div>
+                </th>
+                <th> @if ($orden->status != 'en proceso')
 
-        @if ($orden->status != 'en proceso')
+                    <label class="form-label" for="nombreCompleto">Orden</label>
+                    <div class="form-value">{{ strtoupper($orden->status) }}</div>
+                    @endif
+                </th>
+            </tr>
+            <tr>
+                <td></td>
+                <td>@if (!is_null($orden->motivo))
+                    <label>Motivo: </label> {{ ucwords($orden->motivo) }}
+                    @endif
+                </td>
+            </tr>
+        </table>
 
-        <label class="form-label" for="nombreCompleto">Orden</label>
-        <div class="form-value">{{ strtoupper($orden->status) }}</div>
-        @endif
+
+
+
     </div>
     <div class="row">
         <div class="left-column">

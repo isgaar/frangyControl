@@ -145,6 +145,24 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
+                            <select name="status" id="status" class="form-control">
+                                <option value="">Seleccione un estado</option>
+                                <option value="en proceso" {{ $status == 'en proceso' ? 'selected' : '' }}>En proceso
+                                </option>
+                                <option value="cancelada" {{ $status == 'cancelada' ? 'selected' : '' }}>Cancelada
+                                </option>
+                                <option value="finalizada" {{ $status == 'finalizada' ? 'selected' : '' }}>Finalizada
+                                </option>
+                            </select>
+                            <label for="status" class="placeholder-label">Estados</label>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="col-md-4">
+                        <div class="form-group">
                             <button type="submit" class="btn btn-outline-info"
                                 title="Aplica cambios para ordenamiento">Aplicar</button>
                         </div>

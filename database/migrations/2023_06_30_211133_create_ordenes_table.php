@@ -26,6 +26,7 @@ return new class extends Migration {
             $table->string('noSerievehiculo', 17);
             $table->string('status', 15);
             $table->string('modelo', 100);
+            $table->string('motivo')->nullable();
             $table->date('fechaEntrega');
             $table->text('observacionesInt');
             $table->text('recomendacionesCliente');
