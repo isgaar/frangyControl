@@ -80,6 +80,14 @@ class OrdenController extends Controller
 
         }
     }
+    public function verificarNombreUsuario(Request $request)
+{
+    $nombreCompleto = $request->input('nombreCompleto');
+
+    $exists = Cliente::where('nombreCompleto', $nombreCompleto)->exists();
+
+    return response()->json(['exists' => $exists]);
+}
     public function registro()
     {
         $datosVehiculo = DatosVehiculo::all();

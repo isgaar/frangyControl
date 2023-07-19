@@ -220,14 +220,19 @@ return [
     [
         'text' => 'Datos generales',
         'url' => '/admin/datosv/vehiculosnom',
-        'icon' => 'fas fa-pencil-ruler',
+        'icon' => 'fas fa-car',
         'can' => 'admin.datosv.vehiculosnom',
     ],
     [
         'text' => 'Sesiones de empleados',
         'url' => '/admin/users/usuarios',
-        'icon' => 'fas fa-id-card',
+        'icon' => 'far fa-id-card',
         'can' => 'admin.users.usuarios',
+    ],
+    [
+        'text' => 'Acerca',
+        'url' => '#',
+        'icon' => 'far fa-question-circle',
     ],
 ],
 

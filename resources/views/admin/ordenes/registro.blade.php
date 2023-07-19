@@ -51,10 +51,11 @@
                         <label for="nombreCompleto">Nombre completo</label>
                         <input type="text" name="nombreCompleto" class="form-control" maxlength="100"
                             id="nombreCompleto" oninput="formatNameInput(this)">
-                        @error('nombreCompleto')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                        <span class="text-danger" id="nombreCompleto-error"></span>
+                        <span class="text-warning" id="nombreCompleto-warning"></span>
                     </div>
+
+
 
                     <div class="form-group">
                         <label for="telefono">Teléfono</label>
@@ -347,6 +348,56 @@
 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
+                let typingTimer; // Variable para almacenar el temporizador
+                const doneTypingInterval =
+                    1000; // Intervalo de tiempo para considerar que el usuario ha terminado de escribir (en milisegundos)
+
+                function verificarNombreUsuario(nombreCompleto) {
+                    const errorSpan = document.getElementById('nombreCompleto-error');
+                    const warningSpan = document.getElementById('nombreCompleto-warning');
+                    const inputField = document.getElementById('nombreCompleto');
+
+                    clearTimeout(typingTimer); // Limpiar el temporizador si el usuario sigue escribiendo
+                    if (nombreCompleto) {
+                        typingTimer = setTimeout(() => {
+                            // Realizar la solicitud AJAX a la ruta de verificación
+                            fetch('/orden/verificar_nombre_usuario', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    body: JSON.stringify({
+                                        nombreCompleto: nombreCompleto
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.exists) {
+                                        // Mostrar mensaje de advertencia si el nombre de usuario ya existe
+                                        inputField.classList.remove('is-invalid');
+                                        errorSpan.textContent = '';
+                                        warningSpan.textContent = 'El nombre de usuario ya está en uso.';
+                                    } else {
+                                        // Limpiar el mensaje de advertencia si el nombre de usuario es único
+                                        warningSpan.textContent = '';
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error al verificar el nombre de usuario:', error);
+                                });
+                        }, doneTypingInterval);
+                    } else {
+                        // Limpiar el mensaje de advertencia si el campo está vacío
+                        warningSpan.textContent = '';
+                    }
+                }
+
+                document.getElementById('nombreCompleto').addEventListener('blur', function() {
+                    // Verificar el nombre de usuario cuando el usuario deje el campo
+                    verificarNombreUsuario(this.value);
+                });
+
                 function capitalizeFirstLetter(event) {
                     var input = event.target;
                     var value = input.value;

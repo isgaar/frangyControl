@@ -34,3 +34,5 @@ Route::group(['prefix' => 'landing'], function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::post('verificar_nombre_usuario', 'App\Http\Controllers\Admin\OrdenController@verificarNombreUsuario')->name('verificar_nombre_usuario');
+

@@ -106,71 +106,74 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
     <div class="card-body">
         <div class="row">
-
-
-            <div class="col-lg-7 col-sm-7 col-7 text-right">
+            <div class="col-lg-7 col-sm-7 col-7 text-left">
                 <form action="{{ route('ordenes.index') }}" method="get">
                     <div class="input-group">
                         <input type="text" class="form-control" name="search" value="{{ $search }}"
                             placeholder="Buscar">
                         <div class="input-group-append">
                             <button class="btn btn-outline-info" type="submit"
-                                title="Busque un nombre de cliente, carro, placas, servicio o encargado/a"><i
-                                    class="fas fa-search"></i></button>
+                                title="Busque un nombre de cliente, carro, placas, servicio o encargado/a">
+                                <i class="fas fa-search"></i>
+                            </button>
                         </div>
                     </div>
+                </form>
             </div>
-            <div class="col-lg-5 col-sm-5 col-5 text-right">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-
-                            <select name="limit" id="limit" class="form-control">
-                                <option value="5" {{ $limit == 5 ? 'selected' : '' }}>5</option>
-                                <option value="10" {{ $limit == 10 ? 'selected' : '' }}>10</option>
-                                <option value="15" {{ $limit == 15 ? 'selected' : '' }}>15</option>
-                            </select>
-                            <label for="limit" class="placeholder-label">Limite de órdenes</label>
+            <div class="col-lg-5 col-sm-5 col-5">
+                <form action="{{ route('ordenes.index') }}" method="get">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select name="limit" id="limit" class="form-control">
+                                    <option value="" {{ $limit === '' ? 'selected' : '' }}>Límite de:</option>
+                                    <option value="5" {{ $limit == 5 ? 'selected' : '' }}>5</option>
+                                    <option value="10" {{ $limit == 10 ? 'selected' : '' }}>10</option>
+                                    <option value="15" {{ $limit == 15 ? 'selected' : '' }}>15</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
 
-                            <select name="order" id="order" class="form-control">
-                                <option value="asc" {{ $order == 'asc' ? 'selected' : '' }}>Primeros registros</option>
-                                <option value="desc" {{ $order == 'desc' ? 'selected' : '' }}>Últimos agregados</option>
-                            </select>
-                            <label for="order" class="placeholder-label">Ordenar por</label>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select name="order" id="order" class="form-control">
+                                    <option value="" {{ $order === '' ? 'selected' : '' }}>Ordenar por:</option>
+                                    <option value="asc" {{ $order == 'asc' ? 'selected' : '' }}>Primeros registros
+                                    </option>
+                                    <option value="desc" {{ $order == 'desc' ? 'selected' : '' }}>Últimos agregados
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <select name="status" id="status" class="form-control">
-                                <option value="">Seleccione un estado</option>
-                                <option value="en proceso" {{ $status == 'en proceso' ? 'selected' : '' }}>En proceso
-                                </option>
-                                <option value="cancelada" {{ $status == 'cancelada' ? 'selected' : '' }}>Cancelada
-                                </option>
-                                <option value="finalizada" {{ $status == 'finalizada' ? 'selected' : '' }}>Finalizada
-                                </option>
-                            </select>
-                            <label for="status" class="placeholder-label">Estados</label>
+
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+
+                                <select name="status" id="status" class="form-control">
+                                    <option value="">Búsqueda por estado</option>
+                                    <option value="en proceso" {{ $status == 'en proceso' ? 'selected' : '' }}>En
+                                        proceso</option>
+                                    <option value="cancelada" {{ $status == 'cancelada' ? 'selected' : '' }}>Cancelada
+                                    </option>
+                                    <option value="finalizada" {{ $status == 'finalizada' ? 'selected' : '' }}>
+                                        Finalizada</option>
+                                </select>
+
+                            </div>
                         </div>
-                    </div>
-
-
-
-
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-outline-info"
-                                title="Aplica cambios para ordenamiento">Aplicar</button>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-outline-info"
+                                    title="Aplica cambios para ordenamiento">Aplicar</button>
+                            </div>
                         </div>
+
                     </div>
-                </div>
                 </form>
             </div>
         </div>
+
 
         <div class="table-responsive mt-4">
             <table class="table table-striped mb-0">
