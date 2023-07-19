@@ -1,15 +1,4 @@
-<p align="center"><a href="https://laravel.com" target="_blank">     (()__.(()
-  /  /       \ 
-    (l /  l \  \
-     \ o o    /
-     (_()_)__/ \             
-    / _,==.____ \
-   (   |--|      )
-   /\_.|__|'-.__/\_
-  / (        /     \ 
-  \  \      (      /
-   )  '._____)    /    
-(((____.--(((____/mrf</p>
+<p align="center"><a href="https://laravel.com" target="_blank"></p>
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions">
@@ -21,6 +10,19 @@
 
 
 ## About Laravel
+
+     (()__.(()
+  /  /       \ 
+    (l /  l \  \
+     \ o o    /
+     (_()_)__/ \             
+    / _,==.____ \
+   (   |--|      )
+   /\_.|__|'-.__/\_
+  / (        /     \ 
+  \  \      (      /
+   )  '._____)    /    
+(((____.--(((____/mrf
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
