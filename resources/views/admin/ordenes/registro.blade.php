@@ -247,10 +247,11 @@
                                     <select name="user_id" class="form-control" id="user_id">
                                         <option value="">-- Seleccione empleado --</option>
                                         @foreach ($users as $user)
+                                        @if ($user->id !== 1)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endif
                                         @endforeach
                                     </select>
-
                                 </div>
                             </div>
                         </div>

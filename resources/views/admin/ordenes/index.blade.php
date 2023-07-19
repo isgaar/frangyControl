@@ -183,7 +183,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
                         <th scope="col" class="text-center">Vehículo</th>
                         <th scope="col" class="text-center">Placas</th>
                         <th scope="col" class="text-center">Encargado/a</th>
-                        <th scope="col" class="text-center">Operaciones</th>
+                        <th scope="col" class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">

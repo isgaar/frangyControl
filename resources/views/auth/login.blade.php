@@ -23,13 +23,12 @@ body {
 .window {
     width: 100%;
     /* La ventana ahora ocupa el 100% del ancho disponible */
-    max-width: 400px;
+    max-width: 500px;
     padding: 40px;
     margin: 0 auto;
     /* Centramos la ventana horizontalmente */
-    border: 1px solid white;
-    border-radius: 20px;
-    backdrop-filter: blur(10px) brightness(30%);
+    border-radius: 15px;
+    backdrop-filter: blur(15px) brightness(25%);
     color: white;
 }
 
@@ -114,10 +113,6 @@ input[type="submit"] {
                             <span class="error-message" id="password-error"></span>
                         </div>
 
-
-
-
-
                         <div class="row mb-3">
 
                             <div class="form-check">
@@ -142,6 +137,51 @@ input[type="submit"] {
 </div>
 
 <script>
+        function showToast(message) {
+        const toast = document.createElement('ion-toast');
+        toast.message = message;
+        toast.duration = 5000; // Duración en milisegundos (5 segundos en este caso)
+        toast.color = 'danger'; // Color del toast (puedes personalizarlo)
+        toast.position = 'top'; // Posición del toast (puedes cambiarlo a 'bottom', 'middle', etc.)
+        toast.buttons = [
+            {
+                text: 'Cerrar',
+                role: 'cancel',
+                handler: () => {
+                    toast.dismiss();
+                }
+            }
+        ];
+
+        // Agregar icono de error similar al toast
+        const icon = document.createElement('ion-icon');
+        icon.name = 'close-circle-outline'; // Puedes cambiar el nombre del icono según tus necesidades
+        toast.appendChild(icon);
+
+        document.body.appendChild(toast);
+        return toast.present();
+    }
+
+    document.getElementById('loginButton').addEventListener('click', function(event) {
+        event.preventDefault(); // Prevenir envío del formulario por defecto
+
+        // Obtiene los valores de los campos de entrada
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        // Aquí colocarías la lógica para validar las credenciales en tu backend de Laravel
+        // Supongamos que tu backend devuelve una respuesta JSON con una propiedad 'success' que indica si las credenciales son válidas
+        // Por ahora, simularemos un escenario de credenciales inválidas
+        const credentialsValid = false;
+
+        if (!credentialsValid) {
+            // Mostrar el toast con el mensaje de error
+            showToast('Credenciales inválidas o no existe el registro.');
+        } else {
+            // Si las credenciales son válidas, puedes enviar el formulario aquí
+            document.getElementById('login-form').submit();
+        }
+    });
 document.addEventListener('DOMContentLoaded', function() {
     const passwordInput = document.getElementById('password');
     const togglePasswordButton = document.getElementById('togglePassword');
@@ -193,5 +233,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     setInterval(changeBackground, 70000); // Cambiar cada 7 segundos (7000 ms)
 });
+
 </script>
 @endsection

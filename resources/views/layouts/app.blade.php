@@ -1,4 +1,18 @@
 <!doctype html>
+<style>
+    body {
+        background-color: black;
+        color: white;
+        background-position: center;
+        transition: opacity 0.5s ease;
+        /* Agregamos la transición de opacidad */
+        font-family: 'Inter', sans-serif;
+        /* Agregamos la fuente de letra */
+    }
+.img-pequena {
+    height: 45px;
+}
+</style>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
@@ -27,8 +41,10 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                    <img src="{{ asset('pestaña.png') }}" alt="Bienvenido" class="img-pequena">
                 </a>
+
+
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">

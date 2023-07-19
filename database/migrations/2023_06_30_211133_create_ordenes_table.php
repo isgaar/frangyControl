@@ -18,7 +18,7 @@ return new class extends Migration {
             $table->unsignedInteger('tvehiculo_id');
             $table->unsignedBigInteger('id');
             $table->integer('yearVehiculo');
-            $table->string('color');
+            $table->string('color', 30);
             $table->string('placas', 7);
             $table->double('kilometraje');
             $table->string('motor', 10);

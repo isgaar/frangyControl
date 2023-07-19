@@ -216,12 +216,14 @@
                                     <select name="user_id" class="form-control" id="user_id">
                                         <option value="">-- Seleccione empleado --</option>
                                         @foreach ($users as $user)
+                                        @if ($user->id !== 1)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        @endif
                                         @endforeach
                                     </select>
-
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="row">
@@ -249,7 +251,7 @@
                             </div>
                         </div>
 
-                        
+
 
                         <div class="row">
                             <div class="col-md-6">
@@ -317,7 +319,7 @@
 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
                 <script>
-                    function capitalizeFirstLetter(event) {
+                function capitalizeFirstLetter(event) {
                     var input = event.target;
                     var value = input.value;
 
@@ -326,6 +328,7 @@
                         input.value = value.charAt(0).toUpperCase() + value.slice(1);
                     }
                 }
+
                 function validateYearInput(input) {
                     var year = input.value;
                     year = year.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
@@ -333,7 +336,7 @@
                     input.value = year;
                 }
 
-                
+
 
                 function cambiarNombre(nombre) {
                     let regex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1][a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/g;

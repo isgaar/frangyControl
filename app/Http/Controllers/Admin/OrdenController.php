@@ -423,6 +423,7 @@ class OrdenController extends Controller
             $orden->vehiculo_id = $request->input('vehiculo_id');
             $orden->servicio_id = $request->input('servicio_id');
             $orden->tvehiculo_id = $request->input('tvehiculo_id');
+            $orden->id = $request->input('user_id');
 
             // Actualiza los campos relacionados con el cliente
             $cliente = $orden->cliente;

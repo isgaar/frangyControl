@@ -2,10 +2,6 @@
 
 @section('title', 'Dashboard')
 
-@section('content_header')
-<h1>Panel de control</h1>
-@stop
-
 
 @section('content')
 <style>

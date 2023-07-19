@@ -258,14 +258,17 @@
                                     <select name="user_id" class="form-control" id="user_id">
                                         <option value="">-- Seleccione empleado --</option>
                                         @foreach ($users as $user)
+                                        @if ($user->id !== 1)
                                         <option value="{{ $user->id }}" @if ($user->id == $orden->user->id) selected
                                             @endif>
                                             {{ $user->name }}
                                         </option>
+                                        @endif
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
+
                         </div>
 
                         <div class="row">
@@ -407,7 +410,7 @@
                     } else {
                         motivoField.style.display = 'none';
                         document.getElementById('motivo').value =
-                        ''; // Establece el campo de motivo como una cadena vacía
+                            ''; // Establece el campo de motivo como una cadena vacía
                     }
                 });
 

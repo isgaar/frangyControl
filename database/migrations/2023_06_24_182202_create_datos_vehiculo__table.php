@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('datos_vehiculo', function (Blueprint $table) {
             $table->increments('id_vehiculo');
-            $table->string('marca');
+            $table->string('marca', 35);
             $table->timestamps();
         });
     }
