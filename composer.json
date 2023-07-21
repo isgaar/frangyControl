@@ -7,7 +7,6 @@
     "require": {
         "php": "^8.1",
         "barryvdh/laravel-dompdf": "^2.0",
-        "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "illuminate/database": "*",
         "jeroennoten/laravel-adminlte": "^3.9",
