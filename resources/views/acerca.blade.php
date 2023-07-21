@@ -122,22 +122,24 @@ if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Trident/') !==
 ⠀⠀⠀⠈⠹⠉⠀⠀⠀⠘⠙⢻⠟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠻⣿⠿⡿⠇⠁⠀⠀
 
 - Desarrollado por: Ismael Gaspar Cruz -
+
 Estimados
 
-Por medio de la presente, me complace formalizar el programa 
-dedicado al centro de servicio automotriz y llantera "Frangy", el cual 
-ha sido desarrollado como parte de mi proyecto para estadía.
+Por medio de la presente, me complace formalizar el programa dedicado al centro 
+de servicio automotriz y llantera "Frangy", el cual ha sido desarrollado como 
+parte de mi proyecto para estadía.
 
 Me gustaría expresar mis más sinceros agradecimientos al Lic. Cesar Aldaraca Juárez 
-y a la Ing. Rosalina Autrán Velasco por su valioso apoyo constante 
-en la aprobación de avances durante mi estadía. 
-También quisiera reconocer que, para resolver problemas de código derivado a falta de conocimiento, 
-recurrí a la I.A. Chat GPT, la cual brindó una inmediata ayuda.
+y a la Ing. Rosalina Autrán Velasco por su valioso apoyo constante en la aprobación 
+de avances durante mi estadía. También quisiera reconocer que, para resolver problemas 
+de código derivado a falta de conocimiento, recurrí a la I.A. Chat GPT, la cual 
+brindó una inmediata ayuda.
 
-Además, quiero agradecer infinitamente la paciencia y el constante apoyo de mis padres, quienes 
-siempre me han motivado en cada momento de mi vida.
+Además, quiero agradecer infinitamente la paciencia y el constante apoyo de mis padres, 
+quienes siempre me han motivado en cada momento de mi vida.
 
-Sin el respaldo y colaboración de todas estas personas, este programa no habría sido posible de entregar. 
+Sin el respaldo y colaboración de todas estas personas, este programa no habría sido 
+posible de entregar. 
 
 -- Esta aplicación usa la tecnología --
 PHP <?php echo PHP_VERSION; ?>, 
