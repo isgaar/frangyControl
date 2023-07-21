@@ -103,7 +103,7 @@
         </div>
     </div>
     </div>
-    Holaaa
+    Holaa
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const passwordInput = document.getElementById('password');
