@@ -187,7 +187,4 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
 @stop
 
 @section('js')
-<script>
-console.log('Hi!');
-</script>
 @stop

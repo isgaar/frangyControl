@@ -73,4 +73,8 @@ class HomeController extends Controller
 
         }
     }
+    public function about(Request $request)
+    {
+        return view('acerca');
+    }
 }

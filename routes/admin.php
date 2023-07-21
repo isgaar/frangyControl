@@ -8,8 +8,9 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\TiposController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\OrdenController;
+;
 
-Route::get('', [HomeController::class, 'index']);
+
 
 Route::group(['prefix' => 'users'], function () {
     Route::get('/usuarios', [UserController::class, 'index'])

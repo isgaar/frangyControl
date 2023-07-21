@@ -231,7 +231,7 @@ return [
     ],
     [
         'text' => 'Acerca',
-        'url' => '#',
+        'url' => '/creditos',
         'icon' => 'far fa-question-circle',
     ],
 ],

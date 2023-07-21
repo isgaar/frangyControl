@@ -25,6 +25,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/creditos', [App\Http\Controllers\HomeController::class, 'about'])->name('acerca');
 
 Route::group(['prefix' => 'landing'], function () {
         Route::get('/welcome', [App\Http\Controllers\LandingController::class, 'welcome']) -> name('landing.pages.welcome');
