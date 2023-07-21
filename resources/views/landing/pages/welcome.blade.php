@@ -92,7 +92,7 @@
 <body>
     <div class="navbar-nav ms-auto">
 
-
+Como estas?
         <div class="flex justify-center mt-16 px-0 sm:items-center sm:justify-between">
 
 
@@ -103,7 +103,6 @@
         </div>
     </div>
     </div>
-    Holaa
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const passwordInput = document.getElementById('password');
