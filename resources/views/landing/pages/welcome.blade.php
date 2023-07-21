@@ -92,7 +92,6 @@
 <body>
     <div class="navbar-nav ms-auto">
 
-Como estas?
         <div class="flex justify-center mt-16 px-0 sm:items-center sm:justify-between">
 
 
