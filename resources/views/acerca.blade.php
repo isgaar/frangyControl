@@ -122,17 +122,28 @@ if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Trident/') !==
 ⠀⠀⠀⠈⠹⠉⠀⠀⠀⠘⠙⢻⠟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠻⣿⠿⡿⠇⠁⠀⠀
 
 - Desarrollado por: Ismael Gaspar Cruz -
-Agradecimiento al centro de servicio automotriz y llantera "Frangy" por 
-permitir el desarrollo de proyecto para estadía.
+Estimados
 
-Agradecimientos especiales al Lic. Cesar Aldaraca Juárez por su valioso 
-asesoramiento, reconociendo la útil ayuda de Chat GPT al resolver problemas 
-de código.
+Por medio de la presente, me complace formalizar el programa 
+dedicado al centro de servicio automotriz y llantera "Frangy", el cual 
+ha sido desarrollado como parte de mi proyecto para estadía.
 
+Me gustaría expresar mis más sinceros agradecimientos al Lic. Cesar Aldaraca Juárez 
+y a la Ing. Rosalina Autrán Velasco por su valioso apoyo constante 
+en la aprobación de avances durante mi estadía. 
+También quisiera reconocer que, para resolver problemas de código derivado a falta de conocimiento, 
+recurrí a la I.A. Chat GPT, la cual brindó una inmediata ayuda.
+
+Además, quiero agradecer infinitamente la paciencia y el constante apoyo de mis padres, quienes 
+siempre me han motivado en cada momento de mi vida.
+
+Sin el respaldo y colaboración de todas estas personas, este programa no habría sido posible de entregar. 
 
 -- Esta aplicación usa la tecnología --
-PHP <?php echo PHP_VERSION; ?>, Laravel <?php echo app()->version(); ?> 
-Herramienta: <?php echo $_SERVER['SERVER_SOFTWARE']; ?>, Sistema operativo: <?php echo php_uname('s'); ?>.
+PHP <?php echo PHP_VERSION; ?>, 
+Laravel <?php echo app()->version(); ?> 
+Herramienta: <?php echo $_SERVER['SERVER_SOFTWARE']; ?>, 
+Sistema operativo: <?php echo php_uname('s'); ?>.
 Cliente web: <?php echo $browser; ?>
     
 </pre>
