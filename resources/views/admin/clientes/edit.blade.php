@@ -41,7 +41,14 @@
 
                         <div class="form-group">
                             <label for="telefono">Teléfono</label>
-                            {!! Form::text('telefono', null, ['class' => 'form-control', 'id_cliente' => 'telefono', 'oninput' => 'truncatePhoneNumber(this)']) !!}
+                            {!! Form::text('telefono', null, [
+        'class' => 'form-control',
+        'id' => 'telefono',
+        'oninput' => 'validatePhoneNumber(this)',
+        'pattern' => '[0-9]*', // Solo permitir números en navegadores que lo soporten
+        'maxlength' => '10',   // Longitud máxima de 10 dígitos
+        'inputmode' => 'numeric', // Teclado numérico en dispositivos móviles
+    ]) !!}
                             @error('telefono')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -79,6 +86,15 @@
 @stop
 
 <script>
+    function validatePhoneNumber(input) {
+        // Eliminar cualquier carácter que no sea un número
+        input.value = input.value.replace(/\D/g, '');
+        
+        // Truncar a 10 dígitos si excede la longitud
+        if (input.value.length > 10) {
+            input.value = input.value.slice(0, 10);
+        }
+    }
 
 function formatRFC(event) {
     var input = event.target;

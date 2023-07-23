@@ -22,7 +22,7 @@
         <div class="col-lg-12 col-sm-12 col-12">
             <div class="card card-primary">
                 <div class="card-header bg-danger">
-                    <h3 class="card-title">Información Requerida</h3>
+                    <h3 class="card-title">Perfil de nuevo empleado</h3>
                 </div>
 
                 {!! Form::open(['route' => 'users.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}

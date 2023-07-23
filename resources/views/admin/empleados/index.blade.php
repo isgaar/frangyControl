@@ -73,9 +73,6 @@
                     <td>{{ $row->email }}</td>
                     <td>
                         <a class="btn btn-outline-dark @if($row->id === 1) disabled @endif"
-                            href="{{ route('users.show', $row->id) }}" title="Detalle de usuario/empleado"><i
-                                class="fas fa-solid fa-eye"></i></a>
-                        <a class="btn btn-outline-dark @if($row->id === 1) disabled @endif"
                             href="{{ route('users.edit', $row->id) }}" title="Editar empleado"><i
                                 class="fas fa-solid fa-pen"></i></a>
                         <a class="btn btn-outline-dark @if($row->id === 1) disabled @endif"
