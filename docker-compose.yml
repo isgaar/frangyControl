@@ -1,0 +1,45 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frangy_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    ports:
+      - "192.168.100.140:80:8000"
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - frangy_network
+
+  db:
+    image: mysql:8.0
+    container_name: frangy_db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: frangy_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: frangy_user
+      MYSQL_PASSWORD: frangy_pass
+    volumes:
+      - frangy_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - frangy_network
+
+volumes:
+  frangy_mysql_data:
+
+networks:
+  frangy_network:
+    driver: bridge
