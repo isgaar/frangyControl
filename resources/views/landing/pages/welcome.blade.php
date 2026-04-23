@@ -96,8 +96,8 @@
 
 
             <div class="ml-4 text-center text-sm text-gray-500 dark:text-gray-400 sm:text-right sm:ml-0">
-                Control "Frangy" con técnologia Laravel v{{ Illuminate\Foundation\Application::VERSION }} (PHP
-                v{{ PHP_VERSION }})
+                {{ config('app.name') }} v{{ config('app.version') }} con tecnología Laravel
+                v{{ Illuminate\Foundation\Application::VERSION }} (PHP v{{ PHP_VERSION }})
             </div>
         </div>
     </div>

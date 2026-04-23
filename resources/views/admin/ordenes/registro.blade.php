@@ -1,9 +1,4 @@
 @extends('adminlte::page')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/minMaxTimePlugin.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section('content_header')
 @if (Session::has('status'))
@@ -19,705 +14,1086 @@
     </div>
 </div>
 @endif
-
 @stop
 
 @section('content')
-
 <style>
-.form-control[disabled] {
-    background-color: #f8f9fa;
-    opacity: 0.7;
-    cursor: not-allowed;
-}
+    .order-panel,
+    .order-side-panel {
+        border-radius: 16px;
+        border: 1px solid rgba(13, 110, 253, 0.1);
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    .section-heading {
+        margin-bottom: 1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .helper-copy {
+        font-size: 0.86rem;
+        color: #6c757d;
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        gap: 12px;
+        margin-top: 1rem;
+    }
+
+    .preview-card {
+        background: #f8fafc;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        padding: 8px;
+        text-align: center;
+    }
+
+    .preview-card img {
+        width: 100%;
+        height: 95px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 6px;
+    }
+
+    .readonly-field {
+        background-color: #f8f9fa;
+    }
+
+    .tips-list {
+        padding-left: 1rem;
+        margin-bottom: 0;
+    }
+
+    .tips-list li + li {
+        margin-top: 0.5rem;
+    }
 </style>
 
+@if ($errors->any())
+<div class="alert alert-danger">
+    <strong>Hay datos pendientes por corregir.</strong>
+    <ul class="mb-0 mt-2 pl-3">
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 
-<div class="card">
+<form method="POST" action="{{ route('ordenes.store') }}" enctype="multipart/form-data" id="ordenRegistroForm"
+    novalidate>
+    @csrf
+
     <div class="row">
-        <div class="col-md-6">
-            <div class="card card-primary">
-                {!! Form::open(['route' => 'ordenes.store', 'method' => 'post', 'enctype' => 'multipart/form-data', 'id'
-                => 'formulario']) !!}
-                @csrf
-                <div class="card-header bg-danger">
-                    <h3 class="card-title">Información del cliente</h3>
+        <div class="col-xl-8">
+            <div class="card order-panel">
+                <div class="card-header bg-info">
+                    <h3 class="card-title mb-0">Registrar orden</h3>
                 </div>
+
                 <div class="card-body">
-
-
-                    <input type="hidden" name="cliente_id" value="{{ $cliente_id }}">
-                    <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" name="nombreCompleto" class="form-control" maxlength="100"
-                            id="nombreCompleto" oninput="formatNameInput(this)">
-                        <span class="text-danger" id="nombreCompleto-error"></span>
-                        <span class="text-warning" id="nombreCompleto-warning"></span>
+                    <div class="alert alert-light border">
+                        Completa los campos obligatorios y revisa los mensajes debajo de cada campo antes de guardar la
+                        orden.
                     </div>
 
+                    <div class="custom-control custom-switch mb-4">
+                        <input type="checkbox" class="custom-control-input" id="usarClienteExistente"
+                            name="usar_cliente_existente" value="1" {{ old('usar_cliente_existente') ? 'checked' : '' }}>
+                        <label class="custom-control-label" for="usarClienteExistente">Usar cliente ya registrado</label>
+                        <div class="helper-copy ml-4">Activa esta opción si el cliente ya existe y quieres rellenar sus
+                            datos automáticamente.</div>
+                    </div>
 
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="text" name="telefono" class="form-control" id="telefono" pattern="[0-9]{0,10}"
-                            onkeypress="return isNumberKey(event)" oninput="truncatePhoneNumber(this)">
-                        @error('telefono')
-                        <span class="text-danger">{{ $message }}</span>
+                    <div class="form-group {{ old('usar_cliente_existente') ? '' : 'd-none' }}" id="clienteExistenteBox">
+                        <label for="cliente_existente_id">Cliente registrado</label>
+                        <select name="cliente_existente_id" id="cliente_existente_id"
+                            class="form-control @error('cliente_existente_id') is-invalid @enderror">
+                            <option value="">Selecciona un cliente</option>
+                            @foreach ($clientes as $cliente)
+                            <option value="{{ $cliente->id_cliente }}"
+                                data-nombre="{{ $cliente->nombreCompleto }}"
+                                data-telefono="{{ $cliente->telefono }}"
+                                data-correo="{{ $cliente->correo }}"
+                                data-rfc="{{ $cliente->rfc }}"
+                                {{ (string) old('cliente_existente_id') === (string) $cliente->id_cliente ? 'selected' : '' }}>
+                                {{ $cliente->nombreCompleto }} - {{ $cliente->telefono }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <small class="helper-copy">El sistema cargará nombre, teléfono, correo y RFC del cliente
+                            seleccionado.</small>
+                        <div class="invalid-feedback">Selecciona un cliente registrado.</div>
+                        @error('cliente_existente_id')
+                        <span class="text-danger d-block mt-1">{{ $message }}</span>
                         @enderror
                     </div>
 
-                    <div class="form-group">
-                        <label for="correo">Correo electrónico</label>
-                        <input type="text" name="correo" class="form-control" maxlength="30" id="correo"
-                            oninput="validateEmail(this)">
-                        @error('correo')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
+                    <div class="section-heading mt-4">Información del cliente</div>
+                    <div id="clienteExistenteHint" class="alert alert-warning d-none py-2">
+                        Ya existe un cliente con ese nombre. Puedes activar "Usar cliente ya registrado" para cargarlo
+                        automáticamente.
                     </div>
 
-                    <div class="form-group">
-                        <label for="rfc">RFC</label>
-                        <input type="text" name="rfc" class="form-control" maxlength="13" id="rfc"
-                            oninput="formatRFC(event)">
-                        @error('rfc')
-                        <span class="text-danger">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6">
-            <div class="card card-primary">
-                <div class="card-header bg-danger">
-                    <h3 class="card-title">Datos de la unidad</h3>
-                </div>
-                <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <div class="form-group">
-
-                                    <label for="vehiculo_id">Marca</label>
-                                    <select name="vehiculo_id" class="form-control" id="vehiculo_id">
-                                        <option value="">-- Seleccione una marca --</option>
-                                        @foreach ($datosVehiculo as $vehiculo)
-                                        <option value="{{ $vehiculo->id_vehiculo }}">{{ $vehiculo->marca }}</option>
-                                        @endforeach
-                                    </select>
-
-
-
-                                </div>
-
+                                <label for="nombreCompleto">Nombre completo</label>
+                                <input type="text" name="nombreCompleto" id="nombreCompleto"
+                                    class="form-control @error('nombreCompleto') is-invalid @enderror"
+                                    value="{{ old('nombreCompleto') }}" maxlength="100" required>
+                                <small class="helper-copy">Captura nombre y apellidos, sin números ni símbolos.</small>
+                                <div class="invalid-feedback">Escribe el nombre completo del cliente.</div>
+                                @error('nombreCompleto')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
+                        </div>
+
+                        <div class="col-md-6">
                             <div class="form-group">
-                                <label for="tvehiculo_id">Tipo de Vehículo</label>
-                                <select name="tvehiculo_id" class="form-control" id="tvehiculo_id">
-                                    <option value="">-- Seleccione un tipo --</option>
-                                    @foreach ($tiposVehiculo as $tipoVehiculo)
-                                    <option value="{{ $tipoVehiculo->id_tvehiculo }}">{{ $tipoVehiculo->tipo }}</option>
+                                <label for="telefono">Teléfono</label>
+                                <input type="text" name="telefono" id="telefono"
+                                    class="form-control @error('telefono') is-invalid @enderror"
+                                    value="{{ old('telefono') }}" inputmode="numeric" maxlength="10" required>
+                                <small class="helper-copy">Ingresa 10 dígitos del contacto principal.</small>
+                                <div class="invalid-feedback">Escribe un teléfono de 10 dígitos.</div>
+                                @error('telefono')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="correo">Correo electrónico</label>
+                                <input type="email" name="correo" id="correo"
+                                    class="form-control @error('correo') is-invalid @enderror"
+                                    value="{{ old('correo') }}" maxlength="30" required>
+                                <small class="helper-copy">Usa formato tipo nombre@dominio.com.</small>
+                                <div class="invalid-feedback">Escribe un correo electrónico válido.</div>
+                                @error('correo')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="rfc">RFC</label>
+                                <input type="text" name="rfc" id="rfc"
+                                    class="form-control @error('rfc') is-invalid @enderror" value="{{ old('rfc') }}"
+                                    maxlength="13" required>
+                                <small class="helper-copy">Captura 12 o 13 caracteres, sin espacios ni guiones.</small>
+                                <div class="invalid-feedback">Escribe un RFC válido de 12 o 13 caracteres.</div>
+                                @error('rfc')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-heading mt-4">Datos de la unidad</div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="vehiculo_id">Marca</label>
+                                <select name="vehiculo_id" id="vehiculo_id"
+                                    class="form-control @error('vehiculo_id') is-invalid @enderror" required>
+                                    <option value="">Selecciona una marca</option>
+                                    @foreach ($datosVehiculo as $vehiculo)
+                                    <option value="{{ $vehiculo->id_vehiculo }}"
+                                        {{ (string) old('vehiculo_id') === (string) $vehiculo->id_vehiculo ? 'selected' : '' }}>
+                                        {{ $vehiculo->marca }}
+                                    </option>
                                     @endforeach
                                 </select>
-
+                                <small class="helper-copy">Selecciona la marca registrada de la unidad.</small>
+                                <div class="invalid-feedback">Selecciona una marca.</div>
+                                @error('vehiculo_id')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
+                        </div>
 
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="tvehiculo_id">Tipo de vehículo</label>
+                                <select name="tvehiculo_id" id="tvehiculo_id"
+                                    class="form-control @error('tvehiculo_id') is-invalid @enderror" required>
+                                    <option value="">Selecciona un tipo</option>
+                                    @foreach ($tiposVehiculo as $tipoVehiculo)
+                                    <option value="{{ $tipoVehiculo->id_tvehiculo }}"
+                                        {{ (string) old('tvehiculo_id') === (string) $tipoVehiculo->id_tvehiculo ? 'selected' : '' }}>
+                                        {{ $tipoVehiculo->tipo }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <small class="helper-copy">Indica si es auto, camioneta u otra categoría disponible.</small>
+                                <div class="invalid-feedback">Selecciona un tipo de vehículo.</div>
+                                @error('tvehiculo_id')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
 
-
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="modelo">Línea</label>
-                                {!! Form::text('modelo', null, ['class' => 'form-control', 'id' => 'modelo', 'maxlength'
-                                => '100', 'oninput' => 'capitalizeFirstLetter(event)']) !!}
+                                <input type="text" name="modelo" id="modelo"
+                                    class="form-control @error('modelo') is-invalid @enderror"
+                                    value="{{ old('modelo') }}" maxlength="100" required>
+                                <small class="helper-copy">Ejemplo: Civic, Hilux, NP300.</small>
+                                <div class="invalid-feedback">Escribe la línea o modelo de la unidad.</div>
                                 @error('modelo')
-                                <span class="text-danger">{{ $message }}</span>
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
                                 @enderror
                             </div>
-
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="yearVehiculo">Año</label>
-                                {!! Form::text('yearVehiculo', null, ['class' => 'form-control', 'id' => 'yearVehiculo',
-                                'oninput' => 'validateYearInput(this)']) !!}
+                                <input type="text" name="yearVehiculo" id="yearVehiculo"
+                                    class="form-control @error('yearVehiculo') is-invalid @enderror"
+                                    value="{{ old('yearVehiculo') }}" inputmode="numeric" maxlength="4" required>
+                                <small class="helper-copy">Captura el año con 4 dígitos.</small>
+                                <div class="invalid-feedback">Escribe un año válido de 4 dígitos.</div>
                                 @error('yearVehiculo')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="color">Color</label>
-                                {!! Form::text('color', null, ['class' => 'form-control', 'id' => 'color', 'maxlength'
-                                => '80', 'oninput' => 'formatColorInput(this)']) !!}
-                                @error('color')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <div class="form-group">
-                                <label for="placas">Placas</label>
-                                {!! Form::text('placas', null, ['class' => 'form-control', 'id' => 'placas', 'oninput'
-                                => 'limitInputLength(this, 7); formatPlacasInput(this);']) !!}
-                                @error('placas')
-                                <span class="text-danger">{{ $message }}</span>
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="color">Color</label>
+                                <input type="text" name="color" id="color"
+                                    class="form-control @error('color') is-invalid @enderror"
+                                    value="{{ old('color') }}" maxlength="30" required>
+                                <small class="helper-copy">Describe el color principal de la unidad.</small>
+                                <div class="invalid-feedback">Escribe el color de la unidad.</div>
+                                @error('color')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="placas">Placas</label>
+                                <input type="text" name="placas" id="placas"
+                                    class="form-control @error('placas') is-invalid @enderror"
+                                    value="{{ old('placas') }}" maxlength="7" required>
+                                <small class="helper-copy">Usa letras y números, sin espacios.</small>
+                                <div class="invalid-feedback">Escribe las placas de la unidad.</div>
+                                @error('placas')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="kilometraje">Kilometraje</label>
                                 <div class="input-group">
-                                    {!! Form::text('kilometraje', null, ['class' => 'form-control', 'id' =>
-                                    'kilometraje',
-                                    'maxlength' => '8', 'oninput' => 'formatKilometrajeInput(this)']) !!}
+                                    <input type="text" name="kilometraje" id="kilometraje"
+                                        class="form-control @error('kilometraje') is-invalid @enderror"
+                                        value="{{ old('kilometraje') }}" inputmode="decimal" maxlength="8" required>
                                     <div class="input-group-append">
                                         <span class="input-group-text">Km</span>
                                     </div>
                                 </div>
+                                <small class="helper-copy">Ingresa el kilometraje actual sin texto adicional.</small>
+                                <div class="invalid-feedback">Escribe el kilometraje actual.</div>
                                 @error('kilometraje')
-                                <span class="text-danger">{{ $message }}</span>
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="form-group">
-                                <label for="motor">Motor</label>
-                                {!! Form::text('motor', null, ['class' => 'form-control', 'id' => 'motor', 'maxlength'
-                                => '8', 'oninput' => 'formatMotorInput(this)']) !!}
-                                @error('motor')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-
                         </div>
 
-                        <div class="col-md-6">
-
+                        <div class="col-md-4">
                             <div class="form-group">
+                                <label for="motor">Motor</label>
+                                <input type="text" name="motor" id="motor"
+                                    class="form-control @error('motor') is-invalid @enderror"
+                                    value="{{ old('motor') }}" maxlength="10" required>
+                                <small class="helper-copy">Captura la referencia del motor, por ejemplo 2.0 o V6.</small>
+                                <div class="invalid-feedback">Escribe la información del motor.</div>
+                                @error('motor')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
 
-                                <div class="form-group">
-                                    <label for="cilindros">Cilindros</label>
-                                    {!! Form::text('cilindros', null, ['class' => 'form-control', 'id' => 'cilindros',
-                                    'maxlength' => '20', 'oninput' => 'formatCilindrosInput(this)']) !!}
-                                    @error('cilindros')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="cilindros">Cilindros</label>
+                                <input type="text" name="cilindros" id="cilindros"
+                                    class="form-control @error('cilindros') is-invalid @enderror"
+                                    value="{{ old('cilindros') }}" inputmode="numeric" maxlength="4" required>
+                                <small class="helper-copy">Ingresa la cantidad de cilindros de la unidad.</small>
+                                <div class="invalid-feedback">Escribe el número de cilindros.</div>
+                                @error('cilindros')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
 
-                                <div class="form-group">
-                                    <label for="numSerie">No. Serie</label>
-                                    {!! Form::text('noSerievehiculo', null, ['class' => 'form-control', 'id' =>
-                                    'noSerievehiculo', 'oninput' => 'validateInput(this)']) !!}
-                                    @error('noSerievehiculo')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="noSerievehiculo">Número de serie</label>
+                                <input type="text" name="noSerievehiculo" id="noSerievehiculo"
+                                    class="form-control @error('noSerievehiculo') is-invalid @enderror"
+                                    value="{{ old('noSerievehiculo') }}" maxlength="17" required>
+                                <small class="helper-copy">Usa letras y números del VIN o número de serie, sin
+                                    espacios.</small>
+                                <div class="invalid-feedback">Escribe un número de serie válido.</div>
+                                @error('noSerievehiculo')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-12">
-            <div class="card card-primary">
-                <div class="card-header bg-danger">
-                    <h3 class="card-title">Datos de la orden</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="servicio_id">Tipo de Servicio</label>
-                                    <select name="servicio_id" class="form-control" id="servicio_id">
-                                        <option value="">-- Seleccione un servicio --</option>
-                                        @foreach ($tiposServicio as $tipoServicio)
-                                        <option value="{{ $tipoServicio->id_servicio }}">
-                                            {{ $tipoServicio->nombreServicio }}</option>
-                                        @endforeach
-                                    </select>
-
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="user_id">Atiende</label>
-                                    <select name="user_id" class="form-control" id="user_id">
-                                        <option value="">-- Seleccione empleado --</option>
-                                        @foreach ($users as $user)
-                                        @if ($user->id !== 1)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                                        @endif
-                                        @endforeach
-                                    </select>
-                                </div>
+                    <div class="section-heading mt-4">Datos de la orden</div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="servicio_id">Tipo de servicio</label>
+                                <select name="servicio_id" id="servicio_id"
+                                    class="form-control @error('servicio_id') is-invalid @enderror" required>
+                                    <option value="">Selecciona un servicio</option>
+                                    @foreach ($tiposServicio as $tipoServicio)
+                                    <option value="{{ $tipoServicio->id_servicio }}"
+                                        {{ (string) old('servicio_id') === (string) $tipoServicio->id_servicio ? 'selected' : '' }}>
+                                        {{ $tipoServicio->nombreServicio }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <small class="helper-copy">Elige el trabajo principal solicitado por el cliente.</small>
+                                <div class="invalid-feedback">Selecciona el tipo de servicio.</div>
+                                @error('servicio_id')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="observacionesInt">Observaciones internas (Recepción)</label>
-                                    {!! Form::textarea('observacionesInt', null, ['class' => 'form-control', 'id' =>
-                                    'observacionesInt']) !!}
-                                </div>
-
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="recomendacionesCliente">Recomendaciones del cliente</label>
-                                    {!! Form::textarea('recomendacionesCliente', null, ['class' => 'form-control', 'id'
-                                    => 'recomendacionesCliente']) !!}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="detallesOrden">Detalles del servicio</label>
-                                    {!! Form::textarea('detallesOrden', null, ['class' => 'form-control', 'id' =>
-                                    'detallesOrden']) !!}
-                                </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="user_id">Atiende</label>
+                                <select name="user_id" id="user_id"
+                                    class="form-control @error('user_id') is-invalid @enderror" required>
+                                    <option value="">Selecciona un empleado</option>
+                                    @foreach ($users as $user)
+                                    <option value="{{ $user->id }}"
+                                        {{ (string) old('user_id') === (string) $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <small class="helper-copy">Selecciona al responsable principal de la orden.</small>
+                                <div class="invalid-feedback">Selecciona quién atenderá la orden.</div>
+                                @error('user_id')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="retiroRefacciones">Refacciones</label>
-                                    {!! Form::select('retiroRefacciones', [false => 'No retira', true => 'Retira'],
-                                    null, ['class' => 'form-control', 'id' => 'retiroRefacciones']) !!}
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fechaEntrega">Fecha estimada de entrega</label>
-                                    {!! Form::text('fechaEntrega', null, ['class' => 'form-control', 'id' =>
-                                    'fechaEntrega', 'placeholder' => 'Fecha de entrega']) !!}
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="status">Estado</label>
-                                    <select name="status" class="form-control">
-                                        <option value="">Seleccione un estado</option>
-                                        <option value="en proceso">En proceso</option>
-                                        <option value="finalizada">Finalizada</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="photoFieldsContainer" class="input-group mb-3" style="display: none;">
-                            <div class="photoField input-group" id="photoField1">
-                                <label class="input-group-text" for="photo1">Tomar fotografía:</label>
-                                <input type="file" class="form-control" accept="image/*" capture="camera" id="photo1"
-                                    name="photos[]"
-                                    onchange="previewPhoto(event, 'photoPreview1', 1); toggleAddMorePhotosButton();">
-                                <div class="mt-2">
-                                    <img id="photoPreview1" src="#" alt="Previsualización"
-                                        style="max-width: 200px; max-height: 200px;">
-                                    <button type="button" class="btn btn-outline-danger"
-                                        onclick="deletePhotoField(1); toggleAddMorePhotosButton();">Eliminar</button>
-                                </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="status">Estado</label>
+                                <select name="status" id="status"
+                                    class="form-control @error('status') is-invalid @enderror" required>
+                                    <option value="">Selecciona un estado</option>
+                                    <option value="en proceso" {{ old('status') === 'en proceso' ? 'selected' : '' }}>
+                                        En proceso</option>
+                                    <option value="finalizada" {{ old('status') === 'finalizada' ? 'selected' : '' }}>
+                                        Finalizada</option>
+                                </select>
+                                <small class="helper-copy">Define si la orden inicia en proceso o ya fue finalizada.</small>
+                                <div class="invalid-feedback">Selecciona el estado de la orden.</div>
+                                @error('status')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
-                        <div id="addMorePhotosContainer" class="mt-2" style="display: none;">
-                            <button type="button" class="btn btn-outline-light" onclick="addPhotoField()">Agregar más
-                                fotos</button>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="retiroRefacciones">Refacciones</label>
+                                <select name="retiroRefacciones" id="retiroRefacciones"
+                                    class="form-control @error('retiroRefacciones') is-invalid @enderror" required>
+                                    <option value="">Selecciona una opción</option>
+                                    <option value="0" {{ old('retiroRefacciones') === '0' ? 'selected' : '' }}>No
+                                        retira</option>
+                                    <option value="1" {{ old('retiroRefacciones') === '1' ? 'selected' : '' }}>Retira
+                                    </option>
+                                </select>
+                                <small class="helper-copy">Indica si el cliente retira o no sus refacciones.</small>
+                                <div class="invalid-feedback">Selecciona una opción para refacciones.</div>
+                                @error('retiroRefacciones')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <input type="checkbox" id="myCheckbox">
-                            <label for="myCheckbox">El cliente acepta</label>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fechaEntrega">Fecha estimada de entrega</label>
+                                <input type="text" name="fechaEntrega" id="fechaEntrega"
+                                    class="form-control @error('fechaEntrega') is-invalid @enderror"
+                                    value="{{ old('fechaEntrega') }}" placeholder="Selecciona una fecha" required>
+                                <small class="helper-copy">Elige una fecha igual o posterior al día actual.</small>
+                                <div class="invalid-feedback">Selecciona la fecha estimada de entrega.</div>
+                                @error('fechaEntrega')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="observacionesInt">Observaciones internas</label>
+                                <textarea name="observacionesInt" id="observacionesInt" rows="5"
+                                    class="form-control @error('observacionesInt') is-invalid @enderror"
+                                    required>{{ old('observacionesInt') }}</textarea>
+                                <small class="helper-copy">Describe recepción, fallas detectadas o notas del taller.</small>
+                                <div class="invalid-feedback">Agrega las observaciones internas de la orden.</div>
+                                @error('observacionesInt')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="recomendacionesCliente">Recomendaciones del cliente</label>
+                                <textarea name="recomendacionesCliente" id="recomendacionesCliente" rows="5"
+                                    class="form-control @error('recomendacionesCliente') is-invalid @enderror"
+                                    required>{{ old('recomendacionesCliente') }}</textarea>
+                                <small class="helper-copy">Anota exactamente lo que pide o autoriza el cliente.</small>
+                                <div class="invalid-feedback">Agrega las recomendaciones del cliente.</div>
+                                @error('recomendacionesCliente')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="detallesOrden">Detalles del servicio</label>
+                                <textarea name="detallesOrden" id="detallesOrden" rows="5"
+                                    class="form-control @error('detallesOrden') is-invalid @enderror"
+                                    required>{{ old('detallesOrden') }}</textarea>
+                                <small class="helper-copy">Resume el trabajo que se realizará en esta orden.</small>
+                                <div class="invalid-feedback">Agrega los detalles del servicio.</div>
+                                @error('detallesOrden')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="photos">Fotografías de apoyo</label>
+                                <input type="file" name="photos[]" id="photos"
+                                    class="form-control-file @error('photos.*') is-invalid @enderror"
+                                    accept="image/png,image/jpeg" multiple>
+                                <small class="helper-copy">Puedes subir varias imágenes JPG o PNG de hasta 2 MB cada
+                                    una.</small>
+                                @error('photos.*')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
+                                <div id="photoPreviewContainer" class="preview-grid"></div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="custom-control custom-checkbox mt-2">
+                                <input type="checkbox" class="custom-control-input" id="clienteAcepta">
+                                <label class="custom-control-label" for="clienteAcepta">
+                                    Confirmo que el cliente acepta la orden y la información capturada.
+                                </label>
+                                <small class="helper-copy d-block ml-4 mt-1">Este paso habilita el envío y reduce
+                                    registros accidentales.</small>
+                                <div class="text-danger mt-2 d-none" id="clienteAceptaError">
+                                    Debes confirmar la aceptación del cliente antes de guardar.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-footer text-center">
                     <div class="d-flex justify-content-between">
-                        <a type="button" href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
+                        <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
                         <button type="submit" class="btn btn-info" id="submitButton" disabled>Guardar orden</button>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                {!! Form::close() !!}
+        <div class="col-xl-4 mt-4 mt-xl-0">
+            <div class="card order-side-panel">
+                <div class="card-body">
+                    <h4 class="text-info">Guía rápida</h4>
+                    <ul class="tips-list">
+                        <li>Si el cliente ya existe, usa el selector para evitar duplicados.</li>
+                        <li>En unidad, captura marca, tipo, línea, año y número de serie.</li>
+                        <li>En la orden, describe observaciones, recomendaciones y el detalle del servicio.</li>
+                        <li>La fecha de entrega debe ser hoy o una fecha posterior.</li>
+                    </ul>
+                </div>
+            </div>
 
+            <div class="card order-side-panel mt-3">
+                <div class="card-body">
+                    <h5 class="text-info">Campos que se validan antes del envío</h5>
+                    <p class="mb-2">El formulario revisa y explica estos datos antes de guardar:</p>
+                    <ul class="tips-list">
+                        <li>Cliente: nombre, teléfono, correo y RFC.</li>
+                        <li>Unidad: marca, tipo, línea, año, color, placas, kilometraje, motor, cilindros y serie.</li>
+                        <li>Orden: servicio, responsable, estado, fecha, observaciones, recomendaciones y detalles.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@stop
 
-                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                <script>
-                let typingTimer; // Variable para almacenar el temporizador
-                const doneTypingInterval =
-                    1000; // Intervalo de tiempo para considerar que el usuario ha terminado de escribir (en milisegundos)
+@section('css')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+@endsection
 
-                function verificarNombreUsuario(nombreCompleto) {
-                    const errorSpan = document.getElementById('nombreCompleto-error');
-                    const warningSpan = document.getElementById('nombreCompleto-warning');
-                    const inputField = document.getElementById('nombreCompleto');
+@section('js')
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+<script src="{{ asset('js/validatorFields.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.getElementById('ordenRegistroForm');
+        var submitButton = document.getElementById('submitButton');
+        var acceptCheckbox = document.getElementById('clienteAcepta');
+        var acceptError = document.getElementById('clienteAceptaError');
+        var existingToggle = document.getElementById('usarClienteExistente');
+        var existingClientBox = document.getElementById('clienteExistenteBox');
+        var existingClientSelect = document.getElementById('cliente_existente_id');
+        var duplicateHint = document.getElementById('clienteExistenteHint');
+        var photoInput = document.getElementById('photos');
+        var photoPreviewContainer = document.getElementById('photoPreviewContainer');
 
-                    clearTimeout(typingTimer); // Limpiar el temporizador si el usuario sigue escribiendo
-                    if (nombreCompleto) {
-                        typingTimer = setTimeout(() => {
-                            // Realizar la solicitud AJAX a la ruta de verificación
-                            fetch('/orden/verificar_nombre_usuario', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    body: JSON.stringify({
-                                        nombreCompleto: nombreCompleto
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.exists) {
-                                        // Mostrar mensaje de advertencia si el nombre de usuario ya existe
-                                        inputField.classList.remove('is-invalid');
-                                        errorSpan.textContent = '';
-                                        warningSpan.textContent = 'El nombre de usuario ya está en uso.';
-                                    } else {
-                                        // Limpiar el mensaje de advertencia si el nombre de usuario es único
-                                        warningSpan.textContent = '';
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error al verificar el nombre de usuario:', error);
-                                });
-                        }, doneTypingInterval);
-                    } else {
-                        // Limpiar el mensaje de advertencia si el campo está vacío
-                        warningSpan.textContent = '';
-                    }
-                }
+        var fields = {
+            nombreCompleto: document.getElementById('nombreCompleto'),
+            telefono: document.getElementById('telefono'),
+            correo: document.getElementById('correo'),
+            rfc: document.getElementById('rfc'),
+            modelo: document.getElementById('modelo'),
+            yearVehiculo: document.getElementById('yearVehiculo'),
+            color: document.getElementById('color'),
+            placas: document.getElementById('placas'),
+            kilometraje: document.getElementById('kilometraje'),
+            motor: document.getElementById('motor'),
+            cilindros: document.getElementById('cilindros'),
+            noSerievehiculo: document.getElementById('noSerievehiculo'),
+            vehiculo_id: document.getElementById('vehiculo_id'),
+            tvehiculo_id: document.getElementById('tvehiculo_id'),
+            servicio_id: document.getElementById('servicio_id'),
+            user_id: document.getElementById('user_id'),
+            status: document.getElementById('status'),
+            retiroRefacciones: document.getElementById('retiroRefacciones'),
+            fechaEntrega: document.getElementById('fechaEntrega'),
+            observacionesInt: document.getElementById('observacionesInt'),
+            recomendacionesCliente: document.getElementById('recomendacionesCliente'),
+            detallesOrden: document.getElementById('detallesOrden')
+        };
 
-                document.getElementById('nombreCompleto').addEventListener('blur', function() {
-                    // Verificar el nombre de usuario cuando el usuario deje el campo
-                    verificarNombreUsuario(this.value);
+        flatpickr('#fechaEntrega', {
+            locale: 'es',
+            altInput: true,
+            altFormat: 'd/m/Y',
+            dateFormat: 'Y-m-d',
+            minDate: 'today',
+            maxDate: new Date().fp_incr(60)
+        });
+
+        function sanitizeName(value) {
+            return value
+                .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trimStart()
+                .replace(/\b\w/g, function (letter) {
+                    return letter.toUpperCase();
                 });
+        }
 
-                function capitalizeFirstLetter(event) {
-                    var input = event.target;
-                    var value = input.value;
+        function sanitizeAlphaText(value) {
+            return value
+                .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trimStart();
+        }
 
-                    // Verificar si hay al menos un carácter y convertir la primera letra en mayúscula
-                    if (value.length > 0) {
-                        input.value = value.charAt(0).toUpperCase() + value.slice(1);
+        function sanitizeModel(value) {
+            return value
+                .replace(/[^A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ\s-]/g, '')
+                .replace(/\s+/g, ' ')
+                .trimStart();
+        }
+
+        function sanitizeDigits(value) {
+            return value.replace(/\D+/g, '');
+        }
+
+        function sanitizeAlphaNumeric(value) {
+            return value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+        }
+
+        function sanitizeDecimal(value) {
+            return value.replace(/[^0-9.]/g, '');
+        }
+
+        function updateClientMode() {
+            var usingExistingClient = existingToggle.checked;
+
+            existingClientBox.classList.toggle('d-none', !usingExistingClient);
+            existingClientSelect.required = usingExistingClient;
+
+            ['nombreCompleto', 'telefono', 'correo', 'rfc'].forEach(function (key) {
+                fields[key].readOnly = usingExistingClient;
+                fields[key].required = !usingExistingClient;
+                fields[key].classList.toggle('readonly-field', usingExistingClient);
+                fields[key].setCustomValidity('');
+            });
+
+            if (usingExistingClient && existingClientSelect.value) {
+                populateExistingClient();
+            }
+
+            if (!usingExistingClient) {
+                existingClientSelect.value = '';
+            }
+        }
+
+        function populateExistingClient() {
+            var selectedOption = existingClientSelect.options[existingClientSelect.selectedIndex];
+
+            if (!selectedOption || !selectedOption.value) {
+                return;
+            }
+
+            fields.nombreCompleto.value = selectedOption.dataset.nombre || '';
+            fields.telefono.value = selectedOption.dataset.telefono || '';
+            fields.correo.value = selectedOption.dataset.correo || '';
+            fields.rfc.value = selectedOption.dataset.rfc || '';
+        }
+
+        function validateField(field, validator) {
+            if (!field || typeof validator !== 'function') {
+                return true;
+            }
+
+            var result = validator(field);
+            field.setCustomValidity(result.valid ? '' : result.message);
+            return result.valid;
+        }
+
+        function updateAcceptanceState(showError) {
+            var accepted = acceptCheckbox.checked;
+            submitButton.disabled = !accepted;
+            acceptError.classList.toggle('d-none', accepted || !showError);
+        }
+
+        function validateAllFields() {
+            var validators = [
+                function () {
+                    if (existingToggle.checked) {
+                        return validateField(existingClientSelect, function (field) {
+                            return {
+                                valid: !!field.value,
+                                message: 'Selecciona un cliente registrado.'
+                            };
+                        });
                     }
-                }
 
-                function formatRFC(event) {
-                    var input = event.target;
-                    var value = input.value;
-
-                    // Verificar la longitud del valor y ajustar si es necesario
-                    if (value.length > 13) {
-                        input.value = value.slice(0, 13); // Limitar a 13 caracteres
-                    }
-                    // Obtén el campo de entrada del RFC
-                    const rfcInput = event.target;
-
-                    // Obtén el valor actual del campo de entrada
-                    let rfcValue = rfcInput.value;
-
-                    // Elimina los caracteres especiales utilizando una expresión regular
-                    rfcValue = rfcValue.replace(/[^\w\s]/gi, '');
-
-                    // Convierte las letras a mayúsculas
-                    rfcValue = rfcValue.toUpperCase();
-
-                    // Asigna el valor modificado al campo de entrada
-                    rfcInput.value = rfcValue;
-                }
-
-                function validateYearInput(input) {
-                    var year = input.value;
-                    year = year.replace(/[^0-9]/g, ''); // Eliminar caracteres no numéricos
-                    year = year.slice(0, 4); // Limitar a 4 dígitos
-                    input.value = year;
-                }
-
-                function cambiarNombre(nombre) {
-                    let regex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1][a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/g;
-                    return regex.exec(nombre)[0];
-                }
-
-                function formatNameInput(input) {
-                    var name = input.value;
-                    // Reemplazar caracteres especiales, números, y símbolos con espacios
-                    name = cambiarNombre(name);
-                    // Convertir la primera letra de cada palabra a mayúscula y las demás letras a minúscula
-                    name = name.replace(/(?:^|\s)\S/g, function(l) {
-                        return l.toUpperCase();
-                    });
-                    input.value = name;
-                }
-
-
-                function isNumberKey(evt) {
-                    var charCode = (evt.which) ? evt.which : event.keyCode;
-                    if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-                        return false;
-                    }
                     return true;
-                }
-
-                function truncatePhoneNumber(input) {
-                    var phoneNumber = input.value;
-                    if (phoneNumber.length > 10) {
-                        phoneNumber = phoneNumber.slice(0, 10);
-                    }
-                    input.value = phoneNumber;
-                }
-
-                function validateEmail(input) {
-                    var email = input.value;
-                    var regex = /^[a-z0-9@]+$/;
-
-                    if (!regex.test(email)) {
-                        input.value = email.slice(0, -1);
+                },
+                function () {
+                    if (existingToggle.checked) {
+                        return true;
                     }
 
-                    if (email.split("@").length > 2) {
-                        input.value = email.slice(0, -1);
-                    }
-
-                    if (email.length > 25) {
-                        input.value = email.slice(0, 25);
-                    }
-                    input.value = email.toLowerCase();
-                }
-
-                function formatColorInput(input) {
-                    var color = input.value;
-                    // Eliminar caracteres especiales y números
-                    color = color.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-                    // Convertir la primera letra a mayúscula y las demás a minúscula
-                    color = color.charAt(0).toUpperCase() + color.slice(1).toLowerCase();
-                    input.value = color;
-                }
-
-                function formatMotorInput(input) {
-                    var motor = input.value;
-                    // Reemplazar cualquier carácter que no sea número, letra o punto decimal
-                    motor = motor.replace(/[^A-Za-z0-9.]/g, '');
-                    // Convertir a mayúsculas
-                    motor = motor.toUpperCase();
-                    // Limitar el número de dígitos a 8
-                    motor = motor.slice(0, 8);
-                    input.value = motor;
-                }
-
-
-
-                function formatCilindrosInput(input) {
-                    var cilindros = input.value;
-                    // Reemplazar cualquier carácter que no sea número o punto decimal
-                    cilindros = cilindros.replace(/[^0-9.]/g, '');
-                    // Limitar el número de dígitos a 20
-                    cilindros = cilindros.slice(0, 20);
-                    input.value = cilindros;
-                }
-
-
-
-                flatpickr("#fechaEntrega", {
-                    enableTime: false,
-                    minDate: "today",
-                    dateFormat: "Y/m/d",
-                    plugins: [
-                        new minMaxTimePlugin({
-                            minTime: "12:00",
-                            maxTime: "23:59",
-                            getMinMaxDate: function() {
-                                return {
-                                    minDate: new Date(),
-                                    maxDate: new Date().fp_incr(60)
-                                }
-                            }
-                        })
-                    ],
-                    locale: {
-                        weekdays: {
-                            shorthand: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
-                            longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
-                        },
-                        months: {
-                            shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct',
-                                'Nov', 'Dic'
-                            ],
-                            longhand: [
-                                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-                            ]
-                        },
-                    },
-                    onChange: function(selectedDates, dateStr, instance) {
-                        var currentDate = new Date();
-                        var maxDate = new Date();
-                        maxDate.setMonth(currentDate.getMonth() + 1);
-
-                        if (selectedDates[0] > maxDate) {
-                            instance.setDate("");
-                        }
-                    }
-                });
-
-                var isMobile = window.matchMedia("only screen and (max-width: 1080px)").matches;
-
-                if (isMobile) {
-                    // Mostrar el campo en dispositivos móviles
-                    var photoFieldsContainer = document.getElementById('photoFieldsContainer');
-                    var addMorePhotosContainer = document.getElementById('addMorePhotosContainer');
-
-                    photoFieldsContainer.style.display = 'block';
-                    addMorePhotosContainer.style.display = 'block';
-
-                    var photoFieldCount = 1;
-
-                    function addPhotoField() {
-                        photoFieldCount++;
-
-                        var container = document.getElementById('photoFieldsContainer');
-
-                        var photoField = document.createElement('div');
-                        photoField.className = 'photoField input-group';
-                        photoField.id = 'photoField' + photoFieldCount;
-
-                        var label = document.createElement('label');
-                        label.className = 'input-group-text';
-                        label.textContent = 'Tomar fotografía:';
-
-                        var input = document.createElement('input');
-                        input.type = 'file';
-                        input.className = 'form-control';
-                        input.accept = 'image/*';
-                        input.capture = 'camera';
-                        input.id = 'photo' + photoFieldCount;
-                        input.name = 'photos[]';
-                        input.onchange = function(event) {
-                            previewPhoto(event, 'photoPreview' + photoFieldCount, photoFieldCount);
-                            toggleAddMorePhotosButton();
+                    return validateField(fields.nombreCompleto, function (field) {
+                        var value = field.value.trim();
+                        return {
+                            valid: value.length >= 5 && /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+$/.test(value),
+                            message: 'Escribe nombre y apellidos usando solo letras.'
                         };
-
-                        var preview = document.createElement('img');
-                        preview.className = 'photoPreview';
-                        preview.id = 'photoPreview' + photoFieldCount;
-
-                        photoField.appendChild(label);
-                        photoField.appendChild(input);
-                        photoField.appendChild(preview);
-
-                        container.appendChild(photoField);
-
-                        toggleAddMorePhotosButton();
+                    });
+                },
+                function () {
+                    if (existingToggle.checked) {
+                        return true;
                     }
 
-                    function removePhotoField() {
-                        if (photoFieldCount > 1) {
-                            var container = document.getElementById('photoFieldsContainer');
-                            var photoField = document.getElementById('photoField' + photoFieldCount);
-
-                            container.removeChild(photoField);
-
-                            photoFieldCount--;
-
-                            toggleAddMorePhotosButton();
-                        }
+                    return validateField(fields.telefono, function (field) {
+                        return {
+                            valid: /^\d{10}$/.test(field.value),
+                            message: 'El teléfono debe llevar 10 dígitos.'
+                        };
+                    });
+                },
+                function () {
+                    if (existingToggle.checked) {
+                        return true;
                     }
 
-                    function toggleAddMorePhotosButton() {
-                        var addMorePhotosButton = document.getElementById('addMorePhotosButton');
-                        var removePhotoButton = document.getElementById('removePhotoButton');
-
-                        if (photoFieldCount === 1) {
-                            removePhotoButton.style.display = 'none';
-                        } else if (photoFieldCount === 3) {
-                            addMorePhotosButton.style.display = 'none';
-                        } else {
-                            addMorePhotosButton.style.display = 'block';
-                            removePhotoButton.style.display = 'block';
-                        }
+                    return validateField(fields.correo, function (field) {
+                        var valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim());
+                        return {
+                            valid: valid,
+                            message: 'Captura un correo con formato nombre@dominio.com.'
+                        };
+                    });
+                },
+                function () {
+                    if (existingToggle.checked) {
+                        return true;
                     }
 
-                    function previewPhoto(event, previewId, photoIndex) {
-                        var preview = document.getElementById(previewId);
-                        var file = event.target.files[0];
-                        var reader = new FileReader();
-
-                        reader.onloadend = function() {
-                            preview.src = reader.result;
-                        }
-
-                        if (file) {
-                            reader.readAsDataURL(file);
-                        } else {
-                            preview.src = "";
-                        }
-                    }
+                    return validateField(fields.rfc, function (field) {
+                        return {
+                            valid: /^[A-Z0-9]{12,13}$/.test(field.value.trim()),
+                            message: 'El RFC debe tener 12 o 13 caracteres alfanuméricos.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.modelo, function (field) {
+                        return {
+                            valid: field.value.trim().length >= 2,
+                            message: 'Escribe la línea o modelo de la unidad.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.yearVehiculo, function (field) {
+                        return {
+                            valid: /^\d{4}$/.test(field.value),
+                            message: 'Captura el año con 4 dígitos.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.color, function (field) {
+                        return {
+                            valid: field.value.trim().length >= 3,
+                            message: 'Escribe el color principal de la unidad.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.placas, function (field) {
+                        return {
+                            valid: /^[A-Z0-9]{5,7}$/.test(field.value),
+                            message: 'Las placas deben tener entre 5 y 7 caracteres.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.kilometraje, function (field) {
+                        return {
+                            valid: field.value.trim() !== '' && !isNaN(field.value),
+                            message: 'Captura un kilometraje válido.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.motor, function (field) {
+                        return {
+                            valid: field.value.trim().length >= 2,
+                            message: 'Escribe la referencia del motor.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.cilindros, function (field) {
+                        return {
+                            valid: field.value.trim() !== '' && !isNaN(field.value),
+                            message: 'Captura la cantidad de cilindros.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.noSerievehiculo, function (field) {
+                        return {
+                            valid: /^[A-Z0-9]{5,17}$/.test(field.value),
+                            message: 'El número de serie debe tener entre 5 y 17 caracteres.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.vehiculo_id, function (field) {
+                        return {
+                            valid: !!field.value,
+                            message: 'Selecciona una marca.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.tvehiculo_id, function (field) {
+                        return {
+                            valid: !!field.value,
+                            message: 'Selecciona un tipo de vehículo.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.servicio_id, function (field) {
+                        return {
+                            valid: !!field.value,
+                            message: 'Selecciona un tipo de servicio.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.user_id, function (field) {
+                        return {
+                            valid: !!field.value,
+                            message: 'Selecciona al responsable.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.status, function (field) {
+                        return {
+                            valid: !!field.value,
+                            message: 'Selecciona un estado.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.retiroRefacciones, function (field) {
+                        return {
+                            valid: field.value === '0' || field.value === '1',
+                            message: 'Indica si el cliente retira refacciones.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.fechaEntrega, function (field) {
+                        return {
+                            valid: !!field.value,
+                            message: 'Selecciona la fecha de entrega.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.observacionesInt, function (field) {
+                        return {
+                            valid: field.value.trim().length >= 10,
+                            message: 'Describe al menos una observación interna.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.recomendacionesCliente, function (field) {
+                        return {
+                            valid: field.value.trim().length >= 10,
+                            message: 'Describe la recomendación o solicitud del cliente.'
+                        };
+                    });
+                },
+                function () {
+                    return validateField(fields.detallesOrden, function (field) {
+                        return {
+                            valid: field.value.trim().length >= 10,
+                            message: 'Describe el detalle del servicio.'
+                        };
+                    });
                 }
+            ];
 
-                function toggleSubmitButton() {
-                    var isChecked = deshabilitarCampos.prop('checked');
-                    var isClienteSelected = selectCliente.val();
-                    var isFormValid = isChecked || (isClienteSelected && nombreCompletoInput.val() && telefonoInput
-                        .val() && correoInput.val());
+            var valid = true;
 
-                    $('#submitButton').prop('disabled', !isFormValid);
+            validators.forEach(function (runValidator) {
+                if (!runValidator()) {
+                    valid = false;
                 }
+            });
 
-                function formatKilometrajeInput(input) {
-                    var kilometraje = input.value;
-                    // Reemplazar cualquier carácter que no sea número o punto decimal
-                    kilometraje = kilometraje.replace(/[^0-9.]/g, '');
-                    // Limitar el número de dígitos a 6
-                    kilometraje = kilometraje.slice(0, 8);
-                    input.value = kilometraje;
-                }
+            return valid;
+        }
 
-                function limitInputLength(input, maxLength) {
-                    if (input.value.length > maxLength) {
-                        input.value = input.value.slice(0, maxLength);
-                    }
-                }
+        fields.nombreCompleto.addEventListener('input', function () {
+            this.value = sanitizeName(this.value);
+            validateAllFields();
+        });
 
-                function formatPlacasInput(input) {
-                    var placas = input.value;
-                    // Reemplazar caracteres especiales con espacios
-                    placas = placas.replace(/[^a-zA-Z0-9]/g, '');
-                    // Convertir a mayúsculas
-                    placas = placas.toUpperCase();
-                    input.value = placas;
-                }
+        fields.telefono.addEventListener('input', function () {
+            this.value = sanitizeDigits(this.value).slice(0, 10);
+            validateAllFields();
+        });
 
-                function validateInput(input) {
-                    var value = input.value;
-                    // Eliminar cualquier caracter que no sea número o letra
-                    value = value.replace(/[^A-Za-z0-9]/g, '');
-                    // Convertir a mayúsculas
-                    value = value.toUpperCase();
-                    // Limitar la longitud a 17 caracteres
-                    if (value.length > 17) {
-                        value = value.slice(0, 17);
-                    }
-                    // Actualizar el valor del campo de entrada
-                    input.value = value;
-                }
-                </script>
+        fields.correo.addEventListener('input', function () {
+            this.value = this.value.toLowerCase().trim();
+            validateAllFields();
+        });
 
-                <script>
-                document.getElementById("myCheckbox").addEventListener("change", function() {
-                    var submitButton = document.getElementById("submitButton");
-                    submitButton.disabled = !this.checked;
+        fields.rfc.addEventListener('input', function () {
+            this.value = sanitizeAlphaNumeric(this.value).slice(0, 13);
+            validateAllFields();
+        });
+
+        fields.modelo.addEventListener('input', function () {
+            this.value = sanitizeModel(this.value);
+            validateAllFields();
+        });
+
+        fields.yearVehiculo.addEventListener('input', function () {
+            this.value = sanitizeDigits(this.value).slice(0, 4);
+            validateAllFields();
+        });
+
+        fields.color.addEventListener('input', function () {
+            this.value = sanitizeAlphaText(this.value).slice(0, 30);
+            validateAllFields();
+        });
+
+        fields.placas.addEventListener('input', function () {
+            this.value = sanitizeAlphaNumeric(this.value).slice(0, 7);
+            validateAllFields();
+        });
+
+        fields.kilometraje.addEventListener('input', function () {
+            this.value = sanitizeDecimal(this.value).slice(0, 8);
+            validateAllFields();
+        });
+
+        fields.motor.addEventListener('input', function () {
+            this.value = this.value.replace(/[^A-Za-z0-9.]/g, '').toUpperCase().slice(0, 10);
+            validateAllFields();
+        });
+
+        fields.cilindros.addEventListener('input', function () {
+            this.value = sanitizeDigits(this.value).slice(0, 4);
+            validateAllFields();
+        });
+
+        fields.noSerievehiculo.addEventListener('input', function () {
+            this.value = sanitizeAlphaNumeric(this.value).slice(0, 17);
+            validateAllFields();
+        });
+
+        [
+            fields.vehiculo_id,
+            fields.tvehiculo_id,
+            fields.servicio_id,
+            fields.user_id,
+            fields.status,
+            fields.retiroRefacciones,
+            fields.fechaEntrega,
+            fields.observacionesInt,
+            fields.recomendacionesCliente,
+            fields.detallesOrden
+        ].forEach(function (field) {
+            field.addEventListener('change', validateAllFields);
+            field.addEventListener('input', validateAllFields);
+        });
+
+        fields.nombreCompleto.addEventListener('blur', function () {
+            if (existingToggle.checked || this.value.trim().length < 5) {
+                duplicateHint.classList.add('d-none');
+                return;
+            }
+
+            fetch('{{ route('verificar_nombre_usuario') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    nombreCompleto: this.value.trim()
+                })
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    duplicateHint.classList.toggle('d-none', !data.exists);
+                })
+                .catch(function () {
+                    duplicateHint.classList.add('d-none');
                 });
-                </script>
+        });
 
-                @stop
+        existingToggle.addEventListener('change', function () {
+            updateClientMode();
+            duplicateHint.classList.add('d-none');
+            validateAllFields();
+        });
 
-                @section('js')
-                <script src="{{ asset('js/validatorFields.js') }}">
+        existingClientSelect.addEventListener('change', function () {
+            populateExistingClient();
+            validateAllFields();
+        });
 
-                </script>
-                @endsection
+        acceptCheckbox.addEventListener('change', function () {
+            updateAcceptanceState(false);
+        });
+
+        photoInput.addEventListener('change', function () {
+            photoPreviewContainer.innerHTML = '';
+
+            Array.from(photoInput.files || []).forEach(function (file) {
+                if (!file.type.match(/^image\//)) {
+                    return;
+                }
+
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    var card = document.createElement('div');
+                    card.className = 'preview-card';
+                    card.innerHTML =
+                        '<img src="' + event.target.result + '" alt="Vista previa">' +
+                        '<small>' + file.name + '</small>';
+                    photoPreviewContainer.appendChild(card);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        form.addEventListener('submit', function (event) {
+            var valid = validateAllFields();
+            updateAcceptanceState(true);
+
+            if (!acceptCheckbox.checked) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            if (!valid || !form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            form.classList.add('was-validated');
+        });
+
+        if (window.FormHelpers) {
+            window.FormHelpers.attachSubmitLoading(form, '#submitButton', 'Guardando orden...');
+        }
+
+        updateClientMode();
+        updateAcceptanceState(false);
+        validateAllFields();
+    });
+</script>
+@endsection

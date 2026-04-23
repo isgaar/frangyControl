@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role;
 use JWTAuth;
 
@@ -17,64 +16,72 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $search = "";
+        $search = $request->input('search', '');
         $limit = 5;
-        if ($request->has('search')) {
-            $search = $request->input('search');
 
-            if (trim($search) != '') {
-                $data = User::where('name', 'like', "%$search%")
-                    ->orWhere('email', 'like', "%$search%")->get();
-            } else {
-                $data = User::all();
-            }
-        } else {
-            $data = User::all();
-        }
-
-        $currentPage = Paginator::resolveCurrentPage() - 1;
-        $perPage = $limit;
-        $currentPageSearchResults = $data->slice($currentPage * $perPage, $perPage)->all();
-        $data = new LengthAwarePaginator($currentPageSearchResults, count($data), $perPage);
+        $data = User::query()
+            ->when(trim($search) !== '', function ($query) use ($search) {
+                $query->where(function ($innerQuery) use ($search) {
+                    $innerQuery->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('name')
+            ->paginate($limit)
+            ->withQueryString();
 
         if ($data->isEmpty()) {
             $message = "No hay registros de \"$search\"";
-            return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'page' => $currentPage, 'message' => $message]);
+            return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'message' => $message]);
         } else {
-            return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
+            return view('admin.empleados.index', ['data' => $data, 'search' => $search]);
         }
     }
 
     public function create()
     {
-        $roles = Role::all();
+        $roles = Cache::remember('catalogos.roles', now()->addMinutes(10), function () {
+            return Role::query()->orderBy('name')->get(['id', 'name']);
+        });
+
         return view('admin.empleados.create', compact('roles'));
     }
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:40'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'roles' => ['required', 'exists:roles,id'],
+        ], [
+            'name.required' => 'Escribe el nombre completo del usuario.',
+            'name.max' => 'El nombre no puede tener más de 40 caracteres.',
+            'email.required' => 'Escribe un correo electrónico.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+            'email.unique' => 'Ese correo ya está registrado.',
+            'password.required' => 'Escribe una contraseña.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'La confirmación de contraseña no coincide.',
+            'roles.required' => 'Selecciona un rol para el usuario.',
+            'roles.exists' => 'El rol seleccionado no es válido.',
+        ]);
+
         try {
             DB::beginTransaction();
 
-            $validated = $request->validate([
-                'name' => ['required', 'string', 'max:40'],
-                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-                'password' => ['required', 'string', 'min:8'],
-            ]);
-
             $user = User::create([
-                'name' => $request['name'],
-                'email' => $request['email'],
-                'password' => Hash::make($request['password']),
+                'name' => trim($validated['name']),
+                'email' => strtolower(trim($validated['email'])),
+                'password' => Hash::make($validated['password']),
             ]);
 
-            if ($request->has('roles')) {
-                $user->roles()->attach($request['roles']);
-            }
+            $user->roles()->sync([$validated['roles']]);
 
             $token = JWTAuth::fromUser($user);
 
             DB::commit();
+            Cache::forget('catalogos.ordenes.users');
 
             Session::flash('status', "Se ha agregado correctamente el usuario");
             Session::flash('status_type', 'success');
@@ -84,12 +91,12 @@ class UserController extends Controller
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
             Session::flash('status_type', 'error-Query');
-            return back();
+            return back()->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
             Session::flash('status', $e->getMessage());
             Session::flash('status_type', 'error');
-            return back();
+            return back()->withInput();
         }
     }
 
@@ -147,6 +154,7 @@ class UserController extends Controller
             $user->roles()->sync($request->input('roles'));
 
             DB::commit();
+            Cache::forget('catalogos.ordenes.users');
             Session::flash('status', "Se ha editado correctamente el registro");
             Session::flash('status_type', 'success');
             return redirect(route('users.index'));
@@ -184,6 +192,7 @@ class UserController extends Controller
             $user = User::findOrFail($id);
             $user->delete();
             DB::commit();
+            Cache::forget('catalogos.ordenes.users');
             Session::flash('status', "Se ha eliminado correctamente el registro");
             Session::flash('status_type', 'success');
             return redirect(route('users.index'));

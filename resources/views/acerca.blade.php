@@ -142,6 +142,7 @@ Sin el respaldo y colaboración de todas estas personas, este programa no habrí
 posible de entregar. 
 
 -- Esta aplicación usa la tecnología --
+Versión del proyecto <?php echo config('app.version'); ?>,
 PHP <?php echo PHP_VERSION; ?>, 
 Laravel <?php echo app()->version(); ?> 
 Herramienta: <?php echo $_SERVER['SERVER_SOFTWARE']; ?>, 

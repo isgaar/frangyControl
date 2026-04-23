@@ -108,7 +108,7 @@ return [
     */
 
     'preloader' => [
-        'enabled' => true,
+        'enabled' => env('ADMINLTE_PRELOADER', false),
         'img' => [
             'path' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
             'alt' => 'Frangy logo',
@@ -359,7 +359,7 @@ return [
             'fullscreen' => true,
         ],
         'options' => [
-            'loading_screen' => 1000,
+            'loading_screen' => env('ADMINLTE_LOADING_SCREEN', 0),
             'auto_show_new_tab' => true,
             'use_navbar_items' => true,
         ],

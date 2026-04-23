@@ -21,6 +21,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | Esta versión identifica el release actual del proyecto. Puedes
+    | incrementarla manualmente siguiendo el esquema que prefieras.
+    |
+    */
+
+    'version' => env('APP_VERSION', '1.1.0'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

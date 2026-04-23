@@ -5,11 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use App\Models\Ordenes;
 use App\Models\Cliente;
 use App\Models\DatosVehiculo;
@@ -17,8 +16,6 @@ use App\Models\TipoVehiculo;
 use App\Models\TipoServicio;
 use App\Models\User;
 use App\Models\Fotografia;
-use App\Policies\OrdenPolicy;
-use Illuminate\Support\Facades\Storage;
 use PDF;
 use Carbon\Carbon;
 
@@ -31,7 +28,7 @@ class OrdenController extends Controller
         $limit = $request->input('limit', 5);
         $order = $request->input('order', 'desc');
         $status = $request->input('status', null);
-        $query = Ordenes::query()->with('cliente');
+        $query = Ordenes::query()->with(['cliente', 'vehiculo', 'servicio', 'user']);
 
         if (trim($search) != '') {
             $query->where(function ($query) use ($search) {
@@ -50,14 +47,13 @@ class OrdenController extends Controller
                         $query->where('name', 'like', "%$search%");
                     });
             });
-        }if (!is_null($status)) {
+        }
+
+        if (!is_null($status)) {
             $query->where('status', $status);
         }
-    
 
-
-
-        $ordenes = $query->orderBy('id_ordenes', $order)->paginate($limit);
+        $ordenes = $query->orderBy('id_ordenes', $order)->paginate($limit)->withQueryString();
 
         if ($ordenes->isEmpty()) {
             $message = "No hay registros de \"$search\"";
@@ -80,208 +76,78 @@ class OrdenController extends Controller
 
         }
     }
+
     public function verificarNombreUsuario(Request $request)
-{
-    $nombreCompleto = $request->input('nombreCompleto');
+    {
+        $nombreCompleto = trim((string) $request->input('nombreCompleto'));
+        $exists = $nombreCompleto !== '' && Cliente::where('nombreCompleto', $nombreCompleto)->exists();
 
-    $exists = Cliente::where('nombreCompleto', $nombreCompleto)->exists();
+        return response()->json(['exists' => $exists]);
+    }
 
-    return response()->json(['exists' => $exists]);
-}
+    public function create()
+    {
+        return $this->registro();
+    }
+
     public function registro()
     {
-        $datosVehiculo = DatosVehiculo::all();
-        $tiposServicio = TipoServicio::all();
-        $tiposVehiculo = TipoVehiculo::all();
-        $users = User::all();
-
-
-        $cliente_id = Cliente::all();
-
-        return view('admin.ordenes.registro', [
-            'datosVehiculo' => $datosVehiculo,
-            'tiposVehiculo' => $tiposVehiculo,
-            'tiposServicio' => $tiposServicio,
-            'users' => $users,
-            'cliente_id' => $cliente_id
-        ]);
+        return view('admin.ordenes.registro', $this->registroCatalogos());
     }
 
 
 
     public function store(Request $request)
     {
+        $request->merge($this->normalizedOrderInput($request));
 
+        $validated = $request->validate(
+            $this->orderValidationRules($request->boolean('usar_cliente_existente')),
+            $this->orderValidationMessages(),
+            $this->orderValidationAttributes()
+        );
 
         try {
             DB::beginTransaction();
 
+            if (!empty($validated['usar_cliente_existente'])) {
+                $cliente = Cliente::findOrFail($validated['cliente_existente_id']);
+            } else {
+                $cliente = Cliente::create([
+                    'nombreCompleto' => trim($validated['nombreCompleto']),
+                    'telefono' => $validated['telefono'],
+                    'correo' => $validated['correo'],
+                    'rfc' => $validated['rfc'],
+                ]);
 
-
-            $messages = [
-                'nombreCompleto.required' => 'El campo nombre completo es obligatorio.',
-                'telefono.required' => 'El campo teléfono es obligatorio.',
-                'correo.required' => 'El campo correo electrónico es obligatorio.',
-                'correo.email' => 'El campo correo electrónico debe ser una dirección de correo válida.',
-                'rfc.required' => 'El campo correo electrónico debe ser una dirección de correo válida.',
-                // Agrega aquí los mensajes de error para los demás campos
-            ];
-
-            $cliente = new Cliente([
-                'nombreCompleto' => $request->nombreCompleto,
-                'telefono' => $request->telefono,
-                'correo' => $request->correo,
-                'rfc' => $request->rfc,
-
-                $request->validate([
-                    'nombreCompleto' => 'required|unique:clientes,nombreCompleto',
-                    'telefono' => 'required|unique:clientes,telefono',
-                    'correo' => 'required|unique:clientes,correo',
-                    'rfc' => 'required|unique:clientes,rfc',
-                ], [
-                    'nombreCompleto.required' => 'El campo Nombre es requerido.',
-                    'nombreCompleto.unique' => 'Ya existe un cliente con este nombre.',
-                    'telefono.required' => 'El campo Teléfono es requerido.',
-                    'telefono.unique' => 'Ya existe un cliente con este teléfono.',
-                    'correo.required' => 'El campo Correo electrónico es requerido.',
-                    'correo.unique' => 'Ya existe un cliente con este correo electrónico.',
-                    'rfc.unique' => 'Ya existe un cliente con este rfc.',
-                ])
-            ]);
-
-            $cliente->save(); // Guarda el cliente en la tabla 'clientes'
+                Cache::forget('catalogos.ordenes.clientes');
+            }
 
             $ordenes = new Ordenes([
-                'yearVehiculo' => $request->input('yearVehiculo'),
-                'color' => $request->input('color'),
-                'placas' => $request->input('placas'),
-                'kilometraje' => $request->input('kilometraje'),
-                'motor' => $request->input('motor'),
-                'status' => $request->input('status'),
-                'modelo' => $request->input('modelo'),
-                'cilindros' => $request->input('cilindros'),
-                'noSerievehiculo' => $request->input('noSerievehiculo'),
-                'fechaEntrega' => $request->input('fechaEntrega'),
-                'observacionesInt' => $request->input('observacionesInt'),
-                'recomendacionesCliente' => $request->input('recomendacionesCliente'),
-                'detallesOrden' => $request->input('detallesOrden'),
-                'retiroRefacciones' => $request->input('retiroRefacciones'),
-                'cliente_id' => $request->input('cliente_id'),
-                // Asigna el valor del cliente_id del formulario
-                'vehiculo_id' => $request->input('vehiculo_id'),
-                'servicio_id' => $request->input('servicio_id'),
-                'tvehiculo_id' => $request->input('tvehiculo_id'),
-                'id' => $request->input('user_id'),
-
-                $request->validate([
-                    'yearVehiculo' => 'required',
-                    'color' => 'required',
-                    'placas' => 'required',
-                    'kilometraje' => 'required',
-                    'motor' => 'required',
-                    'status' => 'required',
-                    'modelo' => 'required',
-                    'cilindros' => 'required',
-                    'noSerievehiculo' => 'required',
-                    'fechaEntrega' => 'required',
-                    'observacionesInt' => 'required',
-                    'recomendacionesCliente' => 'required',
-                    'detallesOrden' => 'required',
-                    'retiroRefacciones' => 'required',
-                    'cliente_id' => 'required',
-                    // Asigna el valor del cliente_id del formulario
-                    'vehiculo_id' => 'required',
-                    'servicio_id' => 'required',
-                    'tvehiculo_id' => 'required',
-                ], [
-                    'yearVehiculo.required' => 'El campo Año del Vehículo es requerido.',
-                    'color.required' => 'El campo Color es requerido.',
-                    'placas.required' => 'El campo Placas es requerido.',
-                    'kilometraje.required' => 'El campo Kilometraje es requerido.',
-                    'motor.required' => 'El campo Motor es requerido.',
-                    'modelo.required' => 'El campo Modelo es requerido.',
-                    'cilindros.required' => 'El campo Cilindros es requerido.',
-                    'noSerievehiculo.required' => 'El campo Número de Serie del Vehículo es requerido.',
-                    'fechaEntrega.required' => 'El campo Fecha de Entrega es requerido.',
-                    'observacionesInt.required' => 'El campo Observaciones Internas es requerido.',
-                    'recomendacionesCliente.required' => 'El campo Recomendaciones del Cliente es requerido.',
-                    'detallesOrden.required' => 'El campo Detalles de la Orden es requerido.',
-                    'retiroRefacciones.required' => 'El campo Retiro de Refacciones es requerido.',
-                    'status.required' => 'Seleccione un estado de orden.',
-                    'cliente_id.required' => 'Seleccione el cliente porfavor.',
-                    'vehiculo_id.required' => 'Porfavor, seleccione una marca.',
-                    'servicio_id.required' => 'Porfavor, seleccione un servicio.',
-                    'tvehiculo_id.required' => 'Porfavor, seleccione el tipo de vehiculo.',
-                ])
-
+                'yearVehiculo' => $validated['yearVehiculo'],
+                'color' => trim($validated['color']),
+                'placas' => $validated['placas'],
+                'kilometraje' => $validated['kilometraje'],
+                'motor' => $validated['motor'],
+                'status' => $validated['status'],
+                'modelo' => trim($validated['modelo']),
+                'cilindros' => $validated['cilindros'],
+                'noSerievehiculo' => $validated['noSerievehiculo'],
+                'fechaEntrega' => $validated['fechaEntrega'],
+                'observacionesInt' => trim($validated['observacionesInt']),
+                'recomendacionesCliente' => trim($validated['recomendacionesCliente']),
+                'detallesOrden' => trim($validated['detallesOrden']),
+                'retiroRefacciones' => (bool) $validated['retiroRefacciones'],
+                'vehiculo_id' => $validated['vehiculo_id'],
+                'servicio_id' => $validated['servicio_id'],
+                'tvehiculo_id' => $validated['tvehiculo_id'],
+                'id' => $validated['user_id'],
             ]);
 
-            $ordenes->cliente()->associate($cliente); // Asocia el cliente a la orden
-            $ordenes->save(); // Guarda la orden en la tabla 'ordenes'
+            $ordenes->cliente()->associate($cliente);
+            $ordenes->save();
 
-
-            if ($request->hasFile('photos')) {
-                $photos = $request->file('photos');
-
-                foreach ($photos as $photo) {
-                    $destinoRuta = 'storage/app/images/photos/';
-
-                    // Validar la imagen
-                    $validatedData = $request->validate([
-                        'photos.*' => 'required|image|mimes:png,jpg,jpeg|max:2048'
-                    ]);
-
-                    try {
-                        $filename = time() . '-' . $photo->getClientOriginalName();
-                        $uploadSuccess = $photo->move($destinoRuta, $filename);
-                        $ruta = $destinoRuta . $filename;
-
-                        // Crear una nueva instancia de Fotografia
-                        $fotografia = new Fotografia();
-                        $fotografia->ruta = $ruta;
-                        $fotografia->ordenes_id = $ordenes->id;
-
-                        // Guardar la fotografia
-                        $fotografia->save();
-                    } catch (\Exception $e) {
-                        // Capturar y manejar la excepción
-                        dd($e->getMessage());
-                    }
-                }
-            }
-
-            // Capturar imágenes desde la cámara
-            if ($request->has('capturedPhotos')) {
-                $capturedPhotos = $request->input('capturedPhotos');
-
-                foreach ($capturedPhotos as $capturedPhoto) {
-                    $destinoRuta = 'images/photos/';
-
-                    // Validar la imagen
-                    $validatedData = $request->validate([
-                        'capturedPhotos.*' => 'required|string' // Ajusta la validación según tus necesidades
-                    ]);
-
-                    try {
-                        $filename = time() . '-' . Str::random(10) . '.jpg'; // Nombre de archivo aleatorio
-                        $photoData = base64_decode($capturedPhoto);
-                        $uploadSuccess = file_put_contents($destinoRuta . $filename, $photoData);
-                        $ruta = $destinoRuta . $filename;
-
-                        // Crear una nueva instancia de Fotografia
-                        $fotografia = new Fotografia();
-                        $fotografia->ruta = $ruta;
-                        $fotografia->ordenes_id = $ordenes->id;
-
-                        // Guardar la fotografia
-                        $fotografia->save();
-                    } catch (\Exception $e) {
-                        // Capturar y manejar la excepción
-                        dd($e->getMessage());
-                    }
-                }
-            }
-
+            $this->storeUploadedPhotos($request, $ordenes);
 
             DB::commit();
             session()->flash('status', 'Se ha agregado correctamente la orden.');
@@ -291,12 +157,12 @@ class OrdenController extends Controller
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
             Session::flash('status_type', 'error-Query');
-            return back();
+            return back()->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
             Session::flash('status', $e->getMessage());
             Session::flash('status_type', 'error');
-            return back();
+            return back()->withInput();
         }
     }
 
@@ -364,6 +230,262 @@ class OrdenController extends Controller
             Session::flash('status_type', 'error');
             return back();
         }
+    }
+
+    public function clienteList()
+    {
+        return response()->json(
+            Cliente::query()
+                ->select(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
+                ->orderBy('nombreCompleto')
+                ->get()
+        );
+    }
+
+    public function marcaList()
+    {
+        return response()->json(
+            DatosVehiculo::query()
+                ->select(['id_vehiculo', 'marca'])
+                ->orderBy('marca')
+                ->get()
+        );
+    }
+
+    public function tipovList()
+    {
+        return response()->json(
+            TipoVehiculo::query()
+                ->select(['id_tvehiculo', 'tipo'])
+                ->orderBy('tipo')
+                ->get()
+        );
+    }
+
+    public function tiposList()
+    {
+        return response()->json(
+            TipoServicio::query()
+                ->select(['id_servicio', 'nombreServicio'])
+                ->orderBy('nombreServicio')
+                ->get()
+        );
+    }
+
+    public function userList()
+    {
+        return response()->json(
+            User::query()
+                ->select(['id', 'name'])
+                ->where('id', '!=', 1)
+                ->orderBy('name')
+                ->get()
+        );
+    }
+
+    private function registroCatalogos(): array
+    {
+        return [
+            'datosVehiculo' => Cache::remember('catalogos.ordenes.vehiculos', now()->addMinutes(10), function () {
+                return DatosVehiculo::query()
+                    ->select(['id_vehiculo', 'marca'])
+                    ->orderBy('marca')
+                    ->get();
+            }),
+            'tiposVehiculo' => Cache::remember('catalogos.ordenes.tipos_vehiculo', now()->addMinutes(10), function () {
+                return TipoVehiculo::query()
+                    ->select(['id_tvehiculo', 'tipo'])
+                    ->orderBy('tipo')
+                    ->get();
+            }),
+            'tiposServicio' => Cache::remember('catalogos.ordenes.tipos_servicio', now()->addMinutes(10), function () {
+                return TipoServicio::query()
+                    ->select(['id_servicio', 'nombreServicio'])
+                    ->orderBy('nombreServicio')
+                    ->get();
+            }),
+            'users' => Cache::remember('catalogos.ordenes.users', now()->addMinutes(10), function () {
+                return User::query()
+                    ->select(['id', 'name'])
+                    ->where('id', '!=', 1)
+                    ->orderBy('name')
+                    ->get();
+            }),
+            'clientes' => Cache::remember('catalogos.ordenes.clientes', now()->addMinutes(10), function () {
+                return Cliente::query()
+                    ->select(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
+                    ->orderBy('nombreCompleto')
+                    ->get();
+            }),
+        ];
+    }
+
+    private function normalizedOrderInput(Request $request): array
+    {
+        return [
+            'usar_cliente_existente' => $request->boolean('usar_cliente_existente'),
+            'nombreCompleto' => $request->filled('nombreCompleto') ? preg_replace('/\s+/', ' ', trim($request->input('nombreCompleto'))) : null,
+            'telefono' => $request->filled('telefono') ? preg_replace('/\D+/', '', $request->input('telefono')) : null,
+            'correo' => $request->filled('correo') ? strtolower(trim($request->input('correo'))) : null,
+            'rfc' => $request->filled('rfc') ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $request->input('rfc'))) : null,
+            'yearVehiculo' => $request->filled('yearVehiculo') ? preg_replace('/\D+/', '', $request->input('yearVehiculo')) : null,
+            'color' => $request->filled('color') ? preg_replace('/\s+/', ' ', trim($request->input('color'))) : null,
+            'placas' => $request->filled('placas') ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $request->input('placas'))) : null,
+            'kilometraje' => $request->filled('kilometraje') ? preg_replace('/[^0-9.]/', '', $request->input('kilometraje')) : null,
+            'motor' => $request->filled('motor') ? strtoupper(preg_replace('/[^A-Za-z0-9.]/', '', $request->input('motor'))) : null,
+            'cilindros' => $request->filled('cilindros') ? preg_replace('/[^0-9.]/', '', $request->input('cilindros')) : null,
+            'noSerievehiculo' => $request->filled('noSerievehiculo') ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $request->input('noSerievehiculo'))) : null,
+            'fechaEntrega' => $this->normalizeDate($request->input('fechaEntrega')),
+            'retiroRefacciones' => $request->input('retiroRefacciones'),
+        ];
+    }
+
+    private function orderValidationRules(bool $usingExistingClient): array
+    {
+        $currentYear = (int) now()->format('Y') + 1;
+
+        return [
+            'usar_cliente_existente' => ['nullable', 'boolean'],
+            'cliente_existente_id' => [$usingExistingClient ? 'required' : 'nullable', 'exists:clientes,id_cliente'],
+            'nombreCompleto' => [$usingExistingClient ? 'nullable' : 'required', 'string', 'max:100', Rule::unique('clientes', 'nombreCompleto')],
+            'telefono' => [$usingExistingClient ? 'nullable' : 'required', 'digits:10', Rule::unique('clientes', 'telefono')],
+            'correo' => [$usingExistingClient ? 'nullable' : 'required', 'email', 'max:30', Rule::unique('clientes', 'correo')],
+            'rfc' => [$usingExistingClient ? 'nullable' : 'required', 'string', 'min:12', 'max:13', Rule::unique('clientes', 'rfc')],
+            'vehiculo_id' => ['required', 'exists:datos_vehiculo,id_vehiculo'],
+            'tvehiculo_id' => ['required', 'exists:tipo_vehiculo,id_tvehiculo'],
+            'servicio_id' => ['required', 'exists:tipo_servicio,id_servicio'],
+            'user_id' => ['required', 'exists:users,id'],
+            'modelo' => ['required', 'string', 'max:100'],
+            'yearVehiculo' => ['required', 'integer', 'digits:4', 'between:1900,' . $currentYear],
+            'color' => ['required', 'string', 'max:30'],
+            'placas' => ['required', 'string', 'max:7'],
+            'kilometraje' => ['required', 'numeric', 'min:0'],
+            'motor' => ['required', 'string', 'max:10'],
+            'cilindros' => ['required', 'numeric', 'min:1'],
+            'noSerievehiculo' => ['required', 'string', 'min:5', 'max:17'],
+            'status' => ['required', Rule::in(['en proceso', 'finalizada'])],
+            'fechaEntrega' => ['required', 'date', 'after_or_equal:today'],
+            'observacionesInt' => ['required', 'string'],
+            'recomendacionesCliente' => ['required', 'string'],
+            'detallesOrden' => ['required', 'string'],
+            'retiroRefacciones' => ['required', 'boolean'],
+            'photos.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+        ];
+    }
+
+    private function orderValidationMessages(): array
+    {
+        return [
+            'cliente_existente_id.required' => 'Selecciona un cliente registrado.',
+            'cliente_existente_id.exists' => 'El cliente seleccionado no es válido.',
+            'nombreCompleto.required' => 'Escribe el nombre completo del cliente.',
+            'nombreCompleto.unique' => 'Ese cliente ya existe. Usa la opción de cliente registrado.',
+            'telefono.required' => 'Escribe el teléfono del cliente.',
+            'telefono.digits' => 'El teléfono debe tener 10 dígitos.',
+            'telefono.unique' => 'Ese teléfono ya está registrado.',
+            'correo.required' => 'Escribe el correo electrónico del cliente.',
+            'correo.email' => 'El correo electrónico no tiene un formato válido.',
+            'correo.unique' => 'Ese correo electrónico ya está registrado.',
+            'rfc.required' => 'Escribe el RFC del cliente.',
+            'rfc.min' => 'El RFC debe tener al menos 12 caracteres.',
+            'rfc.max' => 'El RFC no puede exceder 13 caracteres.',
+            'rfc.unique' => 'Ese RFC ya está registrado.',
+            'vehiculo_id.required' => 'Selecciona la marca de la unidad.',
+            'tvehiculo_id.required' => 'Selecciona el tipo de vehículo.',
+            'servicio_id.required' => 'Selecciona el tipo de servicio.',
+            'user_id.required' => 'Selecciona quién atenderá la orden.',
+            'modelo.required' => 'Escribe la línea o modelo de la unidad.',
+            'yearVehiculo.required' => 'Indica el año de la unidad.',
+            'yearVehiculo.digits' => 'El año debe llevar 4 dígitos.',
+            'yearVehiculo.between' => 'Ingresa un año válido para la unidad.',
+            'color.required' => 'Escribe el color de la unidad.',
+            'placas.required' => 'Escribe las placas de la unidad.',
+            'kilometraje.required' => 'Indica el kilometraje actual.',
+            'motor.required' => 'Escribe la información del motor.',
+            'cilindros.required' => 'Indica los cilindros de la unidad.',
+            'noSerievehiculo.required' => 'Escribe el número de serie de la unidad.',
+            'fechaEntrega.required' => 'Selecciona una fecha estimada de entrega.',
+            'fechaEntrega.after_or_equal' => 'La fecha de entrega no puede ser anterior a hoy.',
+            'status.required' => 'Selecciona el estado de la orden.',
+            'observacionesInt.required' => 'Agrega las observaciones internas.',
+            'recomendacionesCliente.required' => 'Agrega las recomendaciones del cliente.',
+            'detallesOrden.required' => 'Agrega los detalles del servicio.',
+            'retiroRefacciones.required' => 'Indica si el cliente retira refacciones.',
+            'photos.*.image' => 'Cada archivo debe ser una imagen.',
+            'photos.*.mimes' => 'Las fotografías deben estar en formato JPG o PNG.',
+            'photos.*.max' => 'Cada fotografía puede pesar hasta 2 MB.',
+        ];
+    }
+
+    private function orderValidationAttributes(): array
+    {
+        return [
+            'nombreCompleto' => 'nombre completo',
+            'telefono' => 'teléfono',
+            'correo' => 'correo electrónico',
+            'rfc' => 'RFC',
+            'vehiculo_id' => 'marca',
+            'tvehiculo_id' => 'tipo de vehículo',
+            'servicio_id' => 'tipo de servicio',
+            'user_id' => 'atiende',
+            'modelo' => 'línea',
+            'yearVehiculo' => 'año',
+            'color' => 'color',
+            'placas' => 'placas',
+            'kilometraje' => 'kilometraje',
+            'motor' => 'motor',
+            'cilindros' => 'cilindros',
+            'noSerievehiculo' => 'número de serie',
+            'fechaEntrega' => 'fecha de entrega',
+            'observacionesInt' => 'observaciones internas',
+            'recomendacionesCliente' => 'recomendaciones del cliente',
+            'detallesOrden' => 'detalles del servicio',
+            'retiroRefacciones' => 'retiro de refacciones',
+        ];
+    }
+
+    private function storeUploadedPhotos(Request $request, Ordenes $orden): void
+    {
+        if (!$request->hasFile('photos')) {
+            return;
+        }
+
+        $destinationPath = public_path('images/photos');
+
+        if (!is_dir($destinationPath)) {
+            mkdir($destinationPath, 0755, true);
+        }
+
+        foreach ($request->file('photos') as $photo) {
+            if (!$photo) {
+                continue;
+            }
+
+            $filename = now()->format('YmdHis') . '-' . uniqid() . '.' . $photo->getClientOriginalExtension();
+            $photo->move($destinationPath, $filename);
+
+            Fotografia::create([
+                'ruta' => 'images/photos/' . $filename,
+                'ordenes_id' => $orden->id_ordenes,
+            ]);
+        }
+    }
+
+    private function normalizeDate(?string $date): ?string
+    {
+        if (!$date) {
+            return null;
+        }
+
+        foreach (['Y-m-d', 'Y/m/d', 'd/m/Y'] as $format) {
+            try {
+                return Carbon::createFromFormat($format, $date)->format('Y-m-d');
+            } catch (\Throwable $exception) {
+                continue;
+            }
+        }
+
+        return $date;
     }
 
     public function show($id_ordenes)
@@ -473,7 +595,7 @@ class OrdenController extends Controller
         $html = view('admin.ordenes.export', compact('orden', 'datosVehiculo', 'tiposServicio', 'tiposVehiculo', 'users', 'cliente_id'))->render();
 
         $pdf = PDF::loadHTML($html);
-        $pdf->setPaper('A4', 'portrait'); // Establecer tamaño de papel A4 y orientación vertical
+        $pdf->setPaper('letter', 'portrait'); // Usar tamaño carta de Estados Unidos en vertical
 
         $filename = 'orden_' . Carbon::now()->format('Ymd_His') . '.pdf';
 
