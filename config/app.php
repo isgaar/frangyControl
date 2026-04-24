@@ -33,6 +33,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Development Installation Defaults
+    |--------------------------------------------------------------------------
+    |
+    | Estos valores se usan durante la instalacion del proyecto en desarrollo
+    | para crear o actualizar el usuario administrador inicial.
+    |
+    */
+
+    'dev_admin' => [
+        'name' => env('DEV_ADMIN_NAME', 'Super Usuario Dev'),
+        'email' => env('DEV_ADMIN_EMAIL', 'superusuario@outlook.com'),
+        'password' => env('DEV_ADMIN_PASSWORD', 'superusuariofrangy'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |
