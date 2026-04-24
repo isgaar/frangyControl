@@ -53,6 +53,13 @@ Tambien puedes usar los scripts basados en el `Dockerfile`:
 ./unix-scrips/lanzar-pod.sh
 ```
 
-`lanzar-pod.sh` puede reutilizar o eliminar un entorno existente, pregunta por el administrador inicial, levanta la base de datos con volumen persistente, inicia Laravel dentro del contenedor de app, ejecuta `php artisan project:install-dev --force`, deja la aplicacion disponible en `http://localhost:9000` y sigue mostrando los logs de Laravel en tiempo real. Si presionas `Ctrl+C`, el script detiene el pod o los contenedores levantados.
+`construir-pod.sh` construye la imagen `frangy-control:latest` y antes limpia cualquier entorno previo de Frangy que detecte:
+```bash
+./unix-scrips/construir-pod.sh
+```
+
+El script detecta y elimina cualquier entorno previo de Frangy asociado a esos nombres: pod, contenedores, volumen de datos y red si existen. Eso deja limpio el entorno para volver a construir y arrancar desde cero.
+
+`lanzar-pod.sh` es el que realmente levanta el entorno. Detecta `podman` o `docker`, reutiliza un entorno existente si ya esta arriba, pregunta por el administrador inicial cuando corresponde, levanta la base de datos con volumen persistente, inicia Laravel dentro del contenedor de app, ejecuta `php artisan project:install-dev --force`, deja la aplicacion disponible en `http://localhost:9000` y sigue mostrando los logs de Laravel en tiempo real. Si presionas `Ctrl+C`, el script detiene el pod o los contenedores levantados.
 
 Dev Ismael

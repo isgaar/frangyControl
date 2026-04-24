@@ -6,6 +6,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ENV_FILE="${ENV_FILE:-${ROOT_DIR}/.env}"
 APP_START_SCRIPT_HOST="${APP_START_SCRIPT_HOST:-${ROOT_DIR}/docker/app/start.sh}"
 APP_START_SCRIPT_CONTAINER="${APP_START_SCRIPT_CONTAINER:-/usr/local/bin/start-frangy-app.sh}"
+APP_ENV_FILE_SOURCE_CONTAINER="${APP_ENV_FILE_SOURCE_CONTAINER:-/var/www/html/.env.host}"
+APP_ENV_FILE_TARGET_CONTAINER="${APP_ENV_FILE_TARGET_CONTAINER:-/var/www/html/.env}"
 IMAGE_NAME="${IMAGE_NAME:-frangy-control}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
 POD_NAME="${POD_NAME:-frangy-control-pod}"
@@ -25,7 +27,6 @@ STOP_TIMEOUT="${STOP_TIMEOUT:-10}"
 LOG_TAIL="${LOG_TAIL:-30}"
 FOLLOW_LOGS="${FOLLOW_LOGS:-1}"
 PROMPT_ADMIN_ON_LAUNCH="${PROMPT_ADMIN_ON_LAUNCH:-1}"
-RECREATE_EXISTING_STACK="${RECREATE_EXISTING_STACK:-ask}"
 
 STACK_MODE=""
 LOG_FOLLOW_PID=""
@@ -64,36 +65,6 @@ DB_ROOT_PASSWORD="${DB_ROOT_PASSWORD:-rootpassword}"
 ADMIN_NAME_VALUE="${DEV_ADMIN_NAME:-Super Usuario Dev}"
 ADMIN_EMAIL_VALUE="${DEV_ADMIN_EMAIL:-superusuario@outlook.com}"
 ADMIN_PASSWORD_VALUE="${DEV_ADMIN_PASSWORD:-superusuariofrangy}"
-
-ask_yes_no() {
-    local question="$1"
-    local default_answer="${2:-n}"
-    local reply=""
-    local prompt_suffix="[s/N]"
-
-    if [[ "${default_answer,,}" == "s" || "${default_answer,,}" == "y" ]]; then
-        prompt_suffix="[S/n]"
-    fi
-
-    if [[ ! -t 0 ]]; then
-        [[ "${default_answer,,}" == "s" || "${default_answer,,}" == "y" ]]
-        return
-    fi
-
-    while true; do
-        read -r -p "${question} ${prompt_suffix} " reply || true
-        reply="${reply:-${default_answer}}"
-
-        case "${reply,,}" in
-            s|si|y|yes)
-                return 0
-                ;;
-            n|no)
-                return 1
-                ;;
-        esac
-    done
-}
 
 prompt_value_with_default() {
     local label="$1"
@@ -259,42 +230,6 @@ stop_current_stack() {
     esac
 }
 
-remove_existing_stack() {
-    local tool="$1"
-    local existing_mode="$2"
-
-    case "${existing_mode}" in
-        podman_pod)
-            echo "Eliminando pod existente ${POD_NAME}..."
-            podman pod rm -f "${POD_NAME}" >/dev/null 2>&1 || true
-            ;;
-        podman_fallback)
-            stop_container_if_exists "${tool}" "${CONTAINER_NAME}"
-            stop_container_if_exists "${tool}" "${DB_CONTAINER_NAME}"
-            if container_exists "${tool}" "${CONTAINER_NAME}"; then
-                echo "Eliminando ${CONTAINER_NAME}..."
-                "${tool}" rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
-            fi
-            if container_exists "${tool}" "${DB_CONTAINER_NAME}"; then
-                echo "Eliminando ${DB_CONTAINER_NAME}..."
-                "${tool}" rm -f "${DB_CONTAINER_NAME}" >/dev/null 2>&1 || true
-            fi
-            ;;
-        docker_stack)
-            stop_container_if_exists "${tool}" "${CONTAINER_NAME}"
-            stop_container_if_exists "${tool}" "${DB_CONTAINER_NAME}"
-            if container_exists "${tool}" "${CONTAINER_NAME}"; then
-                echo "Eliminando ${CONTAINER_NAME}..."
-                "${tool}" rm -f "${CONTAINER_NAME}" >/dev/null 2>&1 || true
-            fi
-            if container_exists "${tool}" "${DB_CONTAINER_NAME}"; then
-                echo "Eliminando ${DB_CONTAINER_NAME}..."
-                "${tool}" rm -f "${DB_CONTAINER_NAME}" >/dev/null 2>&1 || true
-            fi
-            ;;
-    esac
-}
-
 start_container_if_exists() {
     local tool="$1"
     local name="$2"
@@ -363,22 +298,7 @@ handle_existing_stack_before_launch() {
         return 0
     fi
 
-    case "${RECREATE_EXISTING_STACK,,}" in
-        1|true|yes|y|s|si)
-            remove_existing_stack "${tool}" "${existing_mode}"
-            return 0
-            ;;
-        0|false|no|n)
-            reuse_existing_stack "${tool}" "${existing_mode}"
-            return 1
-            ;;
-    esac
-
-    if ask_yes_no "Ya existe un entorno con esos nombres. ¿Deseas eliminarlo y recrearlo?" "n"; then
-        remove_existing_stack "${tool}" "${existing_mode}"
-        return 0
-    fi
-
+    echo "Ya existe un entorno con esos nombres. Se reutilizara."
     reuse_existing_stack "${tool}" "${existing_mode}"
     return 1
 }
@@ -475,6 +395,8 @@ build_app_db_env_args() {
 
     APP_DB_ENV_ARGS=(
         -e "APP_PORT=${CONTAINER_PORT}"
+        -e "ENV_FILE_SOURCE=${APP_ENV_FILE_SOURCE_CONTAINER}"
+        -e "ENV_FILE_TARGET=${APP_ENV_FILE_TARGET_CONTAINER}"
         -e "DB_HOST=${db_host}"
         -e "DB_PORT=${db_port}"
         -e "DB_DATABASE=${APP_DB_DATABASE}"
@@ -483,7 +405,7 @@ build_app_db_env_args() {
         -e "DEV_ADMIN_NAME=${ADMIN_NAME_VALUE}"
         -e "DEV_ADMIN_EMAIL=${ADMIN_EMAIL_VALUE}"
         -e "DEV_ADMIN_PASSWORD=${ADMIN_PASSWORD_VALUE}"
-        -v "${ENV_FILE}:/var/www/html/.env"
+        -v "${ENV_FILE}:${APP_ENV_FILE_SOURCE_CONTAINER}:ro"
         -v "${APP_START_SCRIPT_HOST}:${APP_START_SCRIPT_CONTAINER}:ro"
     )
 }
@@ -708,15 +630,15 @@ launch_docker_stack() {
 
 CONTAINER_TOOL="$(detect_container_tool)"
 
+if ! handle_existing_stack_before_launch "${CONTAINER_TOOL}"; then
+    follow_laravel_logs "${CONTAINER_TOOL}"
+    exit 0
+fi
+
 if ! image_exists "${CONTAINER_TOOL}"; then
     echo "La imagen ${IMAGE_NAME}:${IMAGE_TAG} no existe." >&2
     echo "Ejecuta primero unix-scrips/construir-pod.sh" >&2
     exit 1
-fi
-
-if ! handle_existing_stack_before_launch "${CONTAINER_TOOL}"; then
-    follow_laravel_logs "${CONTAINER_TOOL}"
-    exit 0
 fi
 
 prompt_admin_configuration
