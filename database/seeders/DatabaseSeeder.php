@@ -11,6 +11,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call(RoleSeeder::class);
+        $seeders = collect(glob(__DIR__ . '/*Seeder.php') ?: [])
+            ->map(fn (string $path) => pathinfo($path, PATHINFO_FILENAME))
+            ->reject(fn (string $class) => $class === class_basename(static::class))
+            ->sort()
+            ->map(fn (string $class) => __NAMESPACE__ . "\\{$class}")
+            ->values()
+            ->all();
+
+        if ($seeders !== []) {
+            $this->call($seeders);
+        }
     }
 }

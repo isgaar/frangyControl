@@ -4,10 +4,8 @@ namespace App\Console\Commands;
 
 use App\Jobs\InstallDefaultAdminUserJob;
 use App\Models\User;
-use Database\Seeders\RoleSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
-use Spatie\Permission\PermissionRegistrar;
 
 class InstallDevelopmentProjectCommand extends Command
 {
@@ -17,7 +15,11 @@ class InstallDevelopmentProjectCommand extends Command
      * @var string
      */
     protected $signature = 'project:install-dev
-                            {--force : Permite ejecutar la instalacion fuera del entorno local}';
+                            {--force : Permite ejecutar la instalacion fuera del entorno local}
+                            {--admin-name= : Nombre del administrador inicial}
+                            {--admin-email= : Correo del administrador inicial}
+                            {--admin-password= : Password del administrador inicial}
+                            {--admin-no-prompt : Usa los valores configurados sin preguntar}';
 
     /**
      * The console command description.
@@ -44,6 +46,7 @@ class InstallDevelopmentProjectCommand extends Command
         }
 
         $this->components->info('Preparando la instalacion de desarrollo...');
+        $admin = $this->resolveAdminUser();
 
         if (!config('app.key')) {
             $this->components->task('Generando APP_KEY', function () {
@@ -61,11 +64,8 @@ class InstallDevelopmentProjectCommand extends Command
             return $this->call('migrate', ['--force' => true]) === self::SUCCESS;
         });
 
-        $this->components->task('Creando roles y permisos base', function () {
-            app(PermissionRegistrar::class)->forgetCachedPermissions();
-
+        $this->components->task('Ejecutando seeders disponibles', function () {
             return $this->call('db:seed', [
-                '--class' => RoleSeeder::class,
                 '--force' => true,
             ]) === self::SUCCESS;
         });
@@ -78,14 +78,18 @@ class InstallDevelopmentProjectCommand extends Command
             return $this->call('storage:link') === self::SUCCESS;
         });
 
-        $this->components->task('Creando o actualizando el administrador inicial', function () {
-            Bus::dispatchSync(new InstallDefaultAdminUserJob());
+        $this->components->task('Creando o actualizando el administrador inicial', function () use ($admin) {
+            Bus::dispatchSync(new InstallDefaultAdminUserJob(
+                $admin['name'],
+                $admin['email'],
+                $admin['password'],
+            ));
 
             return true;
         });
 
-        $admin = User::query()
-            ->where('email', config('app.dev_admin.email'))
+        $adminUser = User::query()
+            ->where('email', $admin['email'])
             ->first();
 
         $this->newLine();
@@ -95,14 +99,55 @@ class InstallDevelopmentProjectCommand extends Command
             [
                 ['Aplicacion', config('app.name')],
                 ['Version', config('app.version')],
-                ['Admin', $admin?->name ?? config('app.dev_admin.name')],
-                ['Correo', config('app.dev_admin.email')],
-                ['Password', config('app.dev_admin.password')],
+                ['Admin', $adminUser?->name ?? $admin['name']],
+                ['Correo', $admin['email']],
+                ['Password', $admin['password']],
             ]
         );
 
         $this->line('Ya puedes iniciar el entorno con `php artisan serve` o con tus scripts de contenedor.');
 
         return self::SUCCESS;
+    }
+
+    protected function resolveAdminUser(): array
+    {
+        $admin = [
+            'name' => (string) ($this->option('admin-name') ?: config('app.dev_admin.name')),
+            'email' => (string) ($this->option('admin-email') ?: config('app.dev_admin.email')),
+            'password' => (string) ($this->option('admin-password') ?: config('app.dev_admin.password')),
+        ];
+
+        if (!$this->input->isInteractive() || $this->option('admin-no-prompt')) {
+            return $admin;
+        }
+
+        $this->newLine();
+        $this->components->info('Configura el administrador inicial.');
+
+        $admin['name'] = $this->askRequiredValue(
+            'Nombre del administrador',
+            $admin['name']
+        );
+        $admin['email'] = $this->askRequiredValue(
+            'Correo del administrador',
+            $admin['email']
+        );
+
+        $password = $this->secret('Password del administrador (deja vacio para conservar el configurado)');
+        if (is_string($password) && $password !== '') {
+            $admin['password'] = $password;
+        }
+
+        return $admin;
+    }
+
+    protected function askRequiredValue(string $label, string $default): string
+    {
+        do {
+            $value = trim((string) $this->ask($label, $default));
+        } while ($value === '');
+
+        return $value;
     }
 }

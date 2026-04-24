@@ -53,4 +53,6 @@ Tambien puedes usar los scripts basados en el `Dockerfile`:
 ./unix-scrips/lanzar-pod.sh
 ```
 
+`lanzar-pod.sh` puede reutilizar o eliminar un entorno existente, pregunta por el administrador inicial, levanta la base de datos con volumen persistente, inicia Laravel dentro del contenedor de app, ejecuta `php artisan project:install-dev --force`, deja la aplicacion disponible en `http://localhost:9000` y sigue mostrando los logs de Laravel en tiempo real. Si presionas `Ctrl+C`, el script detiene el pod o los contenedores levantados.
+
 Dev Ismael
