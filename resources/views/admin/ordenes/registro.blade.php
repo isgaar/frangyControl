@@ -18,22 +18,100 @@
 
 @section('content')
 <style>
-    .order-panel,
-    .order-side-panel {
+    .order-panel {
         border-radius: 16px;
         border: 1px solid rgba(13, 110, 253, 0.1);
         box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        overflow: hidden;
+    }
+
+    .order-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .order-header-copy h3 {
+        font-weight: 700;
+    }
+
+    .order-header-copy p {
+        margin: 0.35rem 0 0;
+        color: rgba(255, 255, 255, 0.85);
+    }
+
+    .order-help-toggle {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        border: none;
+        font-weight: 600;
+        color: #0f172a;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
     }
 
     .section-heading {
-        margin-bottom: 1rem;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.65rem;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 1.1rem;
         font-weight: 700;
         color: #0f172a;
     }
 
     .helper-copy {
-        font-size: 0.86rem;
-        color: #6c757d;
+        display: none !important;
+    }
+
+    .help-panel {
+        margin-bottom: 1.5rem;
+        padding: 1.25rem;
+        border: 1px solid rgba(13, 148, 136, 0.18);
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(255, 255, 255, 0.96));
+    }
+
+    .help-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .help-panel-title {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .help-panel-copy {
+        margin: 0;
+        color: #475569;
+    }
+
+    .help-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+    }
+
+    .help-block {
+        padding: 1rem;
+        border-radius: 14px;
+        border: 1px solid rgba(148, 163, 184, 0.22);
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .help-block h4 {
+        margin-bottom: 0.75rem;
+        font-size: 0.98rem;
+        font-weight: 700;
+        color: #0f172a;
     }
 
     .preview-grid {
@@ -63,13 +141,34 @@
         background-color: #f8f9fa;
     }
 
-    .tips-list {
+    .help-list {
         padding-left: 1rem;
         margin-bottom: 0;
     }
 
-    .tips-list li + li {
+    .help-list li + li {
         margin-top: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .custom-switch .custom-control-label,
+    .custom-checkbox .custom-control-label {
+        font-weight: 600;
+    }
+
+    @media (max-width: 767.98px) {
+        .order-header {
+            align-items: flex-start;
+        }
+
+        .order-help-toggle {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
@@ -89,16 +188,59 @@
     @csrf
 
     <div class="row">
-        <div class="col-xl-8">
+        <div class="col-12">
             <div class="card order-panel">
                 <div class="card-header bg-info">
-                    <h3 class="card-title mb-0">Registrar orden</h3>
+                    <div class="order-header">
+                        <div class="order-header-copy">
+                            <h3 class="card-title mb-0">Registrar orden</h3>
+                            <p>Captura cliente, unidad y servicio sin saturar la pantalla de instrucciones.</p>
+                        </div>
+
+                        <button type="button" class="btn btn-light btn-sm order-help-toggle" data-toggle="collapse"
+                            data-target="#ordenHelpPanel" aria-expanded="{{ $errors->any() ? 'true' : 'false' }}"
+                            aria-controls="ordenHelpPanel">
+                            <i class="fas fa-life-ring mr-1"></i> Ayuda rápida
+                        </button>
+                    </div>
                 </div>
 
                 <div class="card-body">
-                    <div class="alert alert-light border">
-                        Completa los campos obligatorios y revisa los mensajes debajo de cada campo antes de guardar la
-                        orden.
+                    <div class="collapse mb-4 {{ $errors->any() ? 'show' : '' }}" id="ordenHelpPanel">
+                        <div class="help-panel">
+                            <div class="help-panel-header">
+                                <div>
+                                    <p class="help-panel-title">Guía rápida para capturar la orden</p>
+                                    <p class="help-panel-copy">La ayuda queda disponible solo cuando la necesites.</p>
+                                </div>
+                            </div>
+
+                            <div class="help-grid">
+                                <div class="help-block">
+                                    <h4>Cliente</h4>
+                                    <ul class="help-list">
+                                        <li>Si ya existe, activa el selector para evitar duplicados.</li>
+                                        <li>Captura nombre, teléfono, correo y RFC solo si es un cliente nuevo.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="help-block">
+                                    <h4>Unidad</h4>
+                                    <ul class="help-list">
+                                        <li>Completa marca, tipo, línea, año y número de serie.</li>
+                                        <li>Agrega placas, kilometraje, motor y cilindros para dejarla bien identificada.</li>
+                                    </ul>
+                                </div>
+
+                                <div class="help-block">
+                                    <h4>Orden</h4>
+                                    <ul class="help-list">
+                                        <li>Describe observaciones, recomendaciones y detalle del servicio.</li>
+                                        <li>La fecha de entrega debe ser hoy o una fecha posterior.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="custom-control custom-switch mb-4">
@@ -530,36 +672,10 @@
                 </div>
 
                 <div class="card-footer text-center">
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between flex-wrap" style="gap: 0.75rem;">
                         <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
                         <button type="submit" class="btn btn-info" id="submitButton" disabled>Guardar orden</button>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-xl-4 mt-4 mt-xl-0">
-            <div class="card order-side-panel">
-                <div class="card-body">
-                    <h4 class="text-info">Guía rápida</h4>
-                    <ul class="tips-list">
-                        <li>Si el cliente ya existe, usa el selector para evitar duplicados.</li>
-                        <li>En unidad, captura marca, tipo, línea, año y número de serie.</li>
-                        <li>En la orden, describe observaciones, recomendaciones y el detalle del servicio.</li>
-                        <li>La fecha de entrega debe ser hoy o una fecha posterior.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="card order-side-panel mt-3">
-                <div class="card-body">
-                    <h5 class="text-info">Campos que se validan antes del envío</h5>
-                    <p class="mb-2">El formulario revisa y explica estos datos antes de guardar:</p>
-                    <ul class="tips-list">
-                        <li>Cliente: nombre, teléfono, correo y RFC.</li>
-                        <li>Unidad: marca, tipo, línea, año, color, placas, kilometraje, motor, cilindros y serie.</li>
-                        <li>Orden: servicio, responsable, estado, fecha, observaciones, recomendaciones y detalles.</li>
-                    </ul>
                 </div>
             </div>
         </div>

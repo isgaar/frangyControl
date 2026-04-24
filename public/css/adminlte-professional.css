@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+
 :root {
     --fc-surface: #f3f6f8;
     --fc-panel: #ffffff;
-    --fc-sidebar: #0f172a;
-    --fc-sidebar-soft: #172554;
-    --fc-brand: #e2e8f0;
+    --fc-sidebar: #0b1220;
+    --fc-sidebar-soft: #162033;
+    --fc-brand: #f8fafc;
     --fc-text: #0f172a;
     --fc-text-soft: #475569;
     --fc-border: #dbe3ea;
@@ -15,6 +17,35 @@
     --fc-warning: #b45309;
     --fc-danger: #b91c1c;
     --fc-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+}
+
+body,
+.main-header,
+.main-sidebar,
+.brand-text,
+.nav-sidebar .nav-link,
+.content-wrapper,
+.content-header,
+.card,
+.btn,
+.form-control,
+.small-box,
+.info-box,
+.modal-content {
+    font-family: 'IBM Plex Sans', 'Segoe UI', sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.content-header h1,
+.card-title,
+.brand-text {
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 body:not(.login-page):not(.register-page) {
@@ -45,13 +76,14 @@ body:not(.login-page):not(.register-page) {
 }
 
 .main-sidebar {
-    background: linear-gradient(180deg, var(--fc-sidebar) 0%, #111827 54%, var(--fc-sidebar-soft) 100%) !important;
-    box-shadow: 8px 0 24px rgba(15, 23, 42, 0.14);
+    background: linear-gradient(180deg, var(--fc-sidebar) 0%, #0f172a 52%, var(--fc-sidebar-soft) 100%) !important;
+    border-right: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: 10px 0 28px rgba(15, 23, 42, 0.2);
 }
 
 .brand-link {
-    background: rgba(255, 255, 255, 0.04) !important;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.08) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(15, 23, 42, 0.18) 100%) !important;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.1) !important;
 }
 
 .brand-link .brand-text,
@@ -60,14 +92,14 @@ body:not(.login-page):not(.register-page) {
 }
 
 .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link {
-    color: rgba(226, 232, 240, 0.76);
+    color: rgba(241, 245, 249, 0.82);
     border-radius: 12px;
     margin: 4px 10px;
     transition: all 0.18s ease;
 }
 
 .sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link:hover {
-    background: rgba(148, 163, 184, 0.14);
+    background: rgba(148, 163, 184, 0.16);
     color: #fff;
 }
 
@@ -79,11 +111,17 @@ body:not(.login-page):not(.register-page) {
 }
 
 .sidebar-dark-primary .nav-treeview > .nav-item > .nav-link {
-    color: rgba(226, 232, 240, 0.68);
+    color: rgba(226, 232, 240, 0.74);
 }
 
 .sidebar-dark-primary .nav-treeview > .nav-item > .nav-link:hover {
     color: #fff;
+}
+
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link .nav-icon,
+.sidebar-dark-primary .nav-treeview > .nav-item > .nav-link .nav-icon,
+.sidebar-dark-primary .nav-sidebar > .nav-item > .nav-link p {
+    color: inherit;
 }
 
 .content-wrapper .card,

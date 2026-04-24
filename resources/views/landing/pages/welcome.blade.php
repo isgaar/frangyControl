@@ -368,33 +368,6 @@
         box-shadow: 0 0 0 0.25rem rgba(56, 189, 248, 0.12);
     }
 
-    .landing-highlights {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.9rem;
-    }
-
-    .landing-highlight {
-        padding: 1rem;
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.05);
-    }
-
-    .landing-highlight small {
-        display: block;
-        margin-bottom: 0.35rem;
-        color: var(--landing-text-soft);
-        font-size: 0.82rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
-
-    .landing-highlight strong {
-        display: block;
-        font-size: 1.1rem;
-        line-height: 1.35;
-    }
-
     .landing-sections {
         display: grid;
         gap: 1rem;
@@ -416,36 +389,6 @@
 
     .landing-section-card p {
         margin-bottom: 0;
-    }
-
-    .landing-bottom {
-        margin-top: 1.2rem;
-    }
-
-    .landing-bottom-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1rem;
-    }
-
-    .landing-mini-stat {
-        padding: 1rem 1.1rem;
-        text-align: left;
-    }
-
-    .landing-mini-stat small {
-        display: block;
-        margin-bottom: 0.3rem;
-        color: var(--landing-text-soft);
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-    }
-
-    .landing-mini-stat strong {
-        display: block;
-        font-size: 1.1rem;
-        line-height: 1.35;
     }
 
     @keyframes landingReveal {
@@ -503,11 +446,6 @@
             align-items: flex-start;
         }
 
-        .landing-highlights,
-        .landing-bottom-grid {
-            grid-template-columns: minmax(0, 1fr);
-        }
-
         .landing-headline {
             font-size: clamp(2.3rem, 10vw, 3.2rem);
         }
@@ -515,7 +453,6 @@
 </style>
 
 @php
-    $version = config('app.version');
     $appName = config('app.name', 'Frangy Control');
 @endphp
 
@@ -535,15 +472,6 @@
 
                     <div class="landing-actions">
                         <a href="{{ route('login') }}" class="landing-btn landing-btn-primary">Iniciar sesión</a>
-                        @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="landing-btn landing-btn-secondary">Crear cuenta</a>
-                        @endif
-                    </div>
-
-                    <div class="landing-badges">
-                        <span>Panel web</span>
-                        <span>Laravel {{ Illuminate\Foundation\Application::VERSION }}</span>
-                        <span>Versión {{ $version }}</span>
                     </div>
 
                     <div class="landing-overview">
@@ -584,8 +512,8 @@
                         </div>
 
                         <p>
-                            Esta vista pública ahora presenta el proyecto con una identidad más clara y con rutas directas
-                            para que el usuario llegue rápido al acceso o al registro.
+                            Esta vista pública presenta el proyecto con una identidad más clara y un acceso directo
+                            al panel para que el usuario entre sin distracciones.
                         </p>
 
                         <ul class="landing-checklist">
@@ -593,25 +521,6 @@
                             <li>Resumen visual del propósito del sistema.</li>
                             <li>Diseño responsivo para escritorio y móvil.</li>
                         </ul>
-                    </section>
-
-                    <section class="landing-highlights">
-                        <article class="landing-highlight">
-                            <small>Módulos</small>
-                            <strong>Clientes, vehículos y servicios</strong>
-                        </article>
-                        <article class="landing-highlight">
-                            <small>Acceso</small>
-                            <strong>Login y registro disponibles</strong>
-                        </article>
-                        <article class="landing-highlight">
-                            <small>Entorno</small>
-                            <strong>{{ app()->environment() }}</strong>
-                        </article>
-                        <article class="landing-highlight">
-                            <small>Runtime</small>
-                            <strong>PHP {{ PHP_VERSION }}</strong>
-                        </article>
                     </section>
 
                     <section class="landing-card">
@@ -629,23 +538,6 @@
                     </section>
                 </div>
             </div>
-
-            <section class="landing-bottom">
-                <div class="landing-bottom-grid">
-                    <article class="landing-mini-stat">
-                        <small>Aplicación</small>
-                        <strong>{{ $appName }}</strong>
-                    </article>
-                    <article class="landing-mini-stat">
-                        <small>Release</small>
-                        <strong>v{{ $version }}</strong>
-                    </article>
-                    <article class="landing-mini-stat">
-                        <small>Tecnología</small>
-                        <strong>Laravel {{ Illuminate\Foundation\Application::VERSION }}</strong>
-                    </article>
-                </div>
-            </section>
         </section>
     </div>
 </div>

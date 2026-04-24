@@ -4,11 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Hash;
 use App\Models\DatosVehiculo;
 use App\Models\TipoServicio;
 use App\Models\TipoVehiculo;
@@ -18,31 +15,17 @@ class DatovController extends Controller
 {
     public function index()
     {
-        // $search = "";
-        // $limit = 10;
+        $dataVehiculos = DatosVehiculo::query()
+            ->orderBy('marca')
+            ->get();
 
-        // if ($request->has('search')) {
-        //     $search = $request->input('search');
+        $dataServicios = TipoServicio::query()
+            ->orderBy('nombreServicio')
+            ->get();
 
-        //     if (trim($search) != '') {
-        //         $data = DatosVehiculo::where('marca', 'like', "%$search%")->get();
-        //     } else {
-        //         $data = DatosVehiculo::all();
-        //     }
-        // } else {
-        //     $data = DatosVehiculo::all();
-        // }
-
-        // $currentPage = Paginator::resolveCurrentPage() - 1;
-        // $perPage = $limit;
-        // $currentPageSearchResults = $data->slice($currentPage * $perPage, $perPage)->all();
-        // $data = new LengthAwarePaginator($currentPageSearchResults, count($data), $perPage);
-
-        // return view('admin.datos_vehiculo.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
-
-        $dataVehiculos = DatosVehiculo::all(); // Retrieve all data from the Vehiculo model
-        $dataServicios = TipoServicio::all();
-        $dataTiposVehiculos = TipoVehiculo::all();
+        $dataTiposVehiculos = TipoVehiculo::query()
+            ->orderBy('tipo')
+            ->get();
 
         return view('admin.datos_vehiculo.index', compact('dataVehiculos', 'dataServicios', 'dataTiposVehiculos'));
 

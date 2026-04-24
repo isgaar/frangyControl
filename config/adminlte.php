@@ -152,8 +152,8 @@ return [
 'classes_auth_btn' => 'btn-flat btn-primary',
 
 'classes_body' => 'bg-light layout-navbar-fixed layout-footer-fixed',
-'classes_brand' => 'bg-white',
-'classes_brand_text' => 'text-white',
+'classes_brand' => 'elevation-0',
+'classes_brand_text' => 'text-light font-weight-semibold',
 'classes_content_wrapper' => 'bg-light',
 'classes_content_header' => 'bg-light',
 'classes_content' => '',
@@ -387,5 +387,5 @@ return [
     |
     */
 
-    'livewire' => true,
+    'livewire' => false,
 ];
