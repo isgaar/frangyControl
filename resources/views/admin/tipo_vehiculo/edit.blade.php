@@ -1,89 +1,93 @@
-@extends('adminlte::page')
-@include('landing.include.head')
+@extends('layouts.dashboard')
+
+@section('title', 'Editar tipo de vehículo')
 
 @section('content_header')
-@if (Session::has('status'))
-<div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 10px; font-weight: bold;">
-            {{ Session::get('status') }}
-            @php
-            Session::forget('status');
-            @endphp
-        </span>
-    </div>
-</div>
-@endif
-
-@endsection
-
-@section('content')
-
-<div class="card">
-    <div class="card-header">
-        <ul>
-            <b>Editando Tipos</b>
-        </ul>
-    </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card card-warning">
-            <div class="card-header d-flex">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                <div>
-                    <h2 class="card-title">¡Advertencia!</h2>
-                    <br>
-                    <h8 class="card-text">Usted está editando datos en la tabla "Tipos de vehículos".</h8>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-12 col-sm-12 col-12">
-                        <!-- Campos para DatosVehiculo -->
-                        {!! Form::model($tipoVehiculo, ['route' => ['tipo_vehiculo.update',
-                        $tipoVehiculo->id_tvehiculo], 'method' => 'put']) !!}
-                        <fieldset>
-                            <div class="form-group row">
-                                <label for="tipo" class="col-md-4 col-form-label text-md-right">Tipo de vehículo</label>
-                                <div class="col-md-6">
-                                    <input id="tipo" type="text" class="form-control" name="tipo"
-                                        value="{{ $tipoVehiculo->tipo }}" required oninput="formatInput(this)">
-                                </div>
-                            </div>
-
-                            <script>
-                            function formatInput(input) {
-                                var value = input.value;
-
-                                // Eliminar caracteres especiales y convertir la primera letra a mayúscula y mantener el resto en minúscula
-                                var formattedValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').charAt(0)
-                                    .toUpperCase() + value.slice(1).toLowerCase();
-
-                                // Actualizar el valor del campo
-                                input.value = formattedValue;
-                            }
-                            </script>
-
-                            <div class="card-footer text-center">
-                                <div class="d-flex justify-content-between">
-                                    <a type="button" href="{{ route('datosv.index') }}"
-                                        class="btn btn-outline-dark">Retroceder</a>
-                                    <button type="submit" class="btn btn-warning">Actualizar</button>
-                                </div>
-                            </div>
-                        </fieldset>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
+    @if (Session::has('status'))
+        <div class="col-md-12 alert-section">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text dashboard-legacy-alert__text--compact">
+                    {{ Session::get('status') }}
+                    @php
+                        Session::forget('status');
+                    @endphp
+                </span>
             </div>
         </div>
-    </div>
-</div>
+    @endif
 @stop
 
+@section('content')
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Clasificación operativa</span>
+                    <h1 class="resource-hero__title">Editar tipo de vehículo</h1>
+                    <p>Actualiza la etiqueta para que el catálogo siga siendo claro y consistente en todo el panel.</p>
+                </div>
+
+                <div class="resource-hero__actions">
+                    <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al módulo
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="resource-form-layout">
+            <section class="resource-form-card">
+                <div class="resource-form-card__header">
+                    <div>
+                        <span class="resource-form-card__eyebrow">Edición</span>
+                        <h2 class="resource-form-card__title">{{ $tipoVehiculo->tipo }}</h2>
+                        <p class="resource-form-card__copy">Guarda el cambio cuando el nombre final represente correctamente la categoría.</p>
+                    </div>
+                </div>
+
+                {!! Form::model($tipoVehiculo, ['route' => ['tipo_vehiculo.update', $tipoVehiculo->id_tvehiculo], 'method' => 'put']) !!}
+                    <div class="resource-kv mt-4">
+                        <div class="form-group mb-0">
+                            <label for="tipo">Tipo de vehículo</label>
+                            <input id="tipo" type="text" class="form-control" name="tipo" value="{{ $tipoVehiculo->tipo }}" required oninput="formatInput(this)">
+                        </div>
+                    </div>
+
+                    <div class="resource-form-card__footer">
+                        <div class="resource-footer-actions">
+                            <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <button type="submit" class="btn btn-warning">Actualizar tipo</button>
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </section>
+
+            <aside class="resource-side-card">
+                <span class="resource-form-card__eyebrow">Tip</span>
+                <h2 class="resource-form-card__title">Ajuste recomendado</h2>
+                <p class="resource-side-card__copy">Piensa en cómo lo buscará el equipo en recepción y operación.</p>
+
+                <ul class="resource-side-card__list mt-4">
+                    <li>Usa nombres breves, sin variantes innecesarias del mismo tipo.</li>
+                    <li>Si la categoría cambia mucho, revisa también las órdenes donde se usará en adelante.</li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+@stop
+
+<script>
+    function formatInput(input) {
+        input.value = input.value
+            .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+            .replace(/\s+/g, ' ')
+            .trimStart()
+            .replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
+            });
+    }
+</script>
+
 @section('js')
-<script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection

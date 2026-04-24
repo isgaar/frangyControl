@@ -1,10 +1,12 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
+
+@section('title', 'Editar cliente')
 
 @section('content_header')
     @if (Session::has('status'))
         <div class="col-md-12 alert-section">
-            <div class="alert alert-{{ Session::get('status_type') }}" style="text-align: center; padding: 5px; margin-bottom: 5px;">
-                <span style="font-size: 20px; font-weight: bold;">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text">
                     {{ Session::get('status') }}
                     @php
                         Session::forget('status');
@@ -13,164 +15,126 @@
             </div>
         </div>
     @endif
-
-    
 @stop
 
 @section('content')
-<div class="card">
-        <div class="card-header">
-            <h4 class="card-title">
-                <b>Editando cliente</b> <i class="fas fa-user-pen"></i>
-            </h4>
-        </div>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-lg-12 col-sm-12 col-12">
-                <div class="card card-secondary">
-                    {!! Form::model($cliente, ['route' => ['clientes.update', $cliente->id_cliente], 'method' => 'put']) !!}
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="nombreCompleto">Nombre completo</label>
-                            {!! Form::text('nombreCompleto', null, ['class' => 'form-control', 'id_cliente' => 'nombreCompleto', 'oninput' => 'formatNameInput(this)']) !!}
-                            @error('nombreCompleto')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Mantenimiento del directorio</span>
+                    <h1 class="resource-hero__title">Actualizar cliente</h1>
+                    <p>Corrige o completa los datos del contacto para que el equipo siga trabajando con información limpia y consistente.</p>
+                </div>
 
-                        <div class="form-group">
-                            <label for="telefono">Teléfono</label>
-                            {!! Form::text('telefono', null, [
-        'class' => 'form-control',
-        'id' => 'telefono',
-        'oninput' => 'validatePhoneNumber(this)',
-        'pattern' => '[0-9]*', // Solo permitir números en navegadores que lo soporten
-        'maxlength' => '10',   // Longitud máxima de 10 dígitos
-        'inputmode' => 'numeric', // Teclado numérico en dispositivos móviles
-    ]) !!}
-                            @error('telefono')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="correo">Correo electrónico</label>
-                            {!! Form::text('correo', null, ['class' => 'form-control', 'id_cliente' => 'correo', 'oninput' => 'validateEmail(this)']) !!}
-                            @error('correo')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <label for="correo">RFC</label>
-                            {!! Form::text('rfc', null, ['class' => 'form-control', 'id_cliente' => 'rfc', 'oninput' => 'formatRFC(event)']) !!}
-                            @error('rfc')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        
-                    </div>
-
-                    <div class="card-footer text-center">
-                        <div class="d-flex justify-content-between">
-                            <a type="button" href="{{ route('clientes.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                            <button type="submit" class="btn btn-warning">Actualizar</button>
-                        </div>
-                    </div>
-                    {!! Form::close() !!}
+                <div class="resource-hero__actions">
+                    <a href="{{ route('clientes.index') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al directorio
+                    </a>
                 </div>
             </div>
+        </section>
+
+        <div class="resource-form-layout">
+            <section class="resource-form-card">
+                <div class="resource-form-card__header">
+                    <div>
+                        <span class="resource-form-card__eyebrow">Edición</span>
+                        <h2 class="resource-form-card__title">{{ $cliente->nombreCompleto }}</h2>
+                        <p class="resource-form-card__copy">Ajusta los datos del cliente y guarda los cambios cuando queden correctos.</p>
+                    </div>
+                </div>
+
+                {!! Form::model($cliente, ['route' => ['clientes.update', $cliente->id_cliente], 'method' => 'put']) !!}
+                    <div class="resource-kv mt-4">
+                        <div class="form-group mb-0">
+                            <label for="nombreCompleto">Nombre completo</label>
+                            {!! Form::text('nombreCompleto', null, ['class' => 'form-control', 'id' => 'nombreCompleto', 'oninput' => 'formatNameInput(this)']) !!}
+                            @error('nombreCompleto')
+                                <span class="text-danger d-block mt-2">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="telefono">Teléfono</label>
+                            {!! Form::text('telefono', null, ['class' => 'form-control', 'id' => 'telefono', 'oninput' => 'validatePhoneNumber(this)', 'maxlength' => '10', 'inputmode' => 'numeric']) !!}
+                            @error('telefono')
+                                <span class="text-danger d-block mt-2">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="correo">Correo electrónico</label>
+                            {!! Form::text('correo', null, ['class' => 'form-control', 'id' => 'correo', 'oninput' => 'validateEmail(this)']) !!}
+                            @error('correo')
+                                <span class="text-danger d-block mt-2">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="rfc">RFC</label>
+                            {!! Form::text('rfc', null, ['class' => 'form-control', 'id' => 'rfc', 'oninput' => 'formatRFC(event)']) !!}
+                            @error('rfc')
+                                <span class="text-danger d-block mt-2">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="resource-form-card__footer">
+                        <div class="resource-footer-actions">
+                            <a href="{{ route('clientes.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <button type="submit" class="btn btn-warning">Actualizar cliente</button>
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </section>
+
+            <aside class="resource-side-card">
+                <span class="resource-form-card__eyebrow">Checklist</span>
+                <h2 class="resource-form-card__title">Qué revisar</h2>
+                <p class="resource-side-card__copy">Un ajuste pequeño aquí evita errores repetidos al registrar nuevas órdenes.</p>
+
+                <ul class="resource-side-card__list mt-4">
+                    <li>Confirma que el nombre siga coincidiendo con el expediente del cliente.</li>
+                    <li>Verifica teléfono y correo antes de guardar para evitar contactos duplicados.</li>
+                    <li>El RFC se normaliza a mayúsculas y sin símbolos extra.</li>
+                    <li>Si solo corriges formato, el cambio se verá reflejado inmediatamente en el directorio.</li>
+                </ul>
+            </aside>
         </div>
     </div>
 @stop
 
 <script>
     function validatePhoneNumber(input) {
-        // Eliminar cualquier carácter que no sea un número
-        input.value = input.value.replace(/\D/g, '');
-        
-        // Truncar a 10 dígitos si excede la longitud
-        if (input.value.length > 10) {
-            input.value = input.value.slice(0, 10);
-        }
+        input.value = input.value.replace(/\D/g, '').slice(0, 10);
     }
 
-function formatRFC(event) {
-    var input = event.target;
-    var value = input.value;
-
-    if (value.length > 13) {
-    input.value = value.slice(0, 13); // Limitar a 13 caracteres
-  }
-        // Obtén el campo de entrada del RFC
-        const rfcInput = event.target;
-
-        // Obtén el valor actual del campo de entrada
-        let rfcValue = rfcInput.value;
-
-        // Elimina los caracteres especiales utilizando una expresión regular
-        rfcValue = rfcValue.replace(/[^\w\s]/gi, '');
-
-        // Convierte las letras a mayúsculas
-        rfcValue = rfcValue.toUpperCase();
-
-        // Asigna el valor modificado al campo de entrada
-        rfcInput.value = rfcValue;
+    function formatRFC(event) {
+        event.target.value = event.target.value
+            .replace(/[^A-Za-z0-9]/g, '')
+            .toUpperCase()
+            .slice(0, 13);
     }
 
-    function cambiarNombre(nombre) {
-  let regex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1][a-zA-ZÀ-ÿ\u00f1\u00d1\s]*$/g;
-  return regex.exec(nombre)[0];
-}
-
-function formatNameInput(input) {
-  var name = input.value;
-  // Reemplazar caracteres especiales, números, y símbolos con espacios
-  name = cambiarNombre(name);
-  // Convertir la primera letra de cada palabra a mayúscula y las demás letras a minúscula
-  name = name.replace(/(?:^|\s)\S/g, function(l) { return l.toUpperCase(); });
-  input.value = name;
-}
-
-function isNumberKey(evt) {
-        var charCode = (evt.which) ? evt.which : event.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-            return false;
-        }
-        return true;
-    }
-
-    function truncatePhoneNumber(input) {
-        var phoneNumber = input.value;
-        if (phoneNumber.length > 10) {
-            phoneNumber = phoneNumber.slice(0, 10);
-        }
-        input.value = phoneNumber;
+    function formatNameInput(input) {
+        input.value = input.value
+            .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+            .replace(/\s+/g, ' ')
+            .trimStart()
+            .replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
+            });
     }
 
     function validateEmail(input) {
-    var email = input.value;
-    var regex = /^[a-z0-9@]+$/;
-
-    if (!regex.test(email)) {
-        input.value = email.slice(0, -1);
+        input.value = input.value
+            .replace(/[^a-zA-Z0-9@._-]/g, '')
+            .toLowerCase()
+            .slice(0, 30);
     }
-
-    if (email.split("@").length > 2) {
-        input.value = email.slice(0, -1);
-    }
-
-    if (email.length > 25) {
-        input.value = email.slice(0, 25);
-    }
-    input.value = email.toLowerCase();
-}
-
 </script>
 
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection
-
-

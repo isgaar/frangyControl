@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Iniciar sesión')
+
 @section('content')
 <style>
     :root {

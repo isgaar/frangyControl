@@ -1,4 +1,6 @@
-@extends('adminlte::auth.register')
+@extends('layouts.app')
+
+@section('title', 'Registrar Usuario')
 
 @section('content')
 <style>

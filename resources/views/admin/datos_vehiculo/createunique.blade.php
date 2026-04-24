@@ -1,162 +1,121 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
+
+@section('title', 'Nueva marca')
 
 @section('content_header')
-
-@if (Session::has('status'))
-<div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 20px; font-weight: bold;">
-            {{ Session::get('status') }}
-            @php
-            Session::forget('status');
-            @endphp
-        </span>
-    </div>
-</div>
-@endif
-
-@endsection
+    @if (Session::has('status'))
+        <div class="col-md-12 alert-section">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text">
+                    {{ Session::get('status') }}
+                    @php
+                        Session::forget('status');
+                    @endphp
+                </span>
+            </div>
+        </div>
+    @endif
+@stop
 
 @section('content')
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Marcas de vehículos</span>
+                    <h1 class="resource-hero__title">Agregar marcas</h1>
+                    <p>Crea una o varias marcas para que estén disponibles al capturar nuevas órdenes dentro del sistema.</p>
+                </div>
 
-<div class="card">
-    <div class="card-header">
-        <ul>
-            <b>Creando registro único</b>
-        </ul>
-    </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card card-warning">
-            <div class="card-header d-flex">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                <div>
-                    <h2 class="card-title">¡Advertencia!</h2>
-                    <br>
-                    <h8 class="card-text">Usted está guardando datos en la tabla "Marcas de vehículos".</h8>
+                <div class="resource-hero__actions">
+                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al panel
+                    </a>
                 </div>
             </div>
+        </section>
 
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-12 col-sm-12 col-12">
-                        <!-- Campos para DatosVehiculo -->
-                        {!! Form::open(['route' => 'datosv.storeunique', 'method' => 'post', 'enctype' =>
-                        'multipart/form-data']) !!}
-                        <fieldset>
-                            <div class="form-group row">
-                                <label for="marca" class="col-md-4 col-form-label text-md-right">Marca</label>
-                                <div class="col-md-6">
-                                    <input id="marca" type="text" class="form-control" name="marcas[]" required
-                                        oninput="formatInput(this)">
-                                </div>
-                            </div>
+        <div class="resource-form-layout">
+            <section class="resource-form-card">
+                <div class="resource-form-card__header">
+                    <div>
+                        <span class="resource-form-card__eyebrow">Captura múltiple</span>
+                        <h2 class="resource-form-card__title">Marcas nuevas</h2>
+                        <p class="resource-form-card__copy">Agrega más campos si necesitas cargar varias marcas en una sola visita.</p>
+                    </div>
+                </div>
 
-                            <script>
-                            function formatInput(input) {
-                                var value = input.value;
-
-                                // Eliminar caracteres especiales y convertir la primera letra a mayúscula y mantener el resto en minúscula
-                                var formattedValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').charAt(0)
-                                    .toUpperCase() + value.slice(1).toLowerCase();
-
-                                // Actualizar el valor del campo
-                                input.value = formattedValue;
-                            }
-                            </script>
-
-                            <div id="camposMarcaContainer">
-                                <!-- Contenedor para campos de marca -->
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-6 offset-md-4">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="agregarMarca"
-                                            name="agregarMarca">
-                                        <label class="form-check-label" for="agregarMarca">
-                                            ¿Desea agregar otra marca?
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="botonAgregarMarcaContainer" style="display: none;">
-                                <div class="form-group row">
-                                    <div class="col-md-6 offset-md-4">
-                                        <button type="button" class="btn btn-outline-primary"
-                                            onclick="agregarCampoMarca()">
-                                            Agregar Marca
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <script>
-                            document.getElementById('agregarMarca').addEventListener('change', function(e) {
-                                var checkbox = e.target;
-                                var botonAgregarMarcaContainer = document.getElementById(
-                                    'botonAgregarMarcaContainer');
-
-                                if (checkbox.checked) {
-                                    botonAgregarMarcaContainer.style.display = 'block';
-                                } else {
-                                    botonAgregarMarcaContainer.style.display = 'none';
-                                }
-                            });
-
-                            function agregarCampoMarca() {
-                                var camposMarcaContainer = document.getElementById('camposMarcaContainer');
-
-                                // Crear campo de marca utilizando Laravel Collective
-                                var marcaField = document.createElement('div');
-                                marcaField.classList.add('form-group', 'row');
-                                marcaField.innerHTML = `
-                        <label class="col-md-4 col-form-label text-md-right">Marca</label>
-                        <div class="col-md-6">
-                            <input type="text" class="form-control" name="marcas[]" required oninput="formatInput(this)">
+                {!! Form::open(['route' => 'datosv.storeunique', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+                    <div id="camposMarcaContainer" class="resource-kv mt-4">
+                        <div class="form-group mb-0 resource-kv__item">
+                            <label for="marca-0">Marca</label>
+                            <input id="marca-0" type="text" class="form-control" name="marcas[]" required oninput="formatInput(this)">
                         </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarCampoMarca(this)">
-                                Borrar
-                            </button>
-                        </div>
-                    `;
-                                camposMarcaContainer.appendChild(marcaField);
-
-                                // Asignar evento input al nuevo campo de marca
-                                var nuevoCampoMarcaInput = marcaField.querySelector('input');
-                                nuevoCampoMarcaInput.addEventListener('input', function(e) {
-                                    var value = e.target.value;
-                                    var formattedValue = formatInput(value);
-
-                                    e.target.value = formattedValue;
-                                });
-                            }
-
-                            function eliminarCampoMarca(btn) {
-                                var campoMarca = btn.closest('.form-group.row');
-                                campoMarca.remove();
-                            }
-                            </script>
-
-                            <div class="card-footer text-center">
-                                <div class="d-flex justify-content-between">
-                                    <a type="button" href="{{ route('datosv.index') }}"
-                                        class="btn btn-outline-dark">Retroceder</a>
-                                    <button type="submit" class="btn btn-success">Guardar</button>
-                                </div>
-                            </div>
-                        </fieldset>
-                        {!! Form::close() !!}
                     </div>
 
+                    <div class="resource-footer-actions mt-4">
+                        <button type="button" class="btn btn-outline-dark" onclick="agregarCampoMarca()">
+                            <i class="fas fa-plus mr-1"></i> Agregar otra
+                        </button>
+                    </div>
+
+                    <div class="resource-form-card__footer">
+                        <div class="resource-footer-actions">
+                            <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <button type="submit" class="btn btn-success">Guardar marcas</button>
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </section>
+
+            <aside class="resource-side-card">
+                <span class="resource-form-card__eyebrow">Consejos</span>
+                <h2 class="resource-form-card__title">Catálogo limpio</h2>
+                <p class="resource-side-card__copy">Un catálogo de marcas ordenado hace más ágil la captura de órdenes.</p>
+
+                <ul class="resource-side-card__list mt-4">
+                    <li>Usa el nombre comercial más reconocido por el equipo.</li>
+                    <li>Evita duplicados con diferencias mínimas como mayúsculas o espacios extra.</li>
+                    <li>Si agregas varias marcas, revisa la ortografía antes de guardar.</li>
+                </ul>
+            </aside>
         </div>
     </div>
-    @stop
+@stop
 
-    @section('js')
+<script>
+    function formatInput(input) {
+        input.value = input.value
+            .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+            .replace(/\s+/g, ' ')
+            .trimStart()
+            .replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
+            });
+    }
+
+    function agregarCampoMarca() {
+        var camposMarcaContainer = document.getElementById('camposMarcaContainer');
+        var index = camposMarcaContainer.children.length;
+        var marcaField = document.createElement('div');
+        marcaField.className = 'form-group mb-0 resource-kv__item';
+        marcaField.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-3" style="gap:.75rem;">
+                <label for="marca-${index}" class="mb-0">Marca</label>
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarCampoMarca(this)">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <input id="marca-${index}" type="text" class="form-control" name="marcas[]" required oninput="formatInput(this)">
+        `;
+        camposMarcaContainer.appendChild(marcaField);
+    }
+
+    function eliminarCampoMarca(button) {
+        button.closest('.resource-kv__item').remove();
+    }
+</script>
+
+@section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
-    @endsection
+@endsection

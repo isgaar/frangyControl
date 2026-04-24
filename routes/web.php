@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Admin\OrdenController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LandingController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,26 +18,20 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-        if(\Auth::check()){
-                return redirect('/home');
-            }else{
-                return redirect()-> route('landing.pages.welcome');
-            }
-            return view('landing.pages.index');
-        });
+    if (Auth::check()) {
+        return redirect('/home');
+    }
+
+    return redirect()->route('landing.pages.welcome');
+});
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/creditos', [App\Http\Controllers\HomeController::class, 'about'])->name('acerca');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/creditos', [HomeController::class, 'about'])->name('acerca');
 
 Route::group(['prefix' => 'landing'], function () {
-        Route::get('/welcome', [App\Http\Controllers\LandingController::class, 'welcome']) -> name('landing.pages.welcome');
-    });
+    Route::get('/welcome', [LandingController::class, 'welcome'])->name('landing.pages.welcome');
+});
 
-
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::post('verificar_nombre_usuario', 'App\Http\Controllers\Admin\OrdenController@verificarNombreUsuario')->name('verificar_nombre_usuario');
-
+Route::post('verificar_nombre_usuario', [OrdenController::class, 'verificarNombreUsuario'])->name('verificar_nombre_usuario');

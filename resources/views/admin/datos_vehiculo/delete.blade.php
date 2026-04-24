@@ -1,12 +1,12 @@
-@extends('adminlte::page')
-@include('landing.include.head')
+@extends('layouts.dashboard')
+
+@section('title', 'Eliminar marca')
 
 @section('content_header')
     @if (Session::has('status'))
         <div class="col-md-12 alert-section">
-            <div class="alert alert-{{ Session::get('status_type') }}"
-                 style="text-align: center; padding: 5px; margin-bottom: 5px;">
-                <span style="font-size: 20px; font-weight: bold;">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text">
                     {{ Session::get('status') }}
                     @php
                         Session::forget('status');
@@ -15,56 +15,43 @@
             </div>
         </div>
     @endif
+@stop
 
-    <div class="card">
-        <div class="card-header">
-            <ul>
-                <b>Eliminando</b>
-            </ul>
-        </div>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card card-danger">
-                <div class="card-header d-flex">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    <div>
-                        <h2 class="card-title">¡Advertencia!</h2>
-                        <br>
-                        <h8 class="card-text">Usted está eliminando un nombre de la tabla "Marcas de vehículos".</h8>
-                    </div>
-                </div>
-
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-12 col-sm-12 col-12">
-                            {!! Form::open(['route' => ['datosv.destroy', $datoVehiculo->id_vehiculo], 'method' => 'get']) !!}
-                            <fieldset>
-                                <div class="form-group row">
-                                    <label for="marca" class="col-md-4 col-form-label text-md-right">Marca</label>
-                                    <div class="col-md-6">
-                                        {!! Form::UTTextOnly('marca', '', 'marca', $datoVehiculo->marca, $errors, 40, true) !!}
-                                    </div>
-                                </div>
-
-                                <div class="card-footer text-center">
-                                    <div class="d-flex justify-content-between">
-                                        <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-light">Retroceder</a>
-                                            <button type="submit" class="btn btn-outline-danger">Eliminar</button>
-                                    </div>
-                                 </div>
-                            </fieldset>
-                            {!! Form::close() !!}
-                        </div>
-                    </div>
+@section('content')
+    <div class="resource-page">
+        <section class="resource-confirm-card">
+            <div class="resource-confirm-card__header">
+                <div>
+                    <span class="resource-form-card__eyebrow">Acción sensible</span>
+                    <h1 class="resource-confirm-card__title">Eliminar marca</h1>
+                    <p class="resource-confirm-card__copy">Confirma la acción antes de retirar esta marca del catálogo general.</p>
                 </div>
             </div>
-        </div>
+
+            {!! Form::open(['route' => ['datosv.destroy', $datoVehiculo->id_vehiculo], 'method' => 'get']) !!}
+                <div class="resource-kv mt-4">
+                    <div class="resource-kv__item">
+                        <span class="resource-kv__label">Marca</span>
+                        <p class="resource-kv__value">{{ $datoVehiculo->marca }}</p>
+                    </div>
+                </div>
+
+                <div class="resource-warning mt-4">
+                    <strong>Importante</strong>
+                    Si la marca ya se usa dentro de órdenes o historiales, revisa primero el impacto antes de eliminarla.
+                </div>
+
+                <div class="resource-confirm-card__footer">
+                    <div class="resource-footer-actions">
+                        <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Eliminar marca</button>
+                    </div>
+                </div>
+            {!! Form::close() !!}
+        </section>
     </div>
 @stop
 
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection
-

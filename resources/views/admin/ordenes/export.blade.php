@@ -222,7 +222,7 @@ textarea {
             <div class="form-value">{{ strtoupper($orden->noSerievehiculo) }}</div>
         </div>
 
-        <div style="clear: both;"></div>
+        <div class="dashboard-clear"></div>
 
         <h3 class="card-title">Datos del servicio</h3>
 

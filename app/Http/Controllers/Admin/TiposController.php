@@ -72,7 +72,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index'));
+            return redirect(route('tipo_servicio.index'));
     
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -147,7 +147,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha editado correctamente el nombre del servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index'));
+            return redirect(route('tipo_servicio.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -180,7 +180,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha eliminado correctamente el nombre del servicio');
             Session::flash('status_type', 'warning');
-            return redirect(route('datosv.index'));
+            return redirect(route('tipo_servicio.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();

@@ -1,16 +1,12 @@
-@extends('adminlte::page')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/minMaxTimePlugin.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@extends('layouts.dashboard')
+
+@section('title', 'Editar orden')
 
 @section('content_header')
 @if (Session::has('status'))
 <div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 20px; font-weight: bold;">
+    <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+        <span class="dashboard-legacy-alert__text">
             {{ Session::get('status') }}
             @php
             Session::forget('status');
@@ -32,6 +28,25 @@
 }
 </style>
 
+<div class="resource-page">
+    <section class="resource-hero">
+        <div class="resource-hero__top">
+            <div class="resource-hero__copy">
+                <span class="resource-hero__eyebrow">Órdenes</span>
+                <h1 class="resource-hero__title">Editar orden #{{ $orden->id_ordenes }}</h1>
+                <p>Actualiza los datos del cliente, la unidad y el servicio sin perder el contexto completo de la orden.</p>
+            </div>
+
+            <div class="resource-hero__actions">
+                <a href="{{ route('ordenes.show', $orden->id_ordenes) }}" class="btn btn-outline-light">
+                    <i class="fas fa-eye mr-1"></i> Ver detalle
+                </a>
+                <a href="{{ route('ordenes.index') }}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+                </a>
+            </div>
+        </div>
+    </section>
 
 <div class="card">
     <div class="row">
@@ -328,8 +343,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6" id="motivo-field"
-                                style="{{ $orden->status == 'cancelada' ? 'display: block;' : 'display: none;' }}">
+                            <div class="col-md-6 {{ $orden->status == 'cancelada' ? '' : 'dashboard-hidden' }}" id="motivo-field">
                                 <div class="form-group">
                                     <label for="motivo">Motivo</label>
                                     {!! Form::text('motivo', null, ['class' => 'form-control', 'id' => 'motivo']) !!}
@@ -340,7 +354,7 @@
 
                             </div>
                         </div>
-                        <div id="photoFieldsContainer" class="input-group mb-3" style="display: none;">
+                        <div id="photoFieldsContainer" class="input-group mb-3 dashboard-hidden">
                             <div class="photoField input-group" id="photoField1">
                                 <label class="input-group-text" for="photo1">Tomar fotografía:</label>
                                 <input type="file" class="form-control" accept="image/*" capture="camera" id="photo1"
@@ -348,14 +362,14 @@
                                     onchange="previewPhoto(event, 'photoPreview1', 1); toggleAddMorePhotosButton();">
                                 <div class="mt-2">
                                     <img id="photoPreview1" src="#" alt="Previsualización"
-                                        style="max-width: 200px; max-height: 200px;">
+                                        class="dashboard-photo-preview">
                                     <button type="button" class="btn btn-outline-danger"
                                         onclick="deletePhotoField(1); toggleAddMorePhotosButton();">Eliminar</button>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="addMorePhotosContainer" class="mt-2" style="display: none;">
+                        <div id="addMorePhotosContainer" class="mt-2 dashboard-hidden">
                             <button type="button" class="btn btn-outline-light" onclick="addPhotoField()">Agregar más
                                 fotos</button>
                         </div>
@@ -705,9 +719,17 @@
                 });
                 </script>
 
+                </div>
                 @stop
 
+                @section('css')
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                @endsection
+
                 @section('js')
+                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/minMaxTimePlugin.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
                 <script src="{{ asset('js/validatorFields.js') }}">
 
                 </script>

@@ -1,12 +1,12 @@
 <?php
+
 namespace App\Models;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Model;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -16,7 +16,6 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var string[]
      */
-    
     protected $fillable = [
         'name',
         'email',
@@ -46,17 +45,5 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
-    }
-    //cambia fotos de usuario aleatoriamente
-    public function adminlte_image(){
-        return 'http://picsum.photos/300/300';
-    }
-
-    public function adminlte_desc(){
-        return 'Administrador';
-    }
-
-    public function adminlte_profile_url(){
-        return 'profile/username';
     }
 }

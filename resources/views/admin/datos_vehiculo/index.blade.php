@@ -1,4 +1,4 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
 
 @section('title', 'Datos generales')
 
@@ -11,21 +11,6 @@
     };
 @endphp
 
-@section('content_header')
-    <div class="general-header d-flex flex-column flex-lg-row align-items-lg-center justify-content-between">
-        <div>
-            <h1 class="mb-1">Datos generales</h1>
-            <p class="text-muted mb-0">Administra marcas, tipos de vehiculo y servicios desde un solo panel.</p>
-        </div>
-
-        <div class="general-header-actions d-flex">
-            <a href="{{ route('datosv.create') }}" class="btn btn-primary shadow-sm">
-                <i class="fas fa-save mr-1"></i> Guardado general
-            </a>
-        </div>
-    </div>
-@stop
-
 @section('content')
     @if (session('status'))
         <div class="alert alert-{{ $flashClass }} alert-dismissible fade show shadow-sm" role="alert">
@@ -36,51 +21,67 @@
         </div>
     @endif
 
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="general-summary-card">
-                <span class="general-summary-label">Marcas</span>
-                <strong>{{ $dataVehiculos->count() }}</strong>
-                <small>Catalogo disponible para capturar vehiculos.</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="general-summary-card">
-                <span class="general-summary-label">Tipos</span>
-                <strong>{{ $dataTiposVehiculos->count() }}</strong>
-                <small>Clasificaciones como sedan, SUV o pickup.</small>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="general-summary-card">
-                <span class="general-summary-label">Servicios</span>
-                <strong>{{ $dataServicios->count() }}</strong>
-                <small>Opciones base para ordenes de servicio.</small>
-            </div>
-        </div>
-    </div>
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Catálogos base</span>
+                    <h1 class="resource-hero__title">Datos generales del taller</h1>
+                    <p>Administra marcas, tipos de vehículo y servicios desde un panel más claro, con accesos directos a cada catálogo.</p>
+                </div>
 
-    <div class="row">
-        <div class="col-xl-4 col-lg-6 d-flex">
-            <div class="card general-data-card w-100">
-                <div class="card-header border-0">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h3 class="card-title mb-1">Marcas de vehiculos</h3>
-                            <small class="text-muted">Catalogo para seleccionar la marca de la unidad.</small>
-                        </div>
-                        <a href="{{ route('datosv.createunique') }}" class="btn btn-outline-primary btn-sm" title="Agregar marca">
-                            <i class="fas fa-plus mr-1"></i> Nueva
+                <div class="resource-hero__actions">
+                    <a href="{{ route('datosv.create') }}" class="btn btn-primary">
+                        <i class="fas fa-layer-group mr-1"></i> Carga general
+                    </a>
+                    <a href="{{ route('datosv.createunique') }}" class="btn btn-outline-light">
+                        <i class="fas fa-car-side mr-1"></i> Nueva marca
+                    </a>
+                </div>
+            </div>
+
+            <div class="resource-metrics">
+                <article class="resource-metric">
+                    <span class="resource-metric__label">Marcas</span>
+                    <p class="resource-metric__value">{{ $dataVehiculos->count() }}</p>
+                    <p class="resource-metric__copy">Catálogo disponible para capturar unidades.</p>
+                </article>
+                <article class="resource-metric">
+                    <span class="resource-metric__label">Tipos</span>
+                    <p class="resource-metric__value">{{ $dataTiposVehiculos->count() }}</p>
+                    <p class="resource-metric__copy">Clasificaciones operativas listas para usar.</p>
+                </article>
+                <article class="resource-metric">
+                    <span class="resource-metric__label">Servicios</span>
+                    <p class="resource-metric__value">{{ $dataServicios->count() }}</p>
+                    <p class="resource-metric__copy">Opciones base para nuevas órdenes de servicio.</p>
+                </article>
+            </div>
+        </section>
+
+        <div class="resource-catalog-grid">
+            <section class="resource-overview-card">
+                <div class="resource-panel__header">
+                    <div>
+                        <span class="resource-panel__eyebrow">Marcas</span>
+                        <h2 class="resource-overview-card__title">Marcas de vehículos</h2>
+                        <p class="resource-panel__copy">Gestiona el catálogo de marcas que aparece al registrar una orden.</p>
+                    </div>
+
+                    <div class="resource-cta-group">
+                        <a href="{{ route('datosv.createunique') }}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-plus mr-1"></i> Agregar
                         </a>
                     </div>
                 </div>
-                <div class="card-body pt-0">
+
+                <div class="resource-table-wrap mt-4">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>Marca</th>
-                                    <th class="text-right general-actions-col">Acciones</th>
+                                    <th class="text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -88,50 +89,52 @@
                                     <tr>
                                         <td>{{ $row->marca }}</td>
                                         <td class="text-right">
-                                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('datosv.edit', $row->id_vehiculo) }}" title="Editar marca">
-                                                <i class="fas fa-pen"></i>
-                                            </a>
-                                            <a class="btn btn-sm btn-outline-danger" href="{{ route('datosv.delete', $row->id_vehiculo) }}" title="Eliminar marca">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <div class="resource-actions justify-content-end">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('datosv.edit', $row->id_vehiculo) }}" title="Editar marca">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('datosv.delete', $row->id_vehiculo) }}" title="Eliminar marca">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
-                                            <div class="general-empty-state">
-                                                No hay marcas registradas todavia.
-                                            </div>
-                                        </td>
+                                        <td colspan="2" class="resource-empty">No hay marcas registradas todavía.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="col-xl-4 col-lg-6 d-flex">
-            <div class="card general-data-card w-100">
-                <div class="card-header border-0">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h3 class="card-title mb-1">Tipos de vehiculos</h3>
-                            <small class="text-muted">Clasifica mejor cada unidad dentro del sistema.</small>
-                        </div>
-                        <a href="{{ route('tipo_vehiculo.create') }}" class="btn btn-outline-primary btn-sm" title="Agregar tipo">
+            <section class="resource-overview-card">
+                <div class="resource-panel__header">
+                    <div>
+                        <span class="resource-panel__eyebrow">Clasificación</span>
+                        <h2 class="resource-overview-card__title">Tipos de vehículo</h2>
+                        <p class="resource-panel__copy">Define cómo se clasifican las unidades dentro del sistema.</p>
+                    </div>
+
+                    <div class="resource-cta-group">
+                        <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-arrow-right mr-1"></i> Ver módulo
+                        </a>
+                        <a href="{{ route('tipo_vehiculo.create') }}" class="btn btn-outline-dark btn-sm">
                             <i class="fas fa-plus mr-1"></i> Nuevo
                         </a>
                     </div>
                 </div>
-                <div class="card-body pt-0">
+
+                <div class="resource-table-wrap mt-4">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>Tipo</th>
-                                    <th class="text-right general-actions-col">Acciones</th>
+                                    <th class="text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -139,50 +142,52 @@
                                     <tr>
                                         <td>{{ $row->tipo }}</td>
                                         <td class="text-right">
-                                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
-                                                <i class="fas fa-pen"></i>
-                                            </a>
-                                            <a class="btn btn-sm btn-outline-danger" href="{{ route('tipo_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <div class="resource-actions justify-content-end">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('tipo_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
-                                            <div class="general-empty-state">
-                                                No hay tipos de vehiculo registrados todavia.
-                                            </div>
-                                        </td>
+                                        <td colspan="2" class="resource-empty">No hay tipos de vehículo registrados todavía.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
 
-        <div class="col-xl-4 col-lg-12 d-flex">
-            <div class="card general-data-card w-100">
-                <div class="card-header border-0">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h3 class="card-title mb-1">Nombres de servicios</h3>
-                            <small class="text-muted">Servicios disponibles para usar dentro de las ordenes.</small>
-                        </div>
-                        <a href="{{ route('tipo_servicio.create') }}" class="btn btn-outline-primary btn-sm" title="Agregar servicio">
+            <section class="resource-overview-card">
+                <div class="resource-panel__header">
+                    <div>
+                        <span class="resource-panel__eyebrow">Servicios</span>
+                        <h2 class="resource-overview-card__title">Nombres de servicios</h2>
+                        <p class="resource-panel__copy">Mantén ordenado el catálogo de trabajos disponibles para el taller.</p>
+                    </div>
+
+                    <div class="resource-cta-group">
+                        <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-arrow-right mr-1"></i> Ver módulo
+                        </a>
+                        <a href="{{ route('tipo_servicio.create') }}" class="btn btn-outline-dark btn-sm">
                             <i class="fas fa-plus mr-1"></i> Nuevo
                         </a>
                     </div>
                 </div>
-                <div class="card-body pt-0">
+
+                <div class="resource-table-wrap mt-4">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-hover mb-0">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
-                                    <th class="text-right general-actions-col">Acciones</th>
+                                    <th class="text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -190,121 +195,26 @@
                                     <tr>
                                         <td>{{ $row->nombreServicio }}</td>
                                         <td class="text-right">
-                                            <a class="btn btn-sm btn-outline-secondary" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar servicio">
-                                                <i class="fas fa-pen"></i>
-                                            </a>
-                                            <a class="btn btn-sm btn-outline-danger" href="{{ route('tipo_servicio.delete', $row->id_servicio) }}" title="Eliminar servicio">
-                                                <i class="fas fa-trash"></i>
-                                            </a>
+                                            <div class="resource-actions justify-content-end">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar servicio">
+                                                    <i class="fas fa-pen"></i>
+                                                </a>
+                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('tipo_servicio.delete', $row->id_servicio) }}" title="Eliminar servicio">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="2">
-                                            <div class="general-empty-state">
-                                                No hay servicios registrados todavia.
-                                            </div>
-                                        </td>
+                                        <td colspan="2" class="resource-empty">No hay servicios registrados todavía.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     </div>
-@stop
-
-@section('css')
-    <style>
-        .general-header {
-            gap: 1rem;
-        }
-
-        .general-header-actions {
-            gap: 0.75rem;
-        }
-
-        .general-summary-card {
-            height: 100%;
-            padding: 1.1rem 1.2rem;
-            border: 1px solid rgba(30, 41, 59, 0.08);
-            border-radius: 1rem;
-            background: linear-gradient(135deg, #ffffff, #f8fbff);
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-        }
-
-        .general-summary-card strong {
-            display: block;
-            margin: 0.35rem 0;
-            color: #1e3a8a;
-            font-size: 2rem;
-            line-height: 1;
-        }
-
-        .general-summary-card small {
-            display: block;
-            color: #64748b;
-            font-size: 0.92rem;
-            line-height: 1.5;
-        }
-
-        .general-summary-label {
-            display: inline-block;
-            color: #334155;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .general-data-card {
-            border: 0;
-            border-radius: 1.15rem;
-            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
-        }
-
-        .general-data-card .card-header {
-            padding: 1.15rem 1.2rem 0.75rem;
-            background: transparent;
-        }
-
-        .general-data-card .card-body {
-            padding: 0 1.2rem 1.2rem;
-        }
-
-        .general-data-card .card-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
-        .general-data-card table thead th {
-            border-top: 0;
-            color: #475569;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .general-data-card table tbody td {
-            vertical-align: middle;
-        }
-
-        .general-actions-col {
-            width: 112px;
-        }
-
-        .general-empty-state {
-            padding: 1rem 0.25rem;
-            color: #64748b;
-            text-align: center;
-        }
-
-        @media (max-width: 991.98px) {
-            .general-header,
-            .general-header-actions {
-                gap: 0.75rem;
-            }
-        }
-    </style>
 @stop

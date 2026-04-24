@@ -1,10 +1,12 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
+
+@section('title', 'Editar servicio')
 
 @section('content_header')
     @if (Session::has('status'))
         <div class="col-md-12 alert-section">
-            <div class="alert alert-{{ Session::get('status_type') }}" style="text-align: center; padding: 5px; margin-bottom: 5px;">
-                <span style="font-size: 10px; font-weight: bold;">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text dashboard-legacy-alert__text--compact">
                     {{ Session::get('status') }}
                     @php
                         Session::forget('status');
@@ -13,54 +15,63 @@
             </div>
         </div>
     @endif
-
-    @endsection
+@stop
 
 @section('content')
-
-    <div class="card">
-        <div class="card-header">
-            <ul>
-                <b>Editando Nombres</b>
-            </ul>
-        </div>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card card-warning">
-                <div class="card-header d-flex">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    <div>
-                        <h2 class="card-title">¡Advertencia!</h2>
-                        <br>
-                        <h8 class="card-text">Usted está editando datos en la tabla "Nombres de servicio".</h8>
-                    </div>
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Catálogo de servicios</span>
+                    <h1 class="resource-hero__title">Editar servicio</h1>
+                    <p>Ajusta el nombre para mantener el catálogo más claro y fácil de usar al crear órdenes.</p>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-12 col-sm-12 col-12">
-                            <!-- Campos para DatosVehiculo -->
-                            {!! Form::model($tipoServicio, ['route' => ['tipo_servicio.update', $tipoServicio->id_servicio], 'method' => 'put']) !!}
-                                <fieldset>
-                                    <div class="form-group row">
-                                        <label for="nombreServicio" class="col-md-4 col-form-label text-md-right">Nombre del servicio</label>
-                                        <div class="col-md-6">
-                                            {!! Form::UTTextOnly('nombreServicio', '', 'nombreServicio', $tipoServicio->nombreServicio, $errors, 40, true) !!}
-                                        </div>
-                                    </div>
-                                    <div class="card-footer text-center">
-                                        <div class="d-flex justify-content-between">
-                                            <a type="button" href="{{ route('datosv.index') }}" class="btn btn-light">Retroceder</a>
-                                            <button type="submit" class="btn btn-warning">Actualizar</button>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            {!! Form::close() !!}
-                        </div>
-                    </div>
+
+                <div class="resource-hero__actions">
+                    <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al módulo
+                    </a>
                 </div>
             </div>
+        </section>
+
+        <div class="resource-form-layout">
+            <section class="resource-form-card">
+                <div class="resource-form-card__header">
+                    <div>
+                        <span class="resource-form-card__eyebrow">Edición</span>
+                        <h2 class="resource-form-card__title">{{ $tipoServicio->nombreServicio }}</h2>
+                        <p class="resource-form-card__copy">Guarda el cambio cuando el nombre final quede exactamente como quieres verlo en el panel.</p>
+                    </div>
+                </div>
+
+                {!! Form::model($tipoServicio, ['route' => ['tipo_servicio.update', $tipoServicio->id_servicio], 'method' => 'put']) !!}
+                    <div class="resource-kv mt-4">
+                        <div class="form-group mb-0">
+                            <label for="nombreServicio">Nombre del servicio</label>
+                            {!! Form::UTTextOnly('nombreServicio', '', 'nombreServicio', $tipoServicio->nombreServicio, $errors, 40, true) !!}
+                        </div>
+                    </div>
+
+                    <div class="resource-form-card__footer">
+                        <div class="resource-footer-actions">
+                            <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <button type="submit" class="btn btn-warning">Actualizar servicio</button>
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </section>
+
+            <aside class="resource-side-card">
+                <span class="resource-form-card__eyebrow">Tip</span>
+                <h2 class="resource-form-card__title">Cómo nombrarlo</h2>
+                <p class="resource-side-card__copy">Usa una etiqueta fácil de reconocer para recepción y operación.</p>
+
+                <ul class="resource-side-card__list mt-4">
+                    <li>Evita abreviaturas demasiado internas si más personas usarán el catálogo.</li>
+                    <li>Un nombre claro mejora las búsquedas dentro del módulo de órdenes.</li>
+                </ul>
+            </aside>
         </div>
     </div>
 @stop
@@ -68,6 +79,3 @@
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection
-
-
-

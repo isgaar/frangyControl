@@ -1,16 +1,12 @@
-@extends('adminlte::page')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/minMaxTimePlugin.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@extends('layouts.dashboard')
+
+@section('title', 'Detalle de orden')
 
 @section('content_header')
 @if (Session::has('status'))
 <div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 20px; font-weight: bold;">
+    <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+        <span class="dashboard-legacy-alert__text">
             {{ Session::get('status') }}
             @php
             Session::forget('status');
@@ -30,6 +26,25 @@
 }
 </style>
 
+<div class="resource-page">
+    <section class="resource-hero">
+        <div class="resource-hero__top">
+            <div class="resource-hero__copy">
+                <span class="resource-hero__eyebrow">Órdenes</span>
+                <h1 class="resource-hero__title">Detalle de la orden #{{ $orden->id_ordenes }}</h1>
+                <p>Consulta cliente, unidad, servicio, estado y acciones rápidas desde una vista más clara.</p>
+            </div>
+
+            <div class="resource-hero__actions">
+                <a href="{{ route('ordenes.edit', $orden->id_ordenes) }}" class="btn btn-primary">
+                    <i class="fas fa-pen mr-1"></i> Editar orden
+                </a>
+                <a href="{{ route('ordenes.index') }}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+                </a>
+            </div>
+        </div>
+    </section>
 
 <div class="card">
     <div class="row">
@@ -279,8 +294,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-6" id="motivo-field"
-                                style="{{ !is_null($orden->motivo) ? '' : 'display: none;' }}">
+                            <div class="col-md-6 {{ !is_null($orden->motivo) ? '' : 'dashboard-hidden' }}" id="motivo-field">
                                 <div class="form-group">
                                     <label for="motivo">Motivo</label>
                                     {!! Form::text('motivo',  $orden->motivo, ['class' => 'form-control', 'id' => 'motivo',
@@ -315,6 +329,7 @@
                         </button>
 
                     </div>
+                </div>
                 </div>
                 @stop
 

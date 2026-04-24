@@ -11,14 +11,18 @@ CONTAINER_NAME="${CONTAINER_NAME:-frangy-control-app}"
 DB_CONTAINER_NAME="${DB_CONTAINER_NAME:-frangy-control-db}"
 DB_VOLUME_NAME="${DB_VOLUME_NAME:-frangy-control-db-data}"
 NETWORK_NAME="${NETWORK_NAME:-frangy-control-net}"
+RECREATE_EXISTING_STACK="${RECREATE_EXISTING_STACK:-0}"
+REMOVE_DATA_ON_BUILD="${REMOVE_DATA_ON_BUILD:-0}"
+USE_PODMAN_LAYERS="${USE_PODMAN_LAYERS:-1}"
 
 print_usage() {
     cat <<EOF
-Uso: $(basename "$0") [--help]
+Uso: $(basename "$0") [--help] [--clean] [--clean-data]
 
-Antes de construir, este script detecta y elimina cualquier entorno previo
-de Frangy asociado a los nombres configurados: pod, contenedores, volumen
-de datos y red si existen.
+Por defecto solo construye la imagen y conserva cualquier entorno ya levantado.
+Si quieres reconstruir desde cero, usa --clean para eliminar pod, contenedores
+y red antes de construir. Usa --clean-data si tambien quieres eliminar el
+volumen de MySQL.
 EOF
 }
 
@@ -28,6 +32,13 @@ parse_args() {
             -h|--help)
                 print_usage
                 exit 0
+                ;;
+            --clean)
+                RECREATE_EXISTING_STACK="1"
+                ;;
+            --clean-data)
+                RECREATE_EXISTING_STACK="1"
+                REMOVE_DATA_ON_BUILD="1"
                 ;;
             *)
                 echo "Opcion no reconocida: $1" >&2
@@ -115,6 +126,11 @@ cleanup_existing_frangy_stack() {
     local tool="$1"
     local found_existing="0"
 
+    if [[ "${RECREATE_EXISTING_STACK}" != "1" ]]; then
+        echo "Se conservara cualquier entorno previo de Frangy. Usa --clean para recrearlo desde cero."
+        return 0
+    fi
+
     if [[ "${tool}" != "podman" ]]; then
         if container_exists "${tool}" "${CONTAINER_NAME}" || \
            container_exists "${tool}" "${DB_CONTAINER_NAME}" || \
@@ -146,7 +162,12 @@ cleanup_existing_frangy_stack() {
 
     remove_container_if_exists "${tool}" "${CONTAINER_NAME}"
     remove_container_if_exists "${tool}" "${DB_CONTAINER_NAME}"
-    remove_volume_if_exists "${tool}" "${DB_VOLUME_NAME}"
+    if [[ "${REMOVE_DATA_ON_BUILD}" == "1" ]]; then
+        remove_volume_if_exists "${tool}" "${DB_VOLUME_NAME}"
+    else
+        echo "Se conservara el volumen ${DB_VOLUME_NAME}. Usa --clean-data para eliminarlo."
+    fi
+
     remove_network_if_exists "${tool}" "${NETWORK_NAME}"
 }
 
@@ -156,9 +177,17 @@ CONTAINER_TOOL="$(detect_container_tool)"
 cleanup_existing_frangy_stack "${CONTAINER_TOOL}"
 
 echo "Construyendo la imagen ${IMAGE_NAME}:${IMAGE_TAG} usando ${CONTAINER_TOOL}..."
+BUILD_ARGS=(
+    -t "${IMAGE_NAME}:${IMAGE_TAG}"
+    -f "${DOCKERFILE_PATH}"
+)
+
+if [[ "${CONTAINER_TOOL}" == "podman" && "${USE_PODMAN_LAYERS}" == "1" ]]; then
+    BUILD_ARGS+=(--layers)
+fi
+
 "${CONTAINER_TOOL}" build \
-    -t "${IMAGE_NAME}:${IMAGE_TAG}" \
-    -f "${DOCKERFILE_PATH}" \
+    "${BUILD_ARGS[@]}" \
     "${ROOT_DIR}"
 
 echo "Imagen construida correctamente: ${IMAGE_NAME}:${IMAGE_TAG}"

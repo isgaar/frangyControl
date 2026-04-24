@@ -1,93 +1,81 @@
-@extends('adminlte::page')
-@include('landing.include.head')
+@extends('layouts.dashboard')
+
+@section('title', 'Editar marca')
 
 @section('content_header')
-@if (Session::has('status'))
-<div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 10px; font-weight: bold;">
-            {{ Session::get('status') }}
-            @php
-            Session::forget('status');
-            @endphp
-        </span>
-    </div>
-</div>
-@endif
-@section('content')
-
-<div class="card">
-    <div class="card-header">
-        <ul>
-            <b>Editando Marca</b>
-        </ul>
-    </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card card-warning">
-            <div class="card-header d-flex">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                <div>
-                    <h2 class="card-title">¡Advertencia!</h2>
-                    <br>
-                    <h8 class="card-text">Usted está editando datos en la tabla "Marcas de vehículos".</h8>
-                </div>
-            </div>
-
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-lg-12 col-sm-12 col-12">
-                        <!-- Campos para DatosVehiculo -->
-                        {!! Form::model($datoVehiculo, ['route' => ['datosv.update', $datoVehiculo->id_vehiculo],
-                        'method' => 'put']) !!}
-                        <fieldset>
-                            <div class="form-group row">
-                                <label for="marca" class="col-md-4 col-form-label text-md-right">Marca</label>
-                                <div class="col-md-6">
-                                    {!! Form::UTTextOnly('marca', '', 'marca', $datoVehiculo->marca, $errors, 40, true)
-                                    !!}
-                                </div>
-                            </div>
-
-                            <script>
-                            var marcaInput = document.getElementById('marca');
-
-                            // Función para convertir la primera letra a mayúscula y mantener el resto en minúscula
-                            function formatFirstLetterToUpper(value) {
-                                return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-                            }
-
-                            // Evento input para convertir la primera letra en mayúscula al ingresar texto
-                            marcaInput.addEventListener('input', function(e) {
-                                var value = e.target.value;
-                                var formattedValue = formatFirstLetterToUpper(value);
-
-                                marcaInput.value = formattedValue;
-                            });
-
-                            // Convertir el valor inicial a la carga de la página
-                            marcaInput.value = formatFirstLetterToUpper(marcaInput.value);
-                            </script>
-
-                            <div class="card-footer text-center">
-                                <div class="d-flex justify-content-between">
-                                    <a type="button" href="{{ route('datosv.index') }}"
-                                        class="btn btn-outline-dark">Retroceder</a>
-                                    <button type="submit" class="btn btn-warning">Actualizar</button>
-                                </div>
-                            </div>
-                        </fieldset>
-                        {!! Form::close() !!}
-                    </div>
-                </div>
+    @if (Session::has('status'))
+        <div class="col-md-12 alert-section">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text dashboard-legacy-alert__text--compact">
+                    {{ Session::get('status') }}
+                    @php
+                        Session::forget('status');
+                    @endphp
+                </span>
             </div>
         </div>
+    @endif
+@stop
+
+@section('content')
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Marcas de vehículos</span>
+                    <h1 class="resource-hero__title">Editar marca</h1>
+                    <p>Actualiza la marca para mantener consistente el catálogo usado por recepción y taller.</p>
+                </div>
+
+                <div class="resource-hero__actions">
+                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al panel
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="resource-form-layout">
+            <section class="resource-form-card">
+                <div class="resource-form-card__header">
+                    <div>
+                        <span class="resource-form-card__eyebrow">Edición</span>
+                        <h2 class="resource-form-card__title">{{ $datoVehiculo->marca }}</h2>
+                        <p class="resource-form-card__copy">Guarda el ajuste cuando el nombre refleje correctamente la marca final.</p>
+                    </div>
+                </div>
+
+                {!! Form::model($datoVehiculo, ['route' => ['datosv.update', $datoVehiculo->id_vehiculo], 'method' => 'put']) !!}
+                    <div class="resource-kv mt-4">
+                        <div class="form-group mb-0">
+                            <label for="marca">Marca</label>
+                            {!! Form::UTTextOnly('marca', '', 'marca', $datoVehiculo->marca, $errors, 40, true) !!}
+                        </div>
+                    </div>
+
+                    <div class="resource-form-card__footer">
+                        <div class="resource-footer-actions">
+                            <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <button type="submit" class="btn btn-warning">Actualizar marca</button>
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </section>
+
+            <aside class="resource-side-card">
+                <span class="resource-form-card__eyebrow">Tip</span>
+                <h2 class="resource-form-card__title">Evita duplicados</h2>
+                <p class="resource-side-card__copy">Una marca bien escrita reduce errores al seleccionar vehículos dentro de las órdenes.</p>
+
+                <ul class="resource-side-card__list mt-4">
+                    <li>Usa el nombre oficial o el más común dentro del taller.</li>
+                    <li>Revisa que no exista la misma marca con otra capitalización.</li>
+                </ul>
+            </aside>
+        </div>
     </div>
-</div>
 @stop
 
 @section('js')
-<script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection

@@ -7,6 +7,7 @@ use App\Models\DatosVehiculo;
 use App\Models\Ordenes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Route;
 
 class HomeController extends Controller
 {
@@ -29,12 +30,15 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
-        $limit = $request->input('limit', 5);
-        $order = $request->input('order', 'desc');
+        $limit = (int) $request->input('limit', 5);
+        $order = $request->input('order', 'desc') === 'asc' ? 'asc' : 'desc';
+        $today = Carbon::today();
+        $periodStart = now()->startOfMonth();
+        $user = $request->user();
 
         $query = Ordenes::query()->with(['cliente', 'vehiculo', 'servicio', 'user']);
 
-        if (trim($search) != '') {
+        if (trim($search) !== '') {
             $query->where(function ($query) use ($search) {
                 $query->where('id_ordenes', 'like', "%$search%")
                     ->orWhereHas('cliente', function ($query) use ($search) {
@@ -53,14 +57,26 @@ class HomeController extends Controller
             });
         }
 
-
-
         $ordenes = $query->orderBy('id_ordenes', $order)->paginate($limit)->withQueryString();
+        $totalOrders = Ordenes::count();
+        $ordersInProgress = Ordenes::where('status', 'en proceso')->count();
+        $finishedOrders = Ordenes::where('status', 'finalizada')->count();
+        $overdueOrdersCount = Ordenes::query()
+            ->where('status', '!=', 'finalizada')
+            ->whereNotNull('fechaEntrega')
+            ->whereDate('fechaEntrega', '<', $today)
+            ->count();
+        $newClientsInPeriod = Cliente::query()
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+        $unassignedOrdersCount = Ordenes::query()
+            ->whereNull('id')
+            ->count();
 
         $stats = [
             [
                 'label' => 'Órdenes registradas',
-                'value' => Ordenes::count(),
+                'value' => $totalOrders,
                 'icon' => 'fas fa-clipboard-list',
                 'accent' => 'primary',
                 'caption' => 'Histórico total',
@@ -68,7 +84,7 @@ class HomeController extends Controller
             ],
             [
                 'label' => 'En proceso',
-                'value' => Ordenes::where('status', 'en proceso')->count(),
+                'value' => $ordersInProgress,
                 'icon' => 'fas fa-tools',
                 'accent' => 'info',
                 'caption' => 'Trabajo activo',
@@ -76,27 +92,35 @@ class HomeController extends Controller
             ],
             [
                 'label' => 'Finalizadas',
-                'value' => Ordenes::where('status', 'finalizada')->count(),
+                'value' => $finishedOrders,
                 'icon' => 'fas fa-check-circle',
                 'accent' => 'success',
                 'caption' => 'Órdenes cerradas',
                 'url' => route('ordenes.index'),
             ],
             [
-                'label' => 'Clientes',
-                'value' => Cliente::count(),
-                'icon' => 'fas fa-user-tie',
+                'label' => 'Vencidas',
+                'value' => $overdueOrdersCount,
+                'icon' => 'fas fa-triangle-exclamation',
+                'accent' => 'danger',
+                'caption' => 'Fecha de entrega vencida',
+                'url' => route('ordenes.index'),
+            ],
+            [
+                'label' => 'Clientes del mes',
+                'value' => $newClientsInPeriod,
+                'icon' => 'fas fa-user-plus',
                 'accent' => 'warning',
-                'caption' => 'Registros activos',
+                'caption' => 'Altas del periodo',
                 'url' => route('clientes.index'),
             ],
             [
-                'label' => 'Vehículos',
-                'value' => DatosVehiculo::count(),
-                'icon' => 'fas fa-car-side',
-                'accent' => 'dark',
-                'caption' => 'Catálogo cargado',
-                'url' => route('datosv.index'),
+                'label' => 'Sin asignar',
+                'value' => $unassignedOrdersCount,
+                'icon' => 'fas fa-user-clock',
+                'accent' => 'danger',
+                'caption' => 'Pendientes de responsable',
+                'url' => route('ordenes.index'),
             ],
         ];
 
@@ -131,6 +155,86 @@ class HomeController extends Controller
             ->limit(5)
             ->get();
 
+        $operationalAlerts = collect([
+            $unassignedOrdersCount > 0 ? [
+                'title' => 'Órdenes sin asignar',
+                'count' => $unassignedOrdersCount,
+                'tone' => 'warning',
+                'message' => 'Conviene asignar responsable para mantener trazabilidad y seguimiento.',
+            ] : null,
+            $overdueOrdersCount > 0 ? [
+                'title' => 'Órdenes vencidas',
+                'count' => $overdueOrdersCount,
+                'tone' => 'danger',
+                'message' => 'Hay órdenes con fechaEntrega anterior a hoy y todavía abiertas.',
+            ] : null,
+        ])->filter()->values();
+
+        $operationalMessages = collect([
+            [
+                'title' => 'Estado operativo',
+                'eyebrow' => $ordersInProgress > 0 ? 'Activo' : 'En calma',
+                'tone' => $ordersInProgress > 0 ? 'info' : 'success',
+                'message' => $ordersInProgress > 0
+                    ? 'El taller mantiene órdenes en curso; conviene vigilar entregas y asignaciones.'
+                    : 'No hay órdenes en proceso registradas en este momento.',
+            ],
+            [
+                'title' => 'Clientes del periodo',
+                'eyebrow' => 'Crecimiento',
+                'tone' => $newClientsInPeriod > 0 ? 'success' : 'warning',
+                'message' => $newClientsInPeriod > 0
+                    ? "Este mes se registraron {$newClientsInPeriod} clientes nuevos."
+                    : 'Todavía no se han registrado clientes nuevos en el periodo actual.',
+            ],
+            [
+                'title' => 'Búsqueda aplicada',
+                'eyebrow' => $search !== '' ? 'Filtrando' : 'Libre',
+                'tone' => $search !== '' ? 'info' : 'success',
+                'message' => $search !== ''
+                    ? "La lista actual está filtrada por el criterio \"{$search}\"."
+                    : 'La vista muestra los registros recientes sin filtros activos.',
+            ],
+        ])->values();
+
+        $quickActions = collect([
+            [
+                'label' => 'Registrar orden',
+                'route' => 'ordenes.create',
+                'icon' => 'fas fa-file-circle-plus',
+            ],
+            [
+                'label' => 'Registrar cliente',
+                'route' => 'clientes.create',
+                'icon' => 'fas fa-user-plus',
+            ],
+            [
+                'label' => 'Registrar vehículo',
+                'route' => 'datosv.createunique',
+                'icon' => 'fas fa-car',
+                'can' => 'admin.datosv.vehiculosnom',
+            ],
+        ])->filter(function (array $action) use ($user) {
+            if (!Route::has($action['route'])) {
+                return false;
+            }
+
+            if (empty($action['can'])) {
+                return true;
+            }
+
+            return $user && method_exists($user, 'can') && $user->can($action['can']);
+        })->values();
+
+        $dashboardProfile = [
+            'primary_role' => $user && method_exists($user, 'getRoleNames')
+                ? ($user->getRoleNames()->first() ?: 'Sin rol')
+                : 'Sin rol',
+            'roles' => $user && method_exists($user, 'getRoleNames')
+                ? $user->getRoleNames()->values()->all()
+                : [],
+        ];
+
         return view('home', [
             'ordenes' => $ordenes,
             'search' => $search,
@@ -140,6 +244,10 @@ class HomeController extends Controller
             'recentOrders' => $recentOrders,
             'recentClients' => $recentClients,
             'recentVehicles' => $recentVehicles,
+            'operationalAlerts' => $operationalAlerts,
+            'operationalMessages' => $operationalMessages,
+            'quickActions' => $quickActions,
+            'dashboardProfile' => $dashboardProfile,
         ]);
     }
     public function about(Request $request)

@@ -214,6 +214,13 @@ stop_pod_if_exists() {
     fi
 }
 
+remove_pod_if_exists() {
+    if podman pod inspect "${POD_NAME}" >/dev/null 2>&1; then
+        echo "Eliminando pod ${POD_NAME}..."
+        podman pod rm -f "${POD_NAME}" >/dev/null 2>&1 || true
+    fi
+}
+
 stop_current_stack() {
     case "${STACK_MODE:-}" in
         podman_pod)
@@ -271,7 +278,9 @@ detect_existing_stack_mode() {
     local tool="$1"
 
     if [[ "${tool}" == "podman" ]]; then
-        if podman pod inspect "${POD_NAME}" >/dev/null 2>&1; then
+        if podman pod inspect "${POD_NAME}" >/dev/null 2>&1 && \
+           podman ps -a --filter "pod=${POD_NAME}" --format '{{.Names}}' | \
+           grep -Fxq -e "${CONTAINER_NAME}" -e "${DB_CONTAINER_NAME}"; then
             echo "podman_pod"
             return 0
         fi
@@ -414,16 +423,20 @@ launch_database_container_with_tool() {
     local tool="$1"
     local pod_name="${2:-}"
     local run_error=""
+    local db_run_args=()
 
     remove_existing_container "${tool}" "${DB_CONTAINER_NAME}"
 
     if [[ -n "${pod_name}" ]]; then
         echo "Lanzando la base de datos ${DB_CONTAINER_NAME} dentro del pod ${pod_name}..."
+        db_run_args=(
+            --name "${DB_CONTAINER_NAME}"
+            --pod "${pod_name}"
+            -v "${DB_VOLUME_NAME}:/var/lib/mysql"
+        )
+
         if run_error="$("${tool}" run -d \
-            --name "${DB_CONTAINER_NAME}" \
-            --hostname "${DB_SERVICE_NAME}" \
-            --pod "${pod_name}" \
-            -v "${DB_VOLUME_NAME}:/var/lib/mysql" \
+            "${db_run_args[@]}" \
             "${DB_ENV_ARGS[@]}" \
             "${DB_IMAGE}" 2>&1 >/dev/null)"; then
             return 0
@@ -431,6 +444,8 @@ launch_database_container_with_tool() {
 
         if [[ "${run_error}" == *"catatonit"* ]]; then
             echo "Podman no encontro catatonit en el host mientras iniciaba MySQL; se continuara sin pod." >&2
+        elif [[ "${run_error}" == *"cannot set hostname when joining the pod UTS namespace"* ]]; then
+            echo "Podman rechazo el hostname del contenedor porque el pod comparte el namespace UTS." >&2
         elif [[ -n "${run_error}" ]]; then
             echo "${run_error}" >&2
         fi
@@ -439,13 +454,17 @@ launch_database_container_with_tool() {
     fi
 
     echo "Lanzando la base de datos ${DB_CONTAINER_NAME} en la red ${NETWORK_NAME}..."
+    db_run_args=(
+        --name "${DB_CONTAINER_NAME}"
+        --hostname "${DB_SERVICE_NAME}"
+        --network "${NETWORK_NAME}"
+        --network-alias "${DB_SERVICE_NAME}"
+        -p "${HOST_DB_PORT}:${DB_CONTAINER_PORT}"
+        -v "${DB_VOLUME_NAME}:/var/lib/mysql"
+    )
+
     if run_error="$("${tool}" run -d \
-        --name "${DB_CONTAINER_NAME}" \
-        --hostname "${DB_SERVICE_NAME}" \
-        --network "${NETWORK_NAME}" \
-        --network-alias "${DB_SERVICE_NAME}" \
-        -p "${HOST_DB_PORT}:${DB_CONTAINER_PORT}" \
-        -v "${DB_VOLUME_NAME}:/var/lib/mysql" \
+        "${db_run_args[@]}" \
         "${DB_ENV_ARGS[@]}" \
         "${DB_IMAGE}" 2>&1 >/dev/null)"; then
         return 0
@@ -473,7 +492,6 @@ launch_app_container_with_tool() {
         if run_error="$("${tool}" run -d \
             --name "${CONTAINER_NAME}" \
             --pod "${pod_name}" \
-            --add-host "${DB_SERVICE_NAME}:127.0.0.1" \
             "${APP_DB_ENV_ARGS[@]}" \
             "${IMAGE_NAME}:${IMAGE_TAG}" \
             sh "${APP_START_SCRIPT_CONTAINER}" 2>&1 >/dev/null)"; then
@@ -482,6 +500,8 @@ launch_app_container_with_tool() {
 
         if [[ "${run_error}" == *"catatonit"* ]]; then
             echo "Podman no encontro catatonit en el host mientras iniciaba la app; se continuara sin pod." >&2
+        elif [[ "${run_error}" == *"extra host entries must be specified on the pod"* ]]; then
+            echo "Podman rechazo la configuracion de hosts extra porque la red del contenedor ya viene del pod." >&2
         elif [[ -n "${run_error}" ]]; then
             echo "${run_error}" >&2
         fi
@@ -568,6 +588,7 @@ launch_podman_stack_without_pod() {
 
 try_launch_podman_with_pod() {
     local create_error=""
+    local pod_created_now="0"
 
     if ! podman pod inspect "${POD_NAME}" >/dev/null 2>&1; then
         echo "Creando pod ${POD_NAME}..."
@@ -585,6 +606,8 @@ try_launch_podman_with_pod() {
 
             return 1
         fi
+
+        pod_created_now="1"
     else
         echo "El pod ${POD_NAME} ya existe. Se reutilizara."
     fi
@@ -594,11 +617,17 @@ try_launch_podman_with_pod() {
 
     if ! launch_database_container_with_tool "podman" "${POD_NAME}"; then
         echo "No se pudo lanzar la base de datos dentro del pod ${POD_NAME}." >&2
+        if [[ "${pod_created_now}" == "1" ]]; then
+            remove_pod_if_exists
+        fi
         return 1
     fi
 
     if ! launch_app_container_with_tool "podman" "127.0.0.1" "${DB_CONTAINER_PORT}" "${POD_NAME}"; then
         echo "No se pudo lanzar la app dentro del pod ${POD_NAME}." >&2
+        if [[ "${pod_created_now}" == "1" ]]; then
+            remove_pod_if_exists
+        fi
         return 1
     fi
 

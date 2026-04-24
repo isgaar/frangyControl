@@ -10,7 +10,6 @@
         "barryvdh/laravel-dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "illuminate/database": "*",
-        "jeroennoten/laravel-adminlte": "^3.9",
         "kreait/firebase-php": "^7.5",
         "laracasts/flash": "^3.2",
         "laravel/framework": "^10.10",

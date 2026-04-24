@@ -1,123 +1,104 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
+
+@section('title', 'Carga general')
 
 @section('content_header')
-
-@if (Session::has('status'))
-<div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 20px; font-weight: bold;">
-            {{ Session::get('status') }}
-            @php
-            Session::forget('status');
-            @endphp
-        </span>
-    </div>
-</div>
-@endif
-@section('content')
-<div class="card">
-    <div class="card-header">
-        <ul>
-            <b>Creando registro generál</b>
-        </ul>
-    </div>
-</div>
-<div class="row justify-content-center">
-
-    <div class="col-md-8">
-        <div class="card card-warning">
-            <div class="card-header d-flex">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                <div>
-                    <h2 class="card-title">¡Advertencia!</h3>
-                        <br>
-                        <h8 class="card-text">Utilice esta tabla para agregar los contenidos de las distintas tablas,
-                            asegurándose de no dejar campos vacíos.</h8>
-                </div>
-            </div>
-
-
-            <div class="card-body">
-
-                <!-- Campos para DatosVehiculo -->
-                {!! Form::open(['route' => 'datosv.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
-                <div class="form-group row">
-                    <label for="marca" class="col-md-4 col-form-label text-md-right">Marca</label>
-                    <div class="col-md-6">
-                        <input id="marca" type="text" class="form-control" name="marca" required>
-                    </div>
-                </div>
-
-
-                <!-- Campos para TipoVehiculo -->
-                <div class="form-group row">
-                    <label for="tipo" class="col-md-4 col-form-label text-md-right">Tipo de Vehículo</label>
-                    <div class="col-md-6">
-                        <input id="tipo" type="text" class="form-control" name="tipo" required
-                            oninput="formatInput(this)">
-                    </div>
-                </div>
-
-                <!-- Campos para TipoServicio -->
-                <div class="form-group row">
-                    <label for="nombre_servicio" class="col-md-4 col-form-label text-md-right">Nombre del
-                        Servicio</label>
-                    <div class="col-md-6">
-                        <input id="nombre_servicio" type="text" class="form-control" name="nombre_servicio" required>
-                    </div>
-                </div>
-
-                <div class="card-footer text-center">
-                    <div class="d-flex justify-content-between">
-                        <a type="button" href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                        <button type="submit" class="btn btn-success">Guardar</button>
-                    </div>
-                </div>
-                {!! Form::close() !!}
+    @if (Session::has('status'))
+        <div class="col-md-12 alert-section">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text">
+                    {{ Session::get('status') }}
+                    @php
+                        Session::forget('status');
+                    @endphp
+                </span>
             </div>
         </div>
-    </div>
-    <script>
-    var marcaInput = document.getElementById('marca');
-
-    // Función para convertir la primera letra a mayúscula y mantener el resto en minúscula
-    function formatFirstLetterToUpper(value) {
-        return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-    }
-
-    // Evento input para convertir la primera letra en mayúscula al ingresar texto
-    marcaInput.addEventListener('input', function(e) {
-        var value = e.target.value;
-        var formattedValue = formatFirstLetterToUpper(value);
-
-        marcaInput.value = formattedValue;
-    });
-
-    // Convertir el valor inicial a la carga de la página
-    marcaInput.value = formatFirstLetterToUpper(marcaInput.value);
-    document.getElementById('tipo').addEventListener('input', function(e) {
-        var input = e.target;
-        var value = input.value;
-        var regex =
-            /^[a-zA-Z0-9\s]*$/; // Expresión regular para permitir solo letras, números y espacios
-
-        if (!regex.test(value)) {
-            input.value = value.replace(/[^a-zA-Z0-9\s]/g, ''); // Remover caracteres especiales
-        }
-    });
-    function formatInput(input) {
-        var value = input.value;
-
-        // Eliminar caracteres especiales y convertir la primera letra a mayúscula y mantener el resto en minúscula
-        var formattedValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '').charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-
-        // Actualizar el valor del campo
-        input.value = formattedValue;
-    }
-    </script>
-</div>
+    @endif
 @stop
+
+@section('content')
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Carga rápida</span>
+                    <h1 class="resource-hero__title">Guardar datos generales</h1>
+                    <p>Captura de una sola vez una marca, un tipo de vehículo y un servicio para arrancar o completar el catálogo base.</p>
+                </div>
+
+                <div class="resource-hero__actions">
+                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left mr-1"></i> Volver al panel
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <div class="resource-form-layout">
+            <section class="resource-form-card">
+                <div class="resource-form-card__header">
+                    <div>
+                        <span class="resource-form-card__eyebrow">Alta combinada</span>
+                        <h2 class="resource-form-card__title">Datos básicos</h2>
+                        <p class="resource-form-card__copy">Este formulario crea una entrada nueva en cada uno de los tres catálogos principales.</p>
+                    </div>
+                </div>
+
+                {!! Form::open(['route' => 'datosv.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+                    <div class="resource-kv mt-4">
+                        <div class="form-group mb-0">
+                            <label for="marca">Marca</label>
+                            <input id="marca" type="text" class="form-control" name="marca" required oninput="formatInput(this)">
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="tipo">Tipo de vehículo</label>
+                            <input id="tipo" type="text" class="form-control" name="tipo" required oninput="formatInput(this)">
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="nombre_servicio">Nombre del servicio</label>
+                            <input id="nombre_servicio" type="text" class="form-control" name="nombre_servicio" required oninput="formatInput(this)">
+                        </div>
+                    </div>
+
+                    <div class="resource-form-card__footer">
+                        <div class="resource-footer-actions">
+                            <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <button type="submit" class="btn btn-success">Guardar datos</button>
+                        </div>
+                    </div>
+                {!! Form::close() !!}
+            </section>
+
+            <aside class="resource-side-card">
+                <span class="resource-form-card__eyebrow">Cuándo usarlo</span>
+                <h2 class="resource-form-card__title">Ideal para iniciar</h2>
+                <p class="resource-side-card__copy">Esta vista funciona mejor cuando necesitas sumar un set base de datos en una sola captura.</p>
+
+                <ul class="resource-side-card__list mt-4">
+                    <li>Úsalo cuando una nueva marca, tipo y servicio aparezcan al mismo tiempo.</li>
+                    <li>Si solo vas a agregar una marca o un servicio, conviene usar el módulo específico.</li>
+                    <li>Revisa ortografía antes de guardar, porque cada campo impacta un catálogo distinto.</li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+@stop
+
+<script>
+    function formatInput(input) {
+        input.value = input.value
+            .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+            .replace(/\s+/g, ' ')
+            .trimStart()
+            .replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
+            });
+    }
+</script>
+
 @section('js')
-<script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection

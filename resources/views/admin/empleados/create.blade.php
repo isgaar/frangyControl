@@ -1,11 +1,10 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
 
 @section('content_header')
 @if (Session::has('status'))
 <div class="col-md-12 alert-section">
-    <div class="alert alert-{{ Session::get('status_type') }}"
-        style="text-align: center; padding: 5px; margin-bottom: 5px;">
-        <span style="font-size: 20px; font-weight: bold;">
+    <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+        <span class="dashboard-legacy-alert__text">
             {{ Session::get('status') }}
             @php
             Session::forget('status');

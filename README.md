@@ -53,12 +53,20 @@ Tambien puedes usar los scripts basados en el `Dockerfile`:
 ./unix-scrips/lanzar-pod.sh
 ```
 
-`construir-pod.sh` construye la imagen `frangy-control:latest` y antes limpia cualquier entorno previo de Frangy que detecte:
+`construir-pod.sh` construye la imagen `frangy-control:latest`:
 ```bash
 ./unix-scrips/construir-pod.sh
 ```
 
-El script detecta y elimina cualquier entorno previo de Frangy asociado a esos nombres: pod, contenedores, volumen de datos y red si existen. Eso deja limpio el entorno para volver a construir y arrancar desde cero.
+Por defecto el script solo construye la imagen y conserva cualquier entorno ya levantado. Si quieres reconstruir desde cero puedes usar:
+```bash
+./unix-scrips/construir-pod.sh --clean
+```
+
+Eso elimina pod, contenedores y red antes de construir. Si tambien quieres borrar el volumen persistente de MySQL, usa:
+```bash
+./unix-scrips/construir-pod.sh --clean-data
+```
 
 `lanzar-pod.sh` es el que realmente levanta el entorno. Detecta `podman` o `docker`, reutiliza un entorno existente si ya esta arriba, pregunta por el administrador inicial cuando corresponde, levanta la base de datos con volumen persistente, inicia Laravel dentro del contenedor de app, ejecuta `php artisan project:install-dev --force`, deja la aplicacion disponible en `http://localhost:9000` y sigue mostrando los logs de Laravel en tiempo real. Si presionas `Ctrl+C`, el script detiene el pod o los contenedores levantados.
 

@@ -1,168 +1,87 @@
-@extends('adminlte::page')
+@extends('layouts.dashboard')
 
-@section('title', 'Dashboard')
+@section('title', 'Acerca')
+
+@php
+    $pageTitle = 'Acerca del proyecto';
+    $pageSubtitle = 'Contexto, créditos y referencias de la aplicación Frangy Control.';
+    $breadcrumbs = [
+        ['label' => 'Panel', 'url' => route('home')],
+        ['label' => 'Acerca'],
+    ];
+
+    $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? '';
+
+    if (str_contains($userAgent, 'MSIE') || str_contains($userAgent, 'Trident/')) {
+        $browser = 'Internet Explorer';
+    } elseif (str_contains($userAgent, 'Edg')) {
+        $browser = 'Microsoft Edge';
+    } elseif (str_contains($userAgent, 'Firefox')) {
+        $browser = 'Mozilla Firefox';
+    } elseif (str_contains($userAgent, 'Chrome')) {
+        $browser = 'Google Chrome o derivados';
+    } elseif (str_contains($userAgent, 'Safari')) {
+        $browser = 'Apple Safari';
+    } elseif (str_contains($userAgent, 'Opera') || str_contains($userAgent, 'OPR/')) {
+        $browser = 'Opera';
+    } else {
+        $browser = 'Otro navegador';
+    }
+@endphp
 
 @section('content')
-<style>
-.logo-utcv {
-    max-width: 100px;
-    height: auto;
-}
+<div class="dashboard-grid dashboard-grid--2">
+    <article class="dashboard-panel-card">
+        <span class="home-card__eyebrow">Proyecto</span>
+        <h2 class="mt-2">Frangy Control</h2>
+        <p class="mb-0">
+            Aplicación administrativa para el centro de servicio automotriz y llantera Frangy, desarrollada
+            como proyecto de estadía para obtener el grado de T.S.U. en Desarrollo de Software Multiplataforma.
+        </p>
+    </article>
 
-.center-text {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    /* Agregamos esto para centrar verticalmente */
-    height: flex;
-    z-index: 2;
-    /* Modificamos la altura para ocupar toda la pantalla */
+    <article class="dashboard-panel-card">
+        <span class="home-card__eyebrow">Agradecimientos</span>
+        <h2 class="mt-2">Créditos del desarrollo</h2>
+        <p class="mb-0">
+            El proyecto reconoce el acompañamiento académico del Lic. Cesar Aldaraca Juárez y la
+            Ing. Rosalina Autrán Velasco, así como el apoyo constante de la familia del autor durante
+            el proceso de entrega.
+        </p>
+    </article>
 
-}
-
-.text-animation {
-    animation: scroll-up 40s linear infinite;
-    text-align: center;
-    /* Centramos horizontalmente el contenido */
-    font-family: monospace;
-    /* Usamos una fuente monoespaciada para mantener el formato */
-    font-size: 16px;
-    /* Ajustamos el tamaño de la fuente para que quepa en la pantalla */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;/
-}
-
-@keyframes scroll-up {
-    0% {
-        transform: translateY(100%);
-    }
-
-    100% {
-        transform: translateY(-100%);
-    }
-}
-
-/* Estilos para el footer */
-.footer {
-    position: absolute;
-    bottom: 0;
-    background-color: #f8f9fa;
-    padding: flex;
-    display: flex;
-    justify-content: space-between;
-    z-index: 2;
-}
-
-.footer a {
-    color: #000;
-    margin-right: 15px;
-    font-size: 20px;
-}
-
-.footer a:hover {
-    color: #007bff; /* Cambiamos el color al pasar el mouse por encima */
-}
-</style>
-<?php
-$user_agent = $_SERVER['HTTP_USER_AGENT'];
-
-if (strpos($user_agent, 'MSIE') !== false || strpos($user_agent, 'Trident/') !== false) {
-    $browser = 'Internet Explorer';
-} elseif (strpos($user_agent, 'Edg') !== false) {
-    $browser = 'Microsoft Edge';
-} elseif (strpos($user_agent, 'Firefox') !== false) {
-    $browser = 'Mozilla Firefox';
-} elseif (strpos($user_agent, 'Chrome') !== false) {
-    $browser = 'Google Chrome o basados en Chromium';
-} elseif (strpos($user_agent, 'Safari') !== false) {
-    $browser = 'Apple Safari';
-} elseif (strpos($user_agent, 'Opera') !== false || strpos($user_agent, 'OPR/') !== false) {
-    $browser = 'Opera';
-} else {
-    $browser = 'Otro Navegador';
-}
-
-?>
-
-<div class="center-text">
-    <div class="card">
-        <div class="row no-gutters">
-            <div class="col-6">
-                <img src="http://www.utcv.edu.mx/images/logos/logo_web_sm.png" class="card-img logo-utcv"
-                    alt="Logo UTCV">
-            </div>
-            <div class="col-6">
-                <div class="card-body">
-                    <p class="card-text">
-                        Proyecto de estadía para obtener el grado académico de T.S.U. en Desarrollo de Software
-                        Multiplataforma
-                    </p>
-                </div>
-            </div>
+    <article class="dashboard-panel-card">
+        <span class="home-card__eyebrow">Stack actual</span>
+        <h3 class="mt-2">Tecnología detectada</h3>
+        <div class="d-flex flex-wrap mt-3 dashboard-inline-gap">
+            <span class="dashboard-badge is-info">Versión {{ config('app.version') }}</span>
+            <span class="dashboard-badge is-success">PHP {{ PHP_VERSION }}</span>
+            <span class="dashboard-badge is-warning">Laravel {{ app()->version() }}</span>
+            <span class="dashboard-badge is-danger">{{ php_uname('s') }}</span>
         </div>
-    </div>
+        <p class="mt-3 mb-0">Cliente web detectado: {{ $browser }}</p>
+    </article>
+
+    <article class="dashboard-panel-card">
+        <span class="home-card__eyebrow">Referencias</span>
+        <h3 class="mt-2">Enlaces útiles</h3>
+        <div class="home-list mt-3">
+            <a class="home-list__item" href="https://github.com/isgaar/frangyControl/tree/main" target="_blank" rel="noopener noreferrer">
+                <div class="home-list__row">
+                    <p class="home-list__title">Repositorio del proyecto</p>
+                    <span class="dashboard-badge is-info">GitHub</span>
+                </div>
+                <p class="home-list__subtitle">Código fuente y seguimiento general del sistema.</p>
+            </a>
+
+            <a class="home-list__item" href="mailto:may17jun2002@outlook.com">
+                <div class="home-list__row">
+                    <p class="home-list__title">Contacto del desarrollador</p>
+                    <span class="dashboard-badge is-success">Correo</span>
+                </div>
+                <p class="home-list__subtitle">Canal directo para dudas o seguimiento académico.</p>
+            </a>
+        </div>
+    </article>
 </div>
-
-<div class="center-text text-animation">
-    <pre>
-⠀⠀⠀⠀⠀   ⣠⡖⠒⢤⣠⡤⠀⢒⣲⣬⣭⣭⣭⣶⣤⣤⡤⠤⠒⣼⡅⠀
-⠀⠀⠀⠀⠀⠀ ⡟⣉⣙⣲⠔⠘⠿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣌⡳⣴⣿⠀
-⠀⠀⠀⠀⠀⠀⠀⢳⣘⠟⠀⠀⠀⢠⡾⠛⢉⠛⡿⡟⡳⢬⣭⣴⡌⠻⡇⠀⠀
-⠀⠀⠀⠀⠀⠀⠰⢞⣭⠀⠀⠀⠀⢸⣇⠫⠉⢓⡶⠃⢉⢶⣭⡽⢀⠀⢱⠀⠀
-⠀⠀⠀⠀⠀⢘⣇⣾⡿⠀⠀⠀⠀⠹⢿⣿⣿⡏⠀⠁⠀⠀⠹⡀⠈⠉⡟⠀⠀
-⠀⠀⣠⣶⠞⣽⣿⡕⣡⠀⠀⠀⢀⣠⣭⣿⠇⠀⡴⣶⢾⣶⡽⡄⠀⡇⠀⠀
-⠀⠀⣴⣿⣿⠇⣸⣿⣿⠞⣡⠞⡄⠀⠞⠻⠿⢿⣧⣀⢻⡏⣾⡿⠇⣷⣾⡇⠀⠀
-⢠⣾⣿⡟⠁⠀⢼⣿⣿⡟⣡⡾⠃⣠⢶⣶⣦⣜⠿⣿⡦⠥⠿⢋⣰⣿⣿⣿⡄⠀
-⢸⣿⠏⣠⡀⠀⣿⣿⣿⣿⣿⡤⣐⡁⢻⣿⣿⣿⡿⣷⣶⣿⣿⣿⣿⣿⣿⣿⣿⡄
-⢹⣟⣼⣷⣿⡀⣻⣿⣿⣿⣿⣿⡿⢠⣄⡄⡁⠈⠘⢁⢿⣿⣿⣿⣿⣿⣿⣿⣿⠃
-⠨⠿⡿⢿⣿⣷⣿⣿⠿⣿⣿⣟⣴⣼⣿⣇⣷⣷⣷⣾⣿⣿⣿⣿⣿⣿⡟⠇⠀
-⠀⠀⠀⠈⠹⠉⠀⠀⠀⠘⠙⢻⠟⢿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠻⣿⠿⡿⠇⠁⠀⠀
-
-- Desarrollado por: Ismael Gaspar Cruz -
-
-Estimados
-
-Por medio de la presente, me complace formalizar el programa dedicado al centro 
-de servicio automotriz y llantera "Frangy", el cual ha sido desarrollado como 
-parte de mi proyecto para estadía.
-
-Me gustaría expresar mis más sinceros agradecimientos al Lic. Cesar Aldaraca Juárez 
-y a la Ing. Rosalina Autrán Velasco por su valioso apoyo constante en la aprobación 
-de avances durante mi estadía. También quisiera reconocer que, para resolver problemas 
-de código derivado a falta de conocimiento, recurrí a la I.A. Chat GPT, la cual 
-brindó una inmediata ayuda.
-
-Además, quiero agradecer infinitamente la paciencia y el constante apoyo de mis padres, 
-quienes siempre me han motivado en cada momento de mi vida.
-
-Sin el respaldo y colaboración de todas estas personas, este programa no habría sido 
-posible de entregar. 
-
--- Esta aplicación usa la tecnología --
-Versión del proyecto <?php echo config('app.version'); ?>,
-PHP <?php echo PHP_VERSION; ?>, 
-Laravel <?php echo app()->version(); ?> 
-Herramienta: <?php echo $_SERVER['SERVER_SOFTWARE']; ?>, 
-Sistema operativo: <?php echo php_uname('s'); ?>.
-Cliente web: <?php echo $browser; ?>
-    
-</pre>
-</div>
-
-<div class="footer">
-    <!-- Ícono de GitHub -->
-    <a href="https://github.com/isgaar/frangyControl/tree/main" target="_blank" rel="noopener noreferrer" title="Repositorio del codigo">
-        <i class="fab fa-github"></i>
-    </a>
-    <!-- Ícono de correo -->
-    <a href="mailto:may17jun2002@outlook.com" title="Contacto con el desarrollador">
-        <i class="far fa-envelope"></i>
-    </a>
-</div>
-
-@stop
-
-@section('plugins.FontAwesome', true)
+@endsection

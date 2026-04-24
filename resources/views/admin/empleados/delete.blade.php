@@ -1,11 +1,12 @@
-@extends('adminlte::page')
-@include('landing.include.head')
+@extends('layouts.dashboard')
+
+@section('title', 'Eliminar usuario')
 
 @section('content_header')
     @if (Session::has('status'))
         <div class="col-md-12 alert-section">
-            <div class="alert alert-{{ Session::get('status_type') }}" style="text-align: center; padding: 5px; margin-bottom: 5px;">
-                <span style="font-size: 20px; font-weight: bold;">
+            <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
+                <span class="dashboard-legacy-alert__text">
                     {{ Session::get('status') }}
                     @php
                         Session::forget('status');
@@ -14,57 +15,51 @@
             </div>
         </div>
     @endif
-
-    <div class="card">
-        <div class="card-header">
-            <ul>
-                <b>Eliminar</b> <i class="fa-solid fa-user-minus"></i>
-            </ul>
-        </div>
-    </div>
 @stop
 
 @section('content')
-    <div class="card-body">
-        <div class="row">
-            <div class="col-lg-12 col-sm-12 col-12">
-                {!! Form::open(['route' => ['users.destroy', $user->id], 'method' => 'get']) !!}
-                <fieldset>
-                    <div class="card card-warning">
-                        <div class="card-header d-flex">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>
-                            <div>
-                                <h2 class="card-title">¡Advertencia!</h2>
-                                <br>
-                                <h8 class="card-text">Usted está eliminando un empleado.</h8>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group">
-                                {!! Form::label('name', 'Nombre del usuario') !!}
-                                {!! Form::UTTextOnly('name', null, 'Nombre del usuario', $user->name, $errors, 40, true, true) !!}
-                            </div>
-                            <div class="form-group">
-                                {!! Form::label('email', 'Correo electrónico') !!}
-                                {!! Form::UTEmail('email', null, 'Correo electrónico', $user->email, $errors, 50, true, true) !!}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer text-center">
-                        <div class="d-flex justify-content-between">
-                            <a type="button" href="{{ route('users.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
-                        </div>
-                    </div>
-                </fieldset>
-                {!! Form::close() !!}
+    <div class="resource-page">
+        <section class="resource-confirm-card">
+            <div class="resource-confirm-card__header">
+                <div>
+                    <span class="resource-form-card__eyebrow">Acción sensible</span>
+                    <h1 class="resource-confirm-card__title">Confirmar eliminación</h1>
+                    <p class="resource-confirm-card__copy">Vas a eliminar un usuario del panel. Revisa los datos antes de continuar.</p>
+                </div>
+
+                <div class="resource-pill" style="background: rgba(248, 113, 113, 0.14); color: #991b1b;">
+                    <i class="fas fa-triangle-exclamation"></i> Permanente
+                </div>
             </div>
-        </div>
+
+            {!! Form::open(['route' => ['users.destroy', $user->id], 'method' => 'get']) !!}
+                <div class="resource-kv mt-4">
+                    <div class="resource-kv__item">
+                        <span class="resource-kv__label">Nombre del usuario</span>
+                        <p class="resource-kv__value">{{ $user->name }}</p>
+                    </div>
+                    <div class="resource-kv__item">
+                        <span class="resource-kv__label">Correo electrónico</span>
+                        <p class="resource-kv__value">{{ $user->email }}</p>
+                    </div>
+                </div>
+
+                <div class="resource-warning mt-4">
+                    <strong>Importante</strong>
+                    El usuario perderá acceso al sistema una vez confirmes la acción.
+                </div>
+
+                <div class="resource-confirm-card__footer">
+                    <div class="resource-footer-actions">
+                        <a href="{{ route('users.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                        <button type="submit" class="btn btn-danger">Eliminar usuario</button>
+                    </div>
+                </div>
+            {!! Form::close() !!}
+        </section>
     </div>
 @stop
 
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
 @endsection
-
-

@@ -72,7 +72,7 @@ class TipoVehiculoController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente el tipo de vehículo');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index'));
+            return redirect(route('tipo_vehiculo.index'));
     
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -108,7 +108,7 @@ class TipoVehiculoController extends Controller
 
             $tipoVehiculo->save();
 
-            return redirect(route('datosv.index'))->with('status', 'Se ha editado correctamente el tipo de vehículo')->with('status_type', 'success');
+            return redirect(route('tipo_vehiculo.index'))->with('status', 'Se ha editado correctamente el tipo de vehículo')->with('status_type', 'success');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
         } catch (\Exception $e) {
@@ -129,7 +129,7 @@ class TipoVehiculoController extends Controller
         try {
             $tipoVehiculo->delete();
 
-            return redirect(route('datosv.index'))->with('status', 'Se ha eliminado correctamente el tipo de vehículo')->with('status_type', 'warning');
+            return redirect(route('tipo_vehiculo.index'))->with('status', 'Se ha eliminado correctamente el tipo de vehículo')->with('status_type', 'warning');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
         } catch (\Exception $e) {
