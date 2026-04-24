@@ -9,462 +9,428 @@
     <title>@yield('title', config('app.name', 'Frangy Control'))</title>
 
     <link href="https://fonts.bunny.net/css?family=space-grotesk:500,700|nunito:400,600,700,800" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
+    @include('layouts.partials.theme-head')
+    @yield('css')
 
     <style>
-        /* ── Design Tokens ── */
         :root {
-            --fc-bg:          #050b16;
-            --fc-surface:     rgba(255,255,255,0.04);
-            --fc-border:      rgba(255,255,255,0.10);
-            --fc-border-h:    rgba(255,255,255,0.22);
-            --fc-text:        #e8edf5;
-            --fc-text-muted:  rgba(232,237,245,0.55);
-            --fc-accent:      #3d8bff;
-            --fc-accent-h:    #5fa0ff;
-            --fc-danger:      #e25f5f;
-            --fc-nav-h:       56px;
-            --fc-radius:      10px;
-            --fc-radius-lg:   16px;
-            --fc-transition:  0.2s cubic-bezier(0.4,0,0.2,1);
+            --fc-bg: #eef4ff;
+            --fc-bg-gradient:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.16) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(14, 165, 233, 0.12) 0%, transparent 55%),
+                linear-gradient(180deg, #eef4ff 0%, #f8fafc 100%);
+            --fc-surface: rgba(255, 255, 255, 0.84);
+            --fc-surface-strong: rgba(255, 255, 255, 0.96);
+            --fc-border: rgba(148, 163, 184, 0.24);
+            --fc-border-h: rgba(71, 85, 105, 0.28);
+            --fc-text: #0f172a;
+            --fc-text-muted: #64748b;
+            --fc-accent: #2563eb;
+            --fc-accent-h: #1d4ed8;
+            --fc-danger: #dc2626;
+            --fc-nav-bg: rgba(255, 255, 255, 0.76);
+            --fc-nav-bg-solid: rgba(255, 255, 255, 0.94);
+            --fc-theme-btn-bg: rgba(255, 255, 255, 0.92);
+            --fc-shadow: 0 24px 60px rgba(15, 23, 42, 0.1);
+            --fc-nav-h: 64px;
+            --fc-radius: 14px;
+            --fc-radius-lg: 22px;
+            --fc-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        *, *::before, *::after { box-sizing: border-box; }
+        html[data-theme='dark'] {
+            --fc-bg: #050b16;
+            --fc-bg-gradient:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61, 139, 255, 0.18) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(61, 139, 255, 0.08) 0%, transparent 55%),
+                linear-gradient(180deg, #050b16 0%, #09111d 100%);
+            --fc-surface: rgba(255, 255, 255, 0.05);
+            --fc-surface-strong: rgba(8, 17, 31, 0.88);
+            --fc-border: rgba(255, 255, 255, 0.1);
+            --fc-border-h: rgba(255, 255, 255, 0.22);
+            --fc-text: #e8edf5;
+            --fc-text-muted: rgba(232, 237, 245, 0.62);
+            --fc-accent: #60a5fa;
+            --fc-accent-h: #93c5fd;
+            --fc-danger: #f87171;
+            --fc-nav-bg: rgba(5, 11, 22, 0.82);
+            --fc-nav-bg-solid: rgba(5, 11, 22, 0.96);
+            --fc-theme-btn-bg: rgba(255, 255, 255, 0.08);
+            --fc-shadow: 0 24px 60px rgba(0, 0, 0, 0.32);
+        }
 
-        html { scroll-behavior: smooth; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-        body {
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body.public-shell-body {
             min-height: 100vh;
             margin: 0;
             color: var(--fc-text);
             background-color: var(--fc-bg);
-            background-image:
-                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61,139,255,0.18) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 90% 80%,  rgba(61,139,255,0.08) 0%, transparent 55%);
+            background-image: var(--fc-bg-gradient);
             font-family: 'Nunito', sans-serif;
             font-size: 15px;
             line-height: 1.65;
         }
 
-        #app { min-height: 100vh; display: flex; flex-direction: column; }
+        body.public-shell-body a,
+        body.public-shell-body button {
+            transition: color var(--fc-transition), background-color var(--fc-transition), border-color var(--fc-transition), transform var(--fc-transition), box-shadow var(--fc-transition);
+        }
 
-        /* ── Navbar ── */
+        #app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
         .public-navbar {
             position: sticky;
             top: 0;
             z-index: 100;
-            height: var(--fc-nav-h);
-            background: rgba(5,11,22,0.82);
-            backdrop-filter: blur(14px) saturate(1.4);
-            -webkit-backdrop-filter: blur(14px) saturate(1.4);
+            min-height: var(--fc-nav-h);
+            background: var(--fc-nav-bg);
+            backdrop-filter: blur(16px) saturate(1.3);
+            -webkit-backdrop-filter: blur(16px) saturate(1.3);
             border-bottom: 1px solid var(--fc-border);
-            transition: border-color var(--fc-transition), background var(--fc-transition);
         }
 
         .public-navbar.scrolled {
-            background: rgba(5,11,22,0.96);
+            background: var(--fc-nav-bg-solid);
             border-bottom-color: var(--fc-border-h);
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
         }
 
         .public-navbar .container {
-            height: 100%;
+            min-height: var(--fc-nav-h);
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
-        /* Brand */
         .nav-brand {
             display: inline-flex;
             align-items: center;
-            gap: 0.65rem;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
+            gap: 0.7rem;
             color: var(--fc-text);
             text-decoration: none;
-            flex-shrink: 0;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
             letter-spacing: -0.01em;
-            transition: opacity var(--fc-transition);
         }
 
-        .nav-brand:hover { opacity: 0.85; color: var(--fc-text); text-decoration: none; }
+        .nav-brand:hover,
+        .nav-brand:focus {
+            color: var(--fc-text);
+            text-decoration: none;
+            opacity: 0.88;
+        }
 
         .nav-brand img {
-            height: 32px;
-            width: auto;
+            width: 34px;
+            height: 34px;
             object-fit: contain;
         }
 
-        /* Desktop nav */
+        .nav-collapse {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
             margin-left: auto;
         }
 
         .nav-link-item {
             color: var(--fc-text-muted);
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-decoration: none;
-            padding: 0.4rem 0.85rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 0.5rem 0.9rem;
             border-radius: var(--fc-radius);
-            transition: color var(--fc-transition), background var(--fc-transition);
-            white-space: nowrap;
-        }
-
-        .nav-link-item:hover {
-            color: var(--fc-text);
-            background: rgba(255,255,255,0.07);
             text-decoration: none;
         }
 
+        .nav-link-item:hover,
+        .nav-link-item:focus,
         .nav-link-item.active {
             color: var(--fc-text);
+            background: var(--fc-surface);
+            text-decoration: none;
         }
 
         .nav-user-name {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--fc-text-muted);
-            padding: 0.4rem 0.75rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--fc-border);
-            border-radius: 999px;
-            letter-spacing: 0.01em;
-        }
-
-        .nav-btn {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            font-family: inherit;
-            font-size: 0.875rem;
-            font-weight: 700;
-            padding: 0.42rem 1.1rem;
-            border-radius: var(--fc-radius);
+            gap: 0.45rem;
+            padding: 0.5rem 0.9rem;
+            border-radius: 999px;
+            border: 1px solid var(--fc-border);
+            background: var(--fc-surface);
+            color: var(--fc-text-muted);
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .nav-btn,
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.55rem;
+            min-height: 42px;
+            padding: 0.58rem 1rem;
             border: 1px solid transparent;
-            cursor: pointer;
+            border-radius: var(--fc-radius);
+            font-size: 0.9rem;
+            font-weight: 800;
             text-decoration: none;
-            transition: all var(--fc-transition);
-            white-space: nowrap;
+            cursor: pointer;
         }
 
         .nav-btn-primary {
             background: var(--fc-accent);
-            color: #fff;
             border-color: var(--fc-accent);
+            color: #fff;
         }
 
-        .nav-btn-primary:hover {
+        .nav-btn-primary:hover,
+        .nav-btn-primary:focus {
             background: var(--fc-accent-h);
             border-color: var(--fc-accent-h);
             color: #fff;
             text-decoration: none;
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(61,139,255,0.35);
         }
 
         .nav-btn-ghost {
             background: transparent;
+            border-color: rgba(248, 113, 113, 0.28);
             color: var(--fc-danger);
-            border-color: rgba(226,95,95,0.3);
         }
 
-        .nav-btn-ghost:hover {
-            background: rgba(226,95,95,0.1);
-            border-color: rgba(226,95,95,0.6);
+        .nav-btn-ghost:hover,
+        .nav-btn-ghost:focus {
+            background: rgba(248, 113, 113, 0.08);
+            border-color: rgba(248, 113, 113, 0.4);
             color: var(--fc-danger);
             text-decoration: none;
         }
 
-        /* Hamburger */
+        .theme-toggle {
+            background: var(--fc-theme-btn-bg);
+            border-color: var(--fc-border);
+            color: var(--fc-text);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .theme-toggle:hover,
+        .theme-toggle:focus {
+            background: var(--fc-surface-strong);
+            border-color: var(--fc-border-h);
+            color: var(--fc-text);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle__label {
+            white-space: nowrap;
+        }
+
         .nav-toggler {
             display: none;
             align-items: center;
             justify-content: center;
-            width: 38px;
-            height: 38px;
-            background: var(--fc-surface);
+            width: 42px;
+            height: 42px;
+            margin-left: auto;
             border: 1px solid var(--fc-border);
             border-radius: var(--fc-radius);
+            background: var(--fc-surface);
+            color: var(--fc-text);
             cursor: pointer;
-            flex-shrink: 0;
-            margin-left: auto;
-            transition: background var(--fc-transition), border-color var(--fc-transition);
-        }
-
-        .nav-toggler:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: var(--fc-border-h);
         }
 
         .hamburger {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             width: 18px;
         }
 
         .hamburger span {
             display: block;
             height: 2px;
-            background: var(--fc-text);
-            border-radius: 2px;
-            transition: transform var(--fc-transition), opacity var(--fc-transition);
+            border-radius: 999px;
+            background: currentColor;
         }
 
-        .nav-toggler[aria-expanded="true"] .hamburger span:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
-        }
-        .nav-toggler[aria-expanded="true"] .hamburger span:nth-child(2) {
-            opacity: 0;
-        }
-        .nav-toggler[aria-expanded="true"] .hamburger span:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-
-        /* Mobile drawer */
-        .nav-collapse {
-            display: flex;
-        }
-
-        @media (max-width: 767.98px) {
-            .nav-toggler { display: flex; }
-
-            .nav-brand { font-size: 0.95rem; }
-
-            .nav-collapse {
-                display: none;
-                position: absolute;
-                top: var(--fc-nav-h);
-                left: 0;
-                right: 0;
-                background: rgba(5,11,22,0.97);
-                backdrop-filter: blur(16px);
-                -webkit-backdrop-filter: blur(16px);
-                border-bottom: 1px solid var(--fc-border);
-                padding: 1rem 1.25rem 1.5rem;
-                flex-direction: column;
-                gap: 0.35rem;
-                animation: slideDown 0.22s ease forwards;
-            }
-
-            @keyframes slideDown {
-                from { opacity: 0; transform: translateY(-8px); }
-                to   { opacity: 1; transform: translateY(0); }
-            }
-
-            .nav-collapse.open { display: flex; }
-
-            .nav-link-item {
-                padding: 0.65rem 0.85rem;
-                font-size: 0.95rem;
-            }
-
-            .nav-user-name {
-                align-self: flex-start;
-                margin-bottom: 0.25rem;
-            }
-
-            .nav-btn { padding: 0.6rem 1rem; font-size: 0.9rem; justify-content: center; }
-
-            .nav-actions { flex-direction: column; align-items: stretch; gap: 0.35rem; margin: 0; width: 100%; }
-
-            .nav-btn-ghost { border-color: rgba(226,95,95,0.4); }
-        }
-
-        /* ── Main content ── */
         .app-main {
             flex: 1;
             padding: 2rem 0 4rem;
         }
 
-        /* ── Cards & surfaces ── */
-        .card-fc {
-            background: var(--fc-surface);
+        body.public-shell-body .card,
+        body.public-shell-body .modal-content {
             border: 1px solid var(--fc-border);
             border-radius: var(--fc-radius-lg);
-            padding: 1.75rem 2rem;
-            transition: border-color var(--fc-transition);
-        }
-
-        .card-fc:hover { border-color: var(--fc-border-h); }
-
-        /* ── Forms ── */
-        .form-label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: var(--fc-text-muted);
-            margin-bottom: 0.45rem;
-        }
-
-        .form-control,
-        .form-select {
-            width: 100%;
-            background: rgba(255,255,255,0.04) !important;
-            border: 1px solid var(--fc-border) !important;
-            border-radius: var(--fc-radius) !important;
-            color: var(--fc-text) !important;
-            font-family: 'Nunito', sans-serif;
-            font-size: 0.9375rem;
-            padding: 0.65rem 1rem !important;
-            transition: border-color var(--fc-transition), box-shadow var(--fc-transition), background var(--fc-transition);
-            outline: none;
-        }
-
-        .form-control:focus,
-        .form-select:focus {
-            background: rgba(255,255,255,0.07) !important;
-            border-color: var(--fc-accent) !important;
-            box-shadow: 0 0 0 3px rgba(61,139,255,0.18) !important;
-            color: var(--fc-text) !important;
-        }
-
-        .form-control::placeholder { color: rgba(232,237,245,0.3); }
-        .form-select option { background: #0e1a2e; color: var(--fc-text); }
-
-        .form-control.is-invalid,
-        .form-select.is-invalid {
-            border-color: var(--fc-danger) !important;
-        }
-
-        .invalid-feedback { color: var(--fc-danger); font-size: 0.8rem; margin-top: 0.3rem; }
-
-        /* Checkbox / Radio */
-        .form-check-input {
-            background-color: rgba(255,255,255,0.06) !important;
-            border-color: var(--fc-border-h) !important;
-        }
-
-        .form-check-input:checked {
-            background-color: var(--fc-accent) !important;
-            border-color: var(--fc-accent) !important;
-        }
-
-        /* ── Buttons ── */
-        .btn {
-            font-family: 'Nunito', sans-serif;
-            font-weight: 700;
-            border-radius: var(--fc-radius);
-            transition: all var(--fc-transition);
-            letter-spacing: 0.01em;
-        }
-
-        .btn-primary {
-            background: var(--fc-accent);
-            border-color: var(--fc-accent);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: var(--fc-accent-h);
-            border-color: var(--fc-accent-h);
-            box-shadow: 0 4px 18px rgba(61,139,255,0.35);
-            transform: translateY(-1px);
-        }
-
-        .btn-outline-secondary {
-            color: var(--fc-text-muted);
-            border-color: var(--fc-border-h);
-            background: transparent;
-        }
-
-        .btn-outline-secondary:hover {
-            background: rgba(255,255,255,0.07);
+            background: var(--fc-surface-strong);
             color: var(--fc-text);
-            border-color: var(--fc-border-h);
+            box-shadow: var(--fc-shadow);
         }
 
-        /* ── Alerts ── */
-        .alert {
-            border-radius: var(--fc-radius);
-            border-width: 1px;
-            font-size: 0.9rem;
-        }
-
-        .alert-danger  { background: rgba(226,95,95,0.1);  border-color: rgba(226,95,95,0.3);  color: #f4a3a3; }
-        .alert-success { background: rgba(52,199,89,0.1);  border-color: rgba(52,199,89,0.3);  color: #7de3a0; }
-        .alert-warning { background: rgba(255,184,0,0.1);  border-color: rgba(255,184,0,0.3);  color: #ffd966; }
-        .alert-info    { background: rgba(61,139,255,0.1); border-color: rgba(61,139,255,0.3); color: #85b8ff; }
-
-        /* ── Tables ── */
-        .table {
-            color: var(--fc-text);
+        body.public-shell-body .card-header,
+        body.public-shell-body .card-footer,
+        body.public-shell-body .modal-header,
+        body.public-shell-body .modal-footer {
             border-color: var(--fc-border);
+            background: rgba(255, 255, 255, 0.04);
+            color: inherit;
         }
 
-        .table th {
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
+        html[data-theme='light'] body.public-shell-body .card-header,
+        html[data-theme='light'] body.public-shell-body .card-footer,
+        html[data-theme='light'] body.public-shell-body .modal-header,
+        html[data-theme='light'] body.public-shell-body .modal-footer {
+            background: rgba(37, 99, 235, 0.04);
+        }
+
+        body.public-shell-body .form-control,
+        body.public-shell-body .form-select,
+        body.public-shell-body .input-group-text {
+            border-radius: var(--fc-radius);
+            border-color: var(--fc-border);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--fc-text);
+        }
+
+        html[data-theme='light'] body.public-shell-body .form-control,
+        html[data-theme='light'] body.public-shell-body .form-select,
+        html[data-theme='light'] body.public-shell-body .input-group-text {
+            background: rgba(255, 255, 255, 0.92);
+        }
+
+        body.public-shell-body .form-control:focus,
+        body.public-shell-body .form-select:focus {
+            border-color: var(--fc-accent);
+            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.16);
+            color: var(--fc-text);
+        }
+
+        body.public-shell-body .form-control::placeholder {
             color: var(--fc-text-muted);
-            border-bottom-color: var(--fc-border-h);
-            padding: 0.85rem 1rem;
         }
 
-        .table td {
-            padding: 0.85rem 1rem;
-            border-bottom-color: var(--fc-border);
-            vertical-align: middle;
+        body.public-shell-body .btn-outline-secondary {
+            color: var(--fc-text-muted);
+            border-color: var(--fc-border-h);
         }
 
-        .table-hover tbody tr:hover td {
-            background: rgba(255,255,255,0.03);
+        body.public-shell-body .btn-outline-secondary:hover,
+        body.public-shell-body .btn-outline-secondary:focus {
+            color: var(--fc-text);
+            background: var(--fc-surface);
+            border-color: var(--fc-border-h);
         }
 
-        /* ── Badges ── */
-        .badge {
-            font-weight: 700;
-            font-size: 0.7rem;
-            letter-spacing: 0.04em;
-            padding: 0.3em 0.65em;
-            border-radius: 999px;
+        body.public-shell-body .alert {
+            border-radius: var(--fc-radius);
         }
 
-        /* ── Utilities ── */
-        a { color: var(--fc-accent); }
-        a:hover { color: var(--fc-accent-h); }
+        body.public-shell-body .table {
+            color: var(--fc-text);
+        }
 
-        hr { border-color: var(--fc-border); opacity: 1; }
+        body.public-shell-body .text-muted {
+            color: var(--fc-text-muted) !important;
+        }
 
-        .text-muted { color: var(--fc-text-muted) !important; }
+        @media (max-width: 767.98px) {
+            .nav-toggler {
+                display: inline-flex;
+            }
 
-        @yield('css')
+            .nav-collapse {
+                display: none;
+                position: absolute;
+                top: calc(100% + 0.25rem);
+                left: 0.75rem;
+                right: 0.75rem;
+                z-index: 20;
+                padding: 1rem;
+                border: 1px solid var(--fc-border);
+                border-radius: 20px;
+                background: var(--fc-nav-bg-solid);
+                box-shadow: var(--fc-shadow);
+            }
+
+            .nav-collapse.open {
+                display: block;
+            }
+
+            .nav-actions {
+                flex-direction: column;
+                align-items: stretch;
+                margin-left: 0;
+            }
+
+            .nav-btn,
+            .theme-toggle {
+                width: 100%;
+            }
+
+            .nav-user-name {
+                justify-content: center;
+            }
+
+            .app-main {
+                padding-top: 1rem;
+            }
+        }
     </style>
 </head>
 
-<body>
+<body class="public-shell-body">
     <div id="app">
-        <nav class="public-navbar" id="publicNav">
+        <nav class="public-navbar navbar navbar-light bg-white" id="publicNav">
             <div class="container position-relative">
-                <a class="nav-brand"
+                <a class="nav-brand navbar-brand"
                    href="{{ auth()->check() && Route::has('home') ? route('home') : url('/') }}">
                     <img src="{{ asset('pestaña.png') }}" alt="{{ config('app.name') }}">
                     <span>{{ config('app.name', 'Frangy Control') }}</span>
                 </a>
 
-                <button class="nav-toggler"
+                <button class="nav-toggler navbar-toggler"
                         id="navToggler"
                         type="button"
                         aria-expanded="false"
                         aria-label="{{ __('Toggle navigation') }}">
                     <span class="hamburger">
-                        <span></span><span></span><span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </span>
                 </button>
 
                 <div class="nav-collapse" id="navCollapse">
                     <div class="nav-actions">
+                        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Activar modo oscuro">
+                            <i class="fas fa-moon" data-theme-icon></i>
+                            <span class="theme-toggle__label" data-theme-text>Modo oscuro</span>
+                        </button>
+
                         @guest
-                            <a href="{{ route('landing.pages.welcome') }}" class="nav-link-item">Inicio</a>
+                            <a href="{{ route('landing.pages.welcome') }}" class="nav-link-item nav-link">Inicio</a>
 
                             @if (Route::has('login'))
                                 <a href="{{ route('login') }}" class="nav-btn nav-btn-primary">
@@ -474,18 +440,18 @@
                             @endif
                         @else
                             <span class="nav-user-name">
-                                <i class="fas fa-user-circle fa-sm me-1"></i>
+                                <i class="fas fa-user-circle fa-sm"></i>
                                 {{ Auth::user()->name }}
                             </span>
 
                             @if (Route::has('home'))
-                                <a href="{{ route('home') }}" class="nav-link-item">
-                                    <i class="fas fa-th-large fa-sm me-1"></i>
+                                <a href="{{ route('home') }}" class="nav-link-item nav-link">
+                                    <i class="fas fa-th-large fa-sm mr-1"></i>
                                     Control
                                 </a>
                             @endif
 
-                            <form action="{{ route('logout') }}" method="POST" style="display:contents">
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline-flex">
                                 @csrf
                                 <button type="submit" class="nav-btn nav-btn-ghost">
                                     <i class="fas fa-sign-out-alt fa-sm"></i>
@@ -498,39 +464,48 @@
             </div>
         </nav>
 
-        <main class="app-main">
+        <main class="app-main py-4">
             @yield('content')
         </main>
     </div>
 
+    <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
     <script>
         (function () {
-            var nav      = document.getElementById('publicNav');
-            var toggler  = document.getElementById('navToggler');
+            var nav = document.getElementById('publicNav');
+            var toggler = document.getElementById('navToggler');
             var collapse = document.getElementById('navCollapse');
 
-            /* scroll shadow */
-            window.addEventListener('scroll', function () {
-                nav.classList.toggle('scrolled', window.scrollY > 8);
-            }, { passive: true });
+            function syncNavbar() {
+                if (!nav) {
+                    return;
+                }
 
-            /* hamburger toggle */
+                nav.classList.toggle('scrolled', window.scrollY > 8);
+            }
+
+            syncNavbar();
+            window.addEventListener('scroll', syncNavbar, { passive: true });
+
             if (toggler && collapse) {
                 toggler.addEventListener('click', function () {
                     var open = collapse.classList.toggle('open');
                     toggler.setAttribute('aria-expanded', open ? 'true' : 'false');
                 });
 
-                /* close on outside click */
-                document.addEventListener('click', function (e) {
-                    if (!nav.contains(e.target)) {
+                document.addEventListener('click', function (event) {
+                    if (!nav.contains(event.target)) {
                         collapse.classList.remove('open');
                         toggler.setAttribute('aria-expanded', 'false');
                     }
                 });
             }
-        })();
+        }());
     </script>
+
+    @include('layouts.partials.theme-script')
     @yield('js')
 </body>
 </html>

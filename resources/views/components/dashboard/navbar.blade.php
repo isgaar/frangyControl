@@ -28,6 +28,11 @@
     </div>
 
     <div class="dashboard-navbar__right">
+        <button class="dashboard-theme-toggle" type="button" data-theme-toggle aria-label="Activar modo oscuro">
+            <i class="fas fa-moon" data-theme-icon></i>
+            <span class="dashboard-theme-toggle__label" data-theme-text>Modo oscuro</span>
+        </button>
+
         <div class="dashboard-navbar__meta">
             <span class="dashboard-navbar__meta-label">Actualizado</span>
             <strong>{{ now()->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</strong>

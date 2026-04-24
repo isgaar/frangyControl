@@ -51,4 +51,15 @@
             </section>
         @endforeach
     </div>
+
+    <div class="dashboard-sidebar__resizer"
+         data-dashboard-resizer
+         role="separator"
+         tabindex="0"
+         aria-label="Redimensionar sidebar"
+         aria-orientation="vertical"
+         aria-valuemin="260"
+         aria-valuemax="420"
+         aria-valuenow="320">
+    </div>
 </aside>
