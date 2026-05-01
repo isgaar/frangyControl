@@ -24,6 +24,27 @@
     opacity: 9.7;
     cursor: not-allowed;
 }
+
+.order-photo-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .75rem;
+    margin-top: 1rem;
+}
+
+.order-photo-gallery__item {
+    border: 1px solid var(--dashboard-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--dashboard-surface-soft);
+}
+
+.order-photo-gallery__item img {
+    display: block;
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+}
 </style>
 
 <div class="resource-page">
@@ -311,6 +332,22 @@
                             <input type="checkbox" id="myCheckbox" disabled checked>
                             <label for="myCheckbox">El cliente aceptó</label>
                         </div>
+
+                        @if ($orden->fotografias->isNotEmpty())
+                        <div class="form-group">
+                            <label>Evidencia fotográfica</label>
+                            <div class="order-photo-gallery">
+                                @foreach ($orden->fotografias as $fotografia)
+                                <a class="order-photo-gallery__item"
+                                    href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
+                                    target="_blank" rel="noopener">
+                                    <img src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
+                                        alt="Fotografía de evidencia de la orden">
+                                </a>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
 
                     </div>
                 </div>

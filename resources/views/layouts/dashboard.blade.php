@@ -1,7 +1,5 @@
 @php
     $resolvedPageTitle = $pageTitle ?? trim($__env->yieldContent('title', config('app.name', 'Frangy Control')));
-    $resolvedPageSubtitle = $pageSubtitle ?? null;
-    $resolvedBreadcrumbs = $breadcrumbs ?? [];
     $brand = config('dashboard.brand', []);
     $menu = app(\App\Support\DashboardMenu::class)->for(auth()->user(), request());
     $legacyHeaderContent = trim($__env->yieldContent('content_header'));
@@ -57,13 +55,6 @@
                     <section class="dashboard-legacy-header">
                         {!! $legacyHeaderContent !!}
                     </section>
-                @endif
-
-                @if ($resolvedPageTitle || !empty($resolvedBreadcrumbs))
-                    <x-dashboard.page-header
-                        :title="$resolvedPageTitle"
-                        :subtitle="$resolvedPageSubtitle"
-                        :breadcrumbs="$resolvedBreadcrumbs" />
                 @endif
 
                 <section class="dashboard-panel">

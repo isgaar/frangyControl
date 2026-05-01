@@ -4,11 +4,16 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Http\UploadedFile;
 use App\Models\Ordenes;
 use App\Models\Cliente;
 use App\Models\DatosVehiculo;
@@ -22,6 +27,8 @@ use Carbon\Carbon;
 
 class OrdenController extends Controller
 {
+    private const TEMP_PHOTO_SESSION_KEY = 'ordenes_temp_photos';
+
     public function index(Request $request)
     {
         $search = $request->input('search', '');
@@ -168,68 +175,70 @@ class OrdenController extends Controller
 
     public function asigne()
     {
-        $datosVehiculo = DatosVehiculo::all();
-        $tiposServicio = TipoServicio::all();
-        $tiposVehiculo = TipoVehiculo::all();
-        $users = User::all();
-        $cliente = Cliente::all();
-
-        return view('admin.ordenes.asigne', [
-            'datosVehiculo' => $datosVehiculo,
-            'tiposVehiculo' => $tiposVehiculo,
-            'tiposServicio' => $tiposServicio,
-            'users' => $users,
-            'cliente' => $cliente
-        ]);
+        return view('admin.ordenes.registro', array_merge($this->registroCatalogos(), [
+            'preferExistingClient' => true,
+        ]));
     }
 
     public function store2(Request $request)
     {
-        try {
-            DB::beginTransaction();
+        $request->merge([
+            'usar_cliente_existente' => true,
+            'cliente_existente_id' => $request->input('cliente_existente_id', $request->input('cliente_id')),
+        ]);
 
-            $ordenes = new Ordenes([
-                'yearVehiculo' => $request->input('yearVehiculo'),
-                'color' => $request->input('color'),
-                'placas' => $request->input('placas'),
-                'kilometraje' => $request->input('kilometraje'),
-                'motor' => $request->input('motor'),
-                'status' => $request->input('status'),
-                'modelo' => $request->input('modelo'),
-                'cilindros' => $request->input('cilindros'),
-                'noSerievehiculo' => $request->input('noSerievehiculo'),
-                'fechaEntrega' => $request->input('fechaEntrega'),
-                'observacionesInt' => $request->input('observacionesInt'),
-                'recomendacionesCliente' => $request->input('recomendacionesCliente'),
-                'detallesOrden' => $request->input('detallesOrden'),
-                'retiroRefacciones' => $request->input('retiroRefacciones'),
-                'cliente_id' => $request->input('cliente_id'),
-                // Asigna el valor seleccionado del campo cliente_id
-                'vehiculo_id' => $request->input('vehiculo_id'),
-                'servicio_id' => $request->input('servicio_id'),
-                'tvehiculo_id' => $request->input('tvehiculo_id'),
-                'id' => $request->input('user_id'),
-            ]);
+        return $this->store($request);
+    }
 
-            $ordenes->save(); // Guarda la orden en la tabla 'ordenes'
+    public function storeTemporaryPhoto(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
+        ]);
 
-            // Resto del código...
+        /** @var UploadedFile $photo */
+        $photo = $validated['photo'];
+        $token = (string) Str::uuid();
+        $extension = $this->safePhotoExtension($photo);
+        $path = 'ordenes/fotografias/temporales/' . $token . '.' . $extension . '.enc';
 
-            DB::commit();
-            session()->flash('status', 'Se ha agregado correctamente la orden.');
-            session()->flash('status_type', 'success');
-            return redirect()->route('ordenes.index');
-        } catch (\Illuminate\Database\QueryException $ex) {
-            DB::rollBack();
-            Session::flash('status', $ex->getMessage());
-            Session::flash('status_type', 'error-Query');
-            return back();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Session::flash('status', $e->getMessage());
-            Session::flash('status_type', 'error');
-            return back();
+        $this->putEncryptedPhoto($photo, $path);
+
+        $tempPhotos = $request->session()->get(self::TEMP_PHOTO_SESSION_KEY, []);
+        $tempPhotos[$token] = [
+            'path' => $path,
+            'extension' => $extension,
+            'name' => $photo->getClientOriginalName(),
+            'size' => $photo->getSize(),
+            'mime' => $photo->getMimeType(),
+            'uploaded_at' => now()->toDateTimeString(),
+        ];
+        $request->session()->put(self::TEMP_PHOTO_SESSION_KEY, $tempPhotos);
+
+        return response()->json([
+            'token' => $token,
+            'name' => $photo->getClientOriginalName(),
+            'size' => $photo->getSize(),
+            'mime' => $photo->getMimeType(),
+        ], 201);
+    }
+
+    public function destroyTemporaryPhoto(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'token' => ['required', 'uuid'],
+        ]);
+
+        $tempPhotos = $request->session()->get(self::TEMP_PHOTO_SESSION_KEY, []);
+        $photo = $tempPhotos[$validated['token']] ?? null;
+
+        if ($photo && !empty($photo['path'])) {
+            Storage::disk('local')->delete($photo['path']);
+            unset($tempPhotos[$validated['token']]);
+            $request->session()->put(self::TEMP_PHOTO_SESSION_KEY, $tempPhotos);
         }
+
+        return response()->json(['deleted' => true]);
     }
 
     public function clienteList()
@@ -347,10 +356,10 @@ class OrdenController extends Controller
         return [
             'usar_cliente_existente' => ['nullable', 'boolean'],
             'cliente_existente_id' => [$usingExistingClient ? 'required' : 'nullable', 'exists:clientes,id_cliente'],
-            'nombreCompleto' => [$usingExistingClient ? 'nullable' : 'required', 'string', 'max:100', Rule::unique('clientes', 'nombreCompleto')],
-            'telefono' => [$usingExistingClient ? 'nullable' : 'required', 'digits:10', Rule::unique('clientes', 'telefono')],
-            'correo' => [$usingExistingClient ? 'nullable' : 'required', 'email', 'max:30', Rule::unique('clientes', 'correo')],
-            'rfc' => [$usingExistingClient ? 'nullable' : 'required', 'string', 'min:12', 'max:13', Rule::unique('clientes', 'rfc')],
+            'nombreCompleto' => $usingExistingClient ? ['nullable'] : ['required', 'string', 'max:100', Rule::unique('clientes', 'nombreCompleto')],
+            'telefono' => $usingExistingClient ? ['nullable'] : ['required', 'digits:10', Rule::unique('clientes', 'telefono')],
+            'correo' => $usingExistingClient ? ['nullable'] : ['required', 'email', 'max:30', Rule::unique('clientes', 'correo')],
+            'rfc' => $usingExistingClient ? ['nullable'] : ['required', 'string', 'min:12', 'max:13', Rule::unique('clientes', 'rfc')],
             'vehiculo_id' => ['required', 'exists:datos_vehiculo,id_vehiculo'],
             'tvehiculo_id' => ['required', 'exists:tipo_vehiculo,id_tvehiculo'],
             'servicio_id' => ['required', 'exists:tipo_servicio,id_servicio'],
@@ -369,6 +378,9 @@ class OrdenController extends Controller
             'recomendacionesCliente' => ['required', 'string'],
             'detallesOrden' => ['required', 'string'],
             'retiroRefacciones' => ['required', 'boolean'],
+            'photo_tokens' => ['nullable', 'array'],
+            'photo_tokens.*' => ['string', 'uuid'],
+            'photos' => ['nullable', 'array'],
             'photos.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ];
     }
@@ -411,6 +423,7 @@ class OrdenController extends Controller
             'recomendacionesCliente.required' => 'Agrega las recomendaciones del cliente.',
             'detallesOrden.required' => 'Agrega los detalles del servicio.',
             'retiroRefacciones.required' => 'Indica si el cliente retira refacciones.',
+            'photo_tokens.*.uuid' => 'Una fotografía temporal no se pudo validar. Vuelve a seleccionarla.',
             'photos.*.image' => 'Cada archivo debe ser una imagen.',
             'photos.*.mimes' => 'Las fotografías deben estar en formato JPG o PNG.',
             'photos.*.max' => 'Cada fotografía puede pesar hasta 2 MB.',
@@ -446,14 +459,10 @@ class OrdenController extends Controller
 
     private function storeUploadedPhotos(Request $request, Ordenes $orden): void
     {
+        $this->storeTemporaryPhotos($request, $orden);
+
         if (!$request->hasFile('photos')) {
             return;
-        }
-
-        $destinationPath = public_path('images/photos');
-
-        if (!is_dir($destinationPath)) {
-            mkdir($destinationPath, 0755, true);
         }
 
         foreach ($request->file('photos') as $photo) {
@@ -461,13 +470,100 @@ class OrdenController extends Controller
                 continue;
             }
 
-            $filename = now()->format('YmdHis') . '-' . uniqid() . '.' . $photo->getClientOriginalExtension();
-            $photo->move($destinationPath, $filename);
+            $token = (string) Str::uuid();
+            $extension = $this->safePhotoExtension($photo);
+            $path = $this->finalPhotoPath($orden, $token, $extension);
+
+            $this->putEncryptedPhoto($photo, $path);
 
             Fotografia::create([
-                'ruta' => 'images/photos/' . $filename,
+                'ruta' => $path,
                 'ordenes_id' => $orden->id_ordenes,
             ]);
+        }
+    }
+
+    private function storeTemporaryPhotos(Request $request, Ordenes $orden): void
+    {
+        $tokens = collect($request->input('photo_tokens', []))
+            ->filter()
+            ->unique()
+            ->values();
+
+        if ($tokens->isEmpty()) {
+            return;
+        }
+
+        $tempPhotos = $request->session()->get(self::TEMP_PHOTO_SESSION_KEY, []);
+
+        foreach ($tokens as $token) {
+            $photo = $tempPhotos[$token] ?? null;
+
+            if (!$photo || empty($photo['path']) || !Storage::disk('local')->exists($photo['path'])) {
+                throw new \RuntimeException('No se pudo recuperar una fotografía temporal. Vuelve a seleccionarla.');
+            }
+
+            $extension = $photo['extension'] ?? 'jpg';
+            $finalPath = $this->finalPhotoPath($orden, $token, $extension);
+
+            Storage::disk('local')->makeDirectory(dirname($finalPath));
+            Storage::disk('local')->move($photo['path'], $finalPath);
+
+            Fotografia::create([
+                'ruta' => $finalPath,
+                'ordenes_id' => $orden->id_ordenes,
+            ]);
+
+            unset($tempPhotos[$token]);
+        }
+
+        $request->session()->put(self::TEMP_PHOTO_SESSION_KEY, $tempPhotos);
+    }
+
+    private function putEncryptedPhoto(UploadedFile $photo, string $path): void
+    {
+        $contents = file_get_contents($photo->getRealPath());
+
+        if ($contents === false) {
+            throw new \RuntimeException('No se pudo leer una fotografía seleccionada.');
+        }
+
+        Storage::disk('local')->makeDirectory(dirname($path));
+        Storage::disk('local')->put($path, Crypt::encryptString(base64_encode($contents)));
+    }
+
+    private function finalPhotoPath(Ordenes $orden, string $token, string $extension): string
+    {
+        return 'ordenes/fotografias/' . $orden->id_ordenes . '/' . $token . '.' . $extension . '.enc';
+    }
+
+    private function safePhotoExtension(UploadedFile $photo): string
+    {
+        $extension = strtolower($photo->guessExtension() ?: $photo->getClientOriginalExtension() ?: 'jpg');
+
+        return in_array($extension, ['jpg', 'jpeg', 'png'], true) ? $extension : 'jpg';
+    }
+
+    private function mimeTypeFromEncryptedPath(string $path): string
+    {
+        if (Str::contains($path, '.png.enc')) {
+            return 'image/png';
+        }
+
+        return 'image/jpeg';
+    }
+
+    private function deleteStoredPhoto(Fotografia $fotografia): void
+    {
+        if (Str::endsWith($fotografia->ruta, '.enc')) {
+            Storage::disk('local')->delete($fotografia->ruta);
+            return;
+        }
+
+        $legacyPath = public_path($fotografia->ruta);
+
+        if (is_file($legacyPath)) {
+            @unlink($legacyPath);
         }
     }
 
@@ -490,7 +586,7 @@ class OrdenController extends Controller
 
     public function show($id_ordenes)
     {
-        $orden = Ordenes::findOrFail($id_ordenes); // Obtén la orden según el ID proporcionado
+        $orden = Ordenes::with('fotografias')->findOrFail($id_ordenes); // Obtén la orden según el ID proporcionado
         $datosVehiculo = DatosVehiculo::all();
         $tiposServicio = TipoServicio::all();
         $tiposVehiculo = TipoVehiculo::all();
@@ -505,6 +601,29 @@ class OrdenController extends Controller
             'users' => $users,
             'cliente_id' => $cliente_id
         ]);
+    }
+
+    public function showPhoto($id_ordenes, Fotografia $fotografia)
+    {
+        abort_unless((int) $fotografia->ordenes_id === (int) $id_ordenes, 404);
+
+        if (Str::endsWith($fotografia->ruta, '.enc')) {
+            abort_unless(Storage::disk('local')->exists($fotografia->ruta), 404);
+
+            $encrypted = Storage::disk('local')->get($fotografia->ruta);
+            $decoded = base64_decode(Crypt::decryptString($encrypted), true);
+
+            abort_if($decoded === false, 404);
+
+            return response($decoded, 200)
+                ->header('Content-Type', $this->mimeTypeFromEncryptedPath($fotografia->ruta))
+                ->header('Cache-Control', 'private, max-age=600');
+        }
+
+        $legacyPath = public_path($fotografia->ruta);
+        abort_unless(is_file($legacyPath), 404);
+
+        return response()->file($legacyPath);
     }
 
     public function edit($id_ordenes)
@@ -604,7 +723,7 @@ class OrdenController extends Controller
 
     public function destroy($id_ordenes)
     {
-        $orden = Ordenes::findOrFail($id_ordenes);
+        $orden = Ordenes::with('fotografias')->findOrFail($id_ordenes);
     
         try {
             DB::beginTransaction();
@@ -612,6 +731,11 @@ class OrdenController extends Controller
             // Verificar el rol del usuario
             if (!auth()->user()->hasRole('Administrador')) {
                 throw new AuthorizationException('No tienes permiso para realizar esta acción.');
+            }
+
+            foreach ($orden->fotografias as $fotografia) {
+                $this->deleteStoredPhoto($fotografia);
+                $fotografia->delete();
             }
     
             $orden->delete();

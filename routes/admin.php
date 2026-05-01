@@ -74,6 +74,8 @@ Route::prefix('ordenes')
         Route::get('/nueva', [OrdenController::class, 'create'])->name('create');
         Route::get('/registro', [OrdenController::class, 'registro'])->name('registro');
         Route::post('/registro', [OrdenController::class, 'store'])->name('store');
+        Route::post('/registro/fotos-temporales', [OrdenController::class, 'storeTemporaryPhoto'])->name('photos.temporary.store');
+        Route::delete('/registro/fotos-temporales', [OrdenController::class, 'destroyTemporaryPhoto'])->name('photos.temporary.destroy');
         Route::get('/cliente-existente', [OrdenController::class, 'asigne'])->name('cliente_existente.create');
         Route::post('/cliente-existente', [OrdenController::class, 'store2'])->name('cliente_existente.store');
 
@@ -83,6 +85,7 @@ Route::prefix('ordenes')
         Route::get('/opciones/servicios', [OrdenController::class, 'tiposList'])->name('opciones.servicios');
         Route::get('/opciones/usuarios', [OrdenController::class, 'userList'])->name('opciones.usuarios');
 
+        Route::get('/{id_ordenes}/fotografias/{fotografia}', [OrdenController::class, 'showPhoto'])->name('photos.show');
         Route::get('/{id_ordenes}/editar', [OrdenController::class, 'edit'])->name('edit');
         Route::put('/{id_ordenes}', [OrdenController::class, 'update'])->name('update');
         Route::get('/{id_ordenes}/exportar-pdf', [OrdenController::class, 'exportToPDF'])->name('export');

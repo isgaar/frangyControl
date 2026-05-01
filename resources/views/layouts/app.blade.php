@@ -100,10 +100,18 @@
             border-bottom: 1px solid var(--fc-border);
         }
 
+        html[data-theme='dark'] body.public-shell-body .public-navbar.bg-white {
+            background: var(--fc-nav-bg) !important;
+        }
+
         .public-navbar.scrolled {
             background: var(--fc-nav-bg-solid);
             border-bottom-color: var(--fc-border-h);
             box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+        }
+
+        html[data-theme='dark'] body.public-shell-body .public-navbar.scrolled.bg-white {
+            background: var(--fc-nav-bg-solid) !important;
         }
 
         .public-navbar .container {

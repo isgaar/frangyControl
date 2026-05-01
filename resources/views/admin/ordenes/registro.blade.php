@@ -1,5 +1,7 @@
 @extends('layouts.dashboard')
 
+@section('title', 'Registrar orden')
+
 @section('content_header')
 @if (Session::has('status'))
 <div class="col-md-12 alert-section">
@@ -16,12 +18,22 @@
 @stop
 
 @section('content')
+@php
+    $usingExistingClient = (bool) old('usar_cliente_existente', $preferExistingClient ?? false);
+@endphp
 <style>
     .order-panel {
         border-radius: 16px;
-        border: 1px solid rgba(13, 110, 253, 0.1);
-        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+        border: 1px solid var(--dashboard-border);
+        background: var(--dashboard-surface);
+        box-shadow: var(--dashboard-shadow);
         overflow: hidden;
+    }
+
+    .order-panel__header {
+        border-bottom: 1px solid var(--dashboard-border);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--dashboard-primary) 16%, var(--dashboard-surface)), var(--dashboard-surface));
+        color: var(--dashboard-text);
     }
 
     .order-header {
@@ -38,17 +50,203 @@
 
     .order-header-copy p {
         margin: 0.35rem 0 0;
-        color: rgba(255, 255, 255, 0.85);
+        color: var(--dashboard-muted);
     }
 
     .order-help-toggle {
         display: inline-flex;
         align-items: center;
+        gap: .35rem;
         border-radius: 999px;
-        border: none;
+        border: 1px solid var(--dashboard-border);
+        background: var(--dashboard-surface);
         font-weight: 600;
-        color: #0f172a;
-        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.14);
+        color: var(--dashboard-text);
+    }
+
+    .order-help-toggle.is-active,
+    .order-help-toggle:hover {
+        border-color: color-mix(in srgb, var(--dashboard-primary) 44%, var(--dashboard-border));
+        background: var(--dashboard-primary-soft);
+        color: var(--dashboard-primary-strong);
+    }
+
+    .order-flow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: .75rem;
+        margin-top: 1rem;
+    }
+
+    .order-flow__item {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+        min-height: 48px;
+        padding: .75rem;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 12px;
+        background: var(--dashboard-surface);
+        color: var(--dashboard-muted);
+        font-weight: 700;
+    }
+
+    .order-flow__item span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--dashboard-primary);
+        color: #fff;
+        font-size: .85rem;
+    }
+
+    .order-intake-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1rem;
+    }
+
+    .order-form-main {
+        min-width: 0;
+    }
+
+    .order-section {
+        padding: 1.25rem 0;
+        border-top: 1px solid var(--dashboard-border);
+    }
+
+    .order-section:first-child {
+        padding-top: 0;
+        border-top: 0;
+    }
+
+    .order-section__header {
+        display: flex;
+        align-items: flex-start;
+        gap: .85rem;
+        margin-bottom: 1rem;
+    }
+
+    .order-section__badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--dashboard-primary-soft);
+        color: var(--dashboard-primary);
+        font-weight: 900;
+    }
+
+    .order-section__title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--dashboard-text);
+    }
+
+    .order-section__copy {
+        margin: .2rem 0 0;
+        color: var(--dashboard-muted);
+    }
+
+    .order-mode-card {
+        margin-bottom: 1rem;
+        padding: .9rem 1rem;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 12px;
+        background: var(--dashboard-surface-soft);
+    }
+
+    .photo-uploader {
+        display: grid;
+        gap: .75rem;
+    }
+
+    .photo-uploader__input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .photo-uploader__drop {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1rem;
+        min-height: 112px;
+        margin: 0;
+        padding: 1rem;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 12px;
+        background: var(--dashboard-surface-soft);
+        color: var(--dashboard-text);
+        cursor: pointer;
+        transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
+    }
+
+    .photo-uploader__drop:hover,
+    .photo-uploader__drop.is-dragover {
+        border-color: color-mix(in srgb, var(--dashboard-primary) 46%, var(--dashboard-border));
+        background: var(--dashboard-primary-soft);
+        transform: translateY(-1px);
+    }
+
+    .photo-uploader__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: var(--dashboard-surface);
+        color: var(--dashboard-primary);
+        font-size: 1.1rem;
+    }
+
+    .photo-uploader__copy {
+        display: grid;
+        gap: .2rem;
+        min-width: 0;
+    }
+
+    .photo-uploader__copy strong {
+        color: var(--dashboard-text);
+        font-size: 1rem;
+    }
+
+    .photo-uploader__copy span,
+    .photo-uploader__status {
+        color: var(--dashboard-muted);
+        font-size: .9rem;
+    }
+
+    .photo-uploader__action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 0 .9rem;
+        border-radius: 999px;
+        background: var(--dashboard-primary);
+        color: #fff;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .photo-token-fields {
+        display: none;
+    }
+
+    .order-section .row {
+        row-gap: .35rem;
     }
 
     .section-heading {
@@ -62,14 +260,22 @@
 
     .helper-copy {
         display: none !important;
+        margin-top: .35rem;
+        color: var(--dashboard-muted);
+        font-size: .85rem;
+        line-height: 1.35;
+    }
+
+    .order-panel.help-enabled .helper-copy {
+        display: block !important;
     }
 
     .help-panel {
         margin-bottom: 1.5rem;
         padding: 1.25rem;
-        border: 1px solid rgba(13, 148, 136, 0.18);
+        border: 1px solid var(--dashboard-border);
         border-radius: 16px;
-        background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(255, 255, 255, 0.96));
+        background: var(--dashboard-surface-soft);
     }
 
     .help-panel-header {
@@ -85,12 +291,12 @@
         margin: 0;
         font-size: 1.05rem;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--dashboard-text);
     }
 
     .help-panel-copy {
         margin: 0;
-        color: #475569;
+        color: var(--dashboard-muted);
     }
 
     .help-grid {
@@ -103,37 +309,81 @@
         padding: 1rem;
         border-radius: 14px;
         border: 1px solid rgba(148, 163, 184, 0.22);
-        background: rgba(255, 255, 255, 0.9);
+        background: var(--dashboard-surface);
     }
 
     .help-block h4 {
         margin-bottom: 0.75rem;
         font-size: 0.98rem;
         font-weight: 700;
-        color: #0f172a;
+        color: var(--dashboard-text);
     }
 
     .preview-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         gap: 12px;
-        margin-top: 1rem;
     }
 
     .preview-card {
-        background: #f8fafc;
-        border: 1px solid #dee2e6;
+        position: relative;
+        display: grid;
+        gap: .45rem;
+        background: var(--dashboard-surface);
+        border: 1px solid var(--dashboard-border);
         border-radius: 12px;
         padding: 8px;
-        text-align: center;
+        min-width: 0;
+    }
+
+    .preview-card.is-uploading {
+        border-color: color-mix(in srgb, var(--dashboard-primary) 45%, var(--dashboard-border));
+    }
+
+    .preview-card.is-error {
+        border-color: #dc3545;
     }
 
     .preview-card img {
         width: 100%;
-        height: 95px;
+        height: 112px;
         object-fit: cover;
         border-radius: 8px;
-        margin-bottom: 6px;
+    }
+
+    .preview-card__name {
+        overflow: hidden;
+        color: var(--dashboard-text);
+        font-size: .82rem;
+        font-weight: 700;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .preview-card__status {
+        color: var(--dashboard-muted);
+        font-size: .78rem;
+    }
+
+    .preview-card__remove {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border: 0;
+        border-radius: 50%;
+        background: rgba(15, 23, 42, .78);
+        color: #fff;
+    }
+
+    .preview-card__remove:hover,
+    .preview-card__remove:focus {
+        background: #dc3545;
+        color: #fff;
     }
 
     .readonly-field {
@@ -151,7 +401,7 @@
 
     .form-group label {
         font-weight: 600;
-        color: #1e293b;
+        color: var(--dashboard-text);
     }
 
     .custom-switch .custom-control-label,
@@ -167,6 +417,18 @@
         .order-help-toggle {
             width: 100%;
             justify-content: center;
+        }
+    }
+
+    @media (max-width: 575.98px) {
+        .photo-uploader__drop {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .photo-uploader__icon,
+        .photo-uploader__action {
+            justify-self: center;
         }
     }
 </style>
@@ -188,19 +450,27 @@
 
     <div class="row">
         <div class="col-12">
-            <div class="card order-panel">
-                <div class="card-header bg-info">
+            <div class="card order-panel {{ $errors->any() ? 'help-enabled' : '' }}" id="ordenPanel">
+                <div class="card-header order-panel__header">
                     <div class="order-header">
                         <div class="order-header-copy">
                             <h3 class="card-title mb-0">Registrar orden</h3>
-                            <p>Captura cliente, unidad y servicio sin saturar la pantalla de instrucciones.</p>
+                            <p>Avanza por bloques: identifica al cliente, describe la unidad y cierra los datos del servicio.</p>
                         </div>
 
-                        <button type="button" class="btn btn-light btn-sm order-help-toggle" data-toggle="collapse"
-                            data-target="#ordenHelpPanel" aria-expanded="{{ $errors->any() ? 'true' : 'false' }}"
+                        <button type="button" class="btn btn-sm order-help-toggle {{ $errors->any() ? 'is-active' : '' }}"
+                            id="ordenHelpToggle" data-bs-toggle="collapse" data-bs-target="#ordenHelpPanel"
+                            aria-expanded="{{ $errors->any() ? 'true' : 'false' }}" aria-pressed="{{ $errors->any() ? 'true' : 'false' }}"
                             aria-controls="ordenHelpPanel">
-                            <i class="fas fa-life-ring me-1"></i> Ayuda rápida
+                            <i class="fas fa-life-ring"></i> Ayuda rápida
                         </button>
+                    </div>
+
+                    <div class="order-flow" aria-label="Flujo de captura">
+                        <div class="order-flow__item"><span>1</span> Cliente</div>
+                        <div class="order-flow__item"><span>2</span> Unidad</div>
+                        <div class="order-flow__item"><span>3</span> Servicio</div>
+                        <div class="order-flow__item"><span>4</span> Confirmación</div>
                     </div>
                 </div>
 
@@ -242,45 +512,57 @@
                         </div>
                     </div>
 
-                    <div class="custom-control custom-switch mb-4">
-                        <input type="checkbox" class="custom-control-input" id="usarClienteExistente"
-                            name="usar_cliente_existente" value="1" {{ old('usar_cliente_existente') ? 'checked' : '' }}>
-                        <label class="custom-control-label" for="usarClienteExistente">Usar cliente ya registrado</label>
-                        <div class="helper-copy ms-4">Activa esta opción si el cliente ya existe y quieres rellenar sus
-                            datos automáticamente.</div>
-                    </div>
+                    <div class="order-intake-layout">
+                        <div class="order-form-main">
+                            <section class="order-section" id="orden-cliente">
+                                <div class="order-section__header">
+                                    <span class="order-section__badge">1</span>
+                                    <div>
+                                        <h4 class="order-section__title">Cliente</h4>
+                                        <p class="order-section__copy">Busca al cliente si ya existe o captura sus datos de contacto.</p>
+                                    </div>
+                                </div>
 
-                    <div class="form-group {{ old('usar_cliente_existente') ? '' : 'd-none' }}" id="clienteExistenteBox">
-                        <label for="cliente_existente_id">Cliente registrado</label>
-                        <select name="cliente_existente_id" id="cliente_existente_id"
-                            class="form-control @error('cliente_existente_id') is-invalid @enderror">
-                            <option value="">Selecciona un cliente</option>
-                            @foreach ($clientes as $cliente)
-                            <option value="{{ $cliente->id_cliente }}"
-                                data-nombre="{{ $cliente->nombreCompleto }}"
-                                data-telefono="{{ $cliente->telefono }}"
-                                data-correo="{{ $cliente->correo }}"
-                                data-rfc="{{ $cliente->rfc }}"
-                                {{ (string) old('cliente_existente_id') === (string) $cliente->id_cliente ? 'selected' : '' }}>
-                                {{ $cliente->nombreCompleto }} - {{ $cliente->telefono }}
-                            </option>
-                            @endforeach
-                        </select>
-                        <small class="helper-copy">El sistema cargará nombre, teléfono, correo y RFC del cliente
-                            seleccionado.</small>
-                        <div class="invalid-feedback">Selecciona un cliente registrado.</div>
-                        @error('cliente_existente_id')
-                        <span class="text-danger d-block mt-1">{{ $message }}</span>
-                        @enderror
-                    </div>
+                                <div class="order-mode-card">
+                                    <div class="custom-control custom-switch mb-0">
+                                        <input type="checkbox" class="custom-control-input" id="usarClienteExistente"
+                                            name="usar_cliente_existente" value="1" {{ $usingExistingClient ? 'checked' : '' }}>
+                                        <label class="custom-control-label" for="usarClienteExistente">Usar cliente ya registrado</label>
+                                        <div class="helper-copy ms-4">Activa esta opción si el cliente ya existe y quieres rellenar sus
+                                            datos automáticamente.</div>
+                                    </div>
+                                </div>
 
-                    <div class="section-heading mt-4">Información del cliente</div>
-                    <div id="clienteExistenteHint" class="alert alert-warning d-none py-2">
-                        Ya existe un cliente con ese nombre. Puedes activar "Usar cliente ya registrado" para cargarlo
-                        automáticamente.
-                    </div>
+                                <div class="form-group {{ $usingExistingClient ? '' : 'd-none' }}" id="clienteExistenteBox">
+                                    <label for="cliente_existente_id">Cliente registrado</label>
+                                    <select name="cliente_existente_id" id="cliente_existente_id"
+                                        class="form-control @error('cliente_existente_id') is-invalid @enderror">
+                                        <option value="">Selecciona un cliente</option>
+                                        @foreach ($clientes as $cliente)
+                                        <option value="{{ $cliente->id_cliente }}"
+                                            data-nombre="{{ $cliente->nombreCompleto }}"
+                                            data-telefono="{{ $cliente->telefono }}"
+                                            data-correo="{{ $cliente->correo }}"
+                                            data-rfc="{{ $cliente->rfc }}"
+                                            {{ (string) old('cliente_existente_id') === (string) $cliente->id_cliente ? 'selected' : '' }}>
+                                            {{ $cliente->nombreCompleto }} - {{ $cliente->telefono }}
+                                        </option>
+                                        @endforeach
+                                    </select>
+                                    <small class="helper-copy">El sistema cargará nombre, teléfono, correo y RFC del cliente
+                                        seleccionado.</small>
+                                    <div class="invalid-feedback">Selecciona un cliente registrado.</div>
+                                    @error('cliente_existente_id')
+                                    <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
 
-                    <div class="row">
+                                <div id="clienteExistenteHint" class="alert alert-warning d-none py-2">
+                                    Ya existe un cliente con ese nombre. Puedes activar "Usar cliente ya registrado" para cargarlo
+                                    automáticamente.
+                                </div>
+
+                                <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="nombreCompleto">Nombre completo</label>
@@ -336,10 +618,19 @@
                                 @enderror
                             </div>
                         </div>
-                    </div>
+                                </div>
+                            </section>
 
-                    <div class="section-heading mt-4">Datos de la unidad</div>
-                    <div class="row">
+                            <section class="order-section" id="orden-unidad">
+                                <div class="order-section__header">
+                                    <span class="order-section__badge">2</span>
+                                    <div>
+                                        <h4 class="order-section__title">Unidad</h4>
+                                        <p class="order-section__copy">Identifica el vehículo con los datos que después aparecerán en la orden.</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="vehiculo_id">Marca</label>
@@ -499,10 +790,19 @@
                                 @enderror
                             </div>
                         </div>
-                    </div>
+                                </div>
+                            </section>
 
-                    <div class="section-heading mt-4">Datos de la orden</div>
-                    <div class="row">
+                            <section class="order-section" id="orden-servicio">
+                                <div class="order-section__header">
+                                    <span class="order-section__badge">3</span>
+                                    <div>
+                                        <h4 class="order-section__title">Servicio y entrega</h4>
+                                        <p class="order-section__copy">Define el trabajo, responsable, estado, fecha estimada y notas del taller.</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for="servicio_id">Tipo de servicio</label>
@@ -638,19 +938,56 @@
                                 @enderror
                             </div>
                         </div>
+                    </div>
+                            </section>
 
+                            <section class="order-section" id="orden-cierre">
+                                <div class="order-section__header">
+                                    <span class="order-section__badge">4</span>
+                                    <div>
+                                        <h4 class="order-section__title">Evidencia y confirmación</h4>
+                                        <p class="order-section__copy">Adjunta fotografías si ayudan a documentar la recepción y confirma la autorización.</p>
+                                    </div>
+                                </div>
+
+                                <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
                                 <label for="photos">Fotografías de apoyo</label>
-                                <input type="file" name="photos[]" id="photos"
-                                    class="form-control-file @error('photos.*') is-invalid @enderror"
-                                    accept="image/png,image/jpeg" multiple>
-                                <small class="helper-copy">Puedes subir varias imágenes JPG o PNG de hasta 2 MB cada
-                                    una.</small>
+                                <div class="photo-uploader" id="photoUploader"
+                                    data-upload-url="{{ route('ordenes.photos.temporary.store') }}"
+                                    data-delete-url="{{ route('ordenes.photos.temporary.destroy') }}">
+                                    <input type="file" name="photos[]" id="photos"
+                                        class="photo-uploader__input @error('photos.*') is-invalid @enderror"
+                                        accept="image/png,image/jpeg" multiple>
+                                    <label for="photos" class="photo-uploader__drop" id="photoDropzone">
+                                        <span class="photo-uploader__icon" aria-hidden="true">
+                                            <i class="fas fa-camera"></i>
+                                        </span>
+                                        <span class="photo-uploader__copy">
+                                            <strong>Agregar fotografías</strong>
+                                            <span>JPG o PNG, máximo 2 MB por imagen.</span>
+                                        </span>
+                                        <span class="photo-uploader__action">Seleccionar</span>
+                                    </label>
+                                    <div class="photo-uploader__status" id="photoUploadStatus">
+                                        Sin fotografías agregadas.
+                                    </div>
+                                    <div class="photo-token-fields" id="photoTokenContainer">
+                                        @foreach ((array) old('photo_tokens', []) as $photoToken)
+                                        <input type="hidden" name="photo_tokens[]" value="{{ $photoToken }}"
+                                            data-photo-token="{{ $photoToken }}">
+                                        @endforeach
+                                    </div>
+                                    <div id="photoPreviewContainer" class="preview-grid"></div>
+                                </div>
+                                <small class="helper-copy">Al seleccionarlas se guardan cifradas de forma privada.</small>
                                 @error('photos.*')
                                 <span class="text-danger d-block mt-1">{{ $message }}</span>
                                 @enderror
-                                <div id="photoPreviewContainer" class="preview-grid"></div>
+                                @error('photo_tokens.*')
+                                <span class="text-danger d-block mt-1">{{ $message }}</span>
+                                @enderror
                             </div>
                         </div>
 
@@ -667,6 +1004,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                            </section>
+                        </div>
+
                     </div>
                 </div>
 
@@ -701,7 +1042,16 @@
         var existingClientSelect = document.getElementById('cliente_existente_id');
         var duplicateHint = document.getElementById('clienteExistenteHint');
         var photoInput = document.getElementById('photos');
+        var photoUploader = document.getElementById('photoUploader');
+        var photoDropzone = document.getElementById('photoDropzone');
+        var photoStatus = document.getElementById('photoUploadStatus');
+        var photoTokenContainer = document.getElementById('photoTokenContainer');
         var photoPreviewContainer = document.getElementById('photoPreviewContainer');
+        var orderPanel = document.getElementById('ordenPanel');
+        var helpToggle = document.getElementById('ordenHelpToggle');
+        var helpPanel = document.getElementById('ordenHelpPanel');
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        var pendingPhotoUploads = 0;
 
         var fields = {
             nombreCompleto: document.getElementById('nombreCompleto'),
@@ -737,6 +1087,17 @@
             maxDate: new Date().fp_incr(60)
         });
 
+        function syncHelpMode() {
+            if (!orderPanel || !helpToggle || !helpPanel) {
+                return;
+            }
+
+            var enabled = helpPanel.classList.contains('show') || helpToggle.getAttribute('aria-expanded') === 'true';
+            orderPanel.classList.toggle('help-enabled', enabled);
+            helpToggle.classList.toggle('is-active', enabled);
+            helpToggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+        }
+
         function sanitizeName(value) {
             return value
                 .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
@@ -771,6 +1132,27 @@
 
         function sanitizeDecimal(value) {
             return value.replace(/[^0-9.]/g, '');
+        }
+
+        function normalizeClientName(value) {
+            return (value || '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function findClientOptionByName(name) {
+            var normalizedName = normalizeClientName(name);
+
+            if (!normalizedName) {
+                return null;
+            }
+
+            return Array.from(existingClientSelect.options).find(function (option) {
+                return option.value && normalizeClientName(option.dataset.nombre) === normalizedName;
+            }) || null;
         }
 
         function updateClientMode() {
@@ -820,8 +1202,213 @@
 
         function updateAcceptanceState(showError) {
             var accepted = acceptCheckbox.checked;
-            submitButton.disabled = !accepted;
+            submitButton.disabled = !accepted || pendingPhotoUploads > 0;
             acceptError.classList.toggle('d-none', accepted || !showError);
+        }
+
+        function formatFileSize(bytes) {
+            if (!bytes) {
+                return '0 KB';
+            }
+
+            if (bytes < 1024 * 1024) {
+                return Math.round(bytes / 1024) + ' KB';
+            }
+
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function setPhotoStatus(message, isError) {
+            if (!photoStatus) {
+                return;
+            }
+
+            photoStatus.textContent = message;
+            photoStatus.classList.toggle('text-danger', !!isError);
+        }
+
+        function savedPhotoCount() {
+            return photoTokenContainer
+                ? photoTokenContainer.querySelectorAll('input[name="photo_tokens[]"]').length
+                : 0;
+        }
+
+        function refreshPhotoStatus() {
+            var savedCount = savedPhotoCount();
+
+            if (pendingPhotoUploads > 0) {
+                setPhotoStatus('Cifrando y guardando ' + pendingPhotoUploads + ' fotografía(s)...', false);
+            } else if (savedCount > 0) {
+                setPhotoStatus(savedCount + ' fotografía(s) listas para esta orden.', false);
+            } else {
+                setPhotoStatus('Sin fotografías agregadas.', false);
+            }
+
+            updateAcceptanceState(false);
+        }
+
+        function addPhotoToken(token) {
+            if (!photoTokenContainer || !token) {
+                return;
+            }
+
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'photo_tokens[]';
+            input.value = token;
+            input.dataset.photoToken = token;
+            photoTokenContainer.appendChild(input);
+        }
+
+        function removePhotoToken(token) {
+            if (!photoTokenContainer || !token) {
+                return;
+            }
+
+            var tokenInput = photoTokenContainer.querySelector('[data-photo-token="' + token + '"]');
+
+            if (tokenInput) {
+                tokenInput.remove();
+            }
+        }
+
+        function deleteTemporaryPhoto(token) {
+            if (!photoUploader || !token) {
+                return;
+            }
+
+            fetch(photoUploader.dataset.deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    token: token
+                })
+            }).catch(function () {
+                return;
+            });
+        }
+
+        function cardStatusMessage(error) {
+            if (error && error.errors && error.errors.photo && error.errors.photo.length) {
+                return error.errors.photo[0];
+            }
+
+            return error && error.message ? error.message : 'No se pudo guardar esta fotografía.';
+        }
+
+        function createPhotoCard(file) {
+            var card = document.createElement('div');
+            card.className = 'preview-card is-uploading';
+
+            var image = document.createElement('img');
+            image.alt = 'Vista previa';
+            image.src = URL.createObjectURL(file);
+            image.addEventListener('load', function () {
+                URL.revokeObjectURL(image.src);
+            });
+
+            var removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'preview-card__remove';
+            removeButton.setAttribute('aria-label', 'Quitar fotografía');
+            removeButton.disabled = true;
+            removeButton.innerHTML = '<i class="fas fa-times"></i>';
+
+            var name = document.createElement('span');
+            name.className = 'preview-card__name';
+            name.textContent = file.name;
+
+            var status = document.createElement('span');
+            status.className = 'preview-card__status';
+            status.textContent = 'Cifrando ' + formatFileSize(file.size);
+
+            removeButton.addEventListener('click', function () {
+                var token = card.dataset.token;
+
+                removePhotoToken(token);
+                deleteTemporaryPhoto(token);
+                card.remove();
+                refreshPhotoStatus();
+            });
+
+            card.appendChild(image);
+            card.appendChild(removeButton);
+            card.appendChild(name);
+            card.appendChild(status);
+            photoPreviewContainer.appendChild(card);
+
+            return {
+                card: card,
+                status: status,
+                removeButton: removeButton
+            };
+        }
+
+        function uploadPhoto(file) {
+            if (!photoUploader || !photoPreviewContainer) {
+                return;
+            }
+
+            if (!/^image\/(jpeg|png)$/.test(file.type)) {
+                setPhotoStatus('Solo puedes agregar imágenes JPG o PNG.', true);
+                return;
+            }
+
+            if (file.size > 2 * 1024 * 1024) {
+                setPhotoStatus('Cada fotografía puede pesar hasta 2 MB.', true);
+                return;
+            }
+
+            var preview = createPhotoCard(file);
+            var formData = new FormData();
+            formData.append('photo', file);
+            pendingPhotoUploads += 1;
+            refreshPhotoStatus();
+
+            fetch(photoUploader.dataset.uploadUrl, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+                .then(function (response) {
+                    return response.json().then(function (data) {
+                        if (!response.ok) {
+                            throw data;
+                        }
+
+                        return data;
+                    });
+                })
+                .then(function (data) {
+                    preview.card.dataset.token = data.token;
+                    preview.card.classList.remove('is-uploading', 'is-error');
+                    preview.status.textContent = 'Cifrada y lista';
+                    preview.removeButton.disabled = false;
+                    addPhotoToken(data.token);
+                })
+                .catch(function (error) {
+                    preview.card.classList.remove('is-uploading');
+                    preview.card.classList.add('is-error');
+                    preview.status.textContent = cardStatusMessage(error);
+                    preview.removeButton.disabled = false;
+                    setPhotoStatus(cardStatusMessage(error), true);
+                })
+                .finally(function () {
+                    pendingPhotoUploads = Math.max(0, pendingPhotoUploads - 1);
+                    photoInput.value = '';
+                    refreshPhotoStatus();
+                });
+        }
+
+        function handlePhotoFiles(files) {
+            Array.from(files || []).forEach(uploadPhoto);
         }
 
         function validateAllFields() {
@@ -1127,6 +1714,17 @@
                 return;
             }
 
+            var matchedClient = findClientOptionByName(this.value);
+
+            if (matchedClient) {
+                existingToggle.checked = true;
+                existingClientSelect.value = matchedClient.value;
+                updateClientMode();
+                duplicateHint.classList.add('d-none');
+                validateAllFields();
+                return;
+            }
+
             fetch('{{ route('clientes.verificar_nombre') }}', {
                 method: 'POST',
                 headers: {
@@ -1164,30 +1762,50 @@
             updateAcceptanceState(false);
         });
 
-        photoInput.addEventListener('change', function () {
-            photoPreviewContainer.innerHTML = '';
+        if (helpPanel) {
+            helpPanel.addEventListener('shown.bs.collapse', syncHelpMode);
+            helpPanel.addEventListener('hidden.bs.collapse', syncHelpMode);
+        }
 
-            Array.from(photoInput.files || []).forEach(function (file) {
-                if (!file.type.match(/^image\//)) {
-                    return;
-                }
-
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    var card = document.createElement('div');
-                    card.className = 'preview-card';
-                    card.innerHTML =
-                        '<img src="' + event.target.result + '" alt="Vista previa">' +
-                        '<small>' + file.name + '</small>';
-                    photoPreviewContainer.appendChild(card);
-                };
-                reader.readAsDataURL(file);
+        if (helpToggle) {
+            helpToggle.addEventListener('click', function () {
+                window.setTimeout(syncHelpMode, 250);
             });
+        }
+
+        photoInput.addEventListener('change', function () {
+            handlePhotoFiles(photoInput.files);
         });
+
+        if (photoDropzone) {
+            ['dragenter', 'dragover'].forEach(function (eventName) {
+                photoDropzone.addEventListener(eventName, function (event) {
+                    event.preventDefault();
+                    photoDropzone.classList.add('is-dragover');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(function (eventName) {
+                photoDropzone.addEventListener(eventName, function (event) {
+                    event.preventDefault();
+                    photoDropzone.classList.remove('is-dragover');
+                });
+            });
+
+            photoDropzone.addEventListener('drop', function (event) {
+                handlePhotoFiles(event.dataTransfer.files);
+            });
+        }
 
         form.addEventListener('submit', function (event) {
             var valid = validateAllFields();
             updateAcceptanceState(true);
+
+            if (pendingPhotoUploads > 0) {
+                event.preventDefault();
+                event.stopPropagation();
+                setPhotoStatus('Espera a que terminen de cifrarse las fotografías.', true);
+            }
 
             if (!acceptCheckbox.checked) {
                 event.preventDefault();
@@ -1207,6 +1825,8 @@
         }
 
         updateClientMode();
+        syncHelpMode();
+        refreshPhotoStatus();
         updateAcceptanceState(false);
         validateAllFields();
     });

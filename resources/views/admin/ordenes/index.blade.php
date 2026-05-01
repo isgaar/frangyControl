@@ -46,10 +46,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('ordenes.registro') }}" class="btn btn-primary">
-                        <i class="fas fa-plus-circle me-1"></i> Cliente nuevo
-                    </a>
-                    <a href="{{ route('ordenes.cliente_existente.create') }}" class="btn btn-outline-light">
-                        <i class="fas fa-user-check me-1"></i> Cliente existente
+                        <i class="fas fa-clipboard-list me-1"></i> Nueva orden
                     </a>
                 </div>
             </div>
