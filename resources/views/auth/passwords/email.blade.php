@@ -8,9 +8,8 @@
         min-height: 100vh;
         color: #f8fafc;
         background:
-            radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 30%),
-            radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.18), transparent 28%),
-            linear-gradient(135deg, rgba(8, 17, 31, 0.96), rgba(15, 23, 42, 0.92)),
+            radial-gradient(circle at top left, rgba(220, 38, 38, 0.18), transparent 30%),
+            linear-gradient(135deg, rgba(22, 6, 7, 0.96), rgba(42, 16, 19, 0.92)),
             url('{{ asset("fondos/image1.jpg") }}') center/cover fixed;
     }
 
@@ -54,8 +53,8 @@
         gap: 0.55rem;
         padding: 0.55rem 0.9rem;
         border-radius: 999px;
-        background: rgba(56, 189, 248, 0.14);
-        color: #bae6fd;
+        background: rgba(248, 113, 113, 0.14);
+        color: #fecaca;
         font-size: 0.82rem;
         font-weight: 800;
         letter-spacing: 0.08em;
@@ -67,12 +66,12 @@
         width: 0.6rem;
         height: 0.6rem;
         border-radius: 999px;
-        background: linear-gradient(135deg, #38bdf8, #f59e0b);
+        background: #c1121f;
     }
 
     .auth-support-showcase h1,
     .auth-support-card h2 {
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: 'Inter', sans-serif;
         font-weight: 800;
     }
 
@@ -144,8 +143,8 @@
     .auth-support-input:focus {
         color: #f8fafc;
         background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(56, 189, 248, 0.55);
-        box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.14);
+        border-color: rgba(248, 113, 113, 0.55);
+        box-shadow: 0 0 0 0.25rem rgba(220, 38, 38, 0.16);
     }
 
     .auth-support-input::placeholder {
@@ -162,8 +161,8 @@
     .auth-support-submit {
         width: 100%;
         border: 0;
-        color: #04111f;
-        background: linear-gradient(135deg, #7dd3fc, #fbbf24);
+        color: #ffffff;
+        background: #c1121f;
     }
 
     .auth-support-link {

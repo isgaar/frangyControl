@@ -8,7 +8,7 @@
 
     <title>@yield('title', config('app.name', 'Frangy Control'))</title>
 
-    <link href="https://fonts.bunny.net/css?family=space-grotesk:500,700|nunito:400,600,700,800" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
     @include('layouts.partials.theme-head')
@@ -16,20 +16,19 @@
 
     <style>
         :root {
-            --fc-bg: #eef4ff;
+            --fc-bg: #fff7f7;
             --fc-bg-gradient:
-                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(37, 99, 235, 0.16) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(14, 165, 233, 0.12) 0%, transparent 55%),
-                linear-gradient(180deg, #eef4ff 0%, #f8fafc 100%);
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(220, 38, 38, 0.12) 0%, transparent 60%),
+                linear-gradient(180deg, #fff7f7 0%, #ffffff 100%);
             --fc-surface: rgba(255, 255, 255, 0.84);
             --fc-surface-strong: rgba(255, 255, 255, 0.96);
             --fc-border: rgba(148, 163, 184, 0.24);
             --fc-border-h: rgba(71, 85, 105, 0.28);
             --fc-text: #0f172a;
             --fc-text-muted: #64748b;
-            --fc-accent: #2563eb;
-            --fc-accent-h: #1d4ed8;
-            --fc-danger: #dc2626;
+            --fc-accent: #c1121f;
+            --fc-accent-h: #9f0712;
+            --fc-danger: #b91c1c;
             --fc-nav-bg: rgba(255, 255, 255, 0.76);
             --fc-nav-bg-solid: rgba(255, 255, 255, 0.94);
             --fc-theme-btn-bg: rgba(255, 255, 255, 0.92);
@@ -41,19 +40,18 @@
         }
 
         html[data-theme='dark'] {
-            --fc-bg: #050b16;
+            --fc-bg: #160607;
             --fc-bg-gradient:
-                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(61, 139, 255, 0.18) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 90% 80%, rgba(61, 139, 255, 0.08) 0%, transparent 55%),
-                linear-gradient(180deg, #050b16 0%, #09111d 100%);
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(239, 68, 68, 0.18) 0%, transparent 60%),
+                linear-gradient(180deg, #160607 0%, #22090b 100%);
             --fc-surface: rgba(255, 255, 255, 0.05);
             --fc-surface-strong: rgba(8, 17, 31, 0.88);
             --fc-border: rgba(255, 255, 255, 0.1);
             --fc-border-h: rgba(255, 255, 255, 0.22);
             --fc-text: #e8edf5;
             --fc-text-muted: rgba(232, 237, 245, 0.62);
-            --fc-accent: #60a5fa;
-            --fc-accent-h: #93c5fd;
+            --fc-accent: #f87171;
+            --fc-accent-h: #fca5a5;
             --fc-danger: #f87171;
             --fc-nav-bg: rgba(5, 11, 22, 0.82);
             --fc-nav-bg-solid: rgba(5, 11, 22, 0.96);
@@ -75,7 +73,7 @@
             color: var(--fc-text);
             background-color: var(--fc-bg);
             background-image: var(--fc-bg-gradient);
-            font-family: 'Nunito', sans-serif;
+            font-family: 'Inter', sans-serif;
             font-size: 15px;
             line-height: 1.65;
         }
@@ -121,7 +119,6 @@
             gap: 0.7rem;
             color: var(--fc-text);
             text-decoration: none;
-            font-family: 'Space Grotesk', sans-serif;
             font-size: 1.05rem;
             font-weight: 700;
             letter-spacing: -0.01em;
@@ -302,7 +299,7 @@
         html[data-theme='light'] body.public-shell-body .card-footer,
         html[data-theme='light'] body.public-shell-body .modal-header,
         html[data-theme='light'] body.public-shell-body .modal-footer {
-            background: rgba(37, 99, 235, 0.04);
+            background: rgba(220, 38, 38, 0.04);
         }
 
         body.public-shell-body .form-control,
@@ -323,7 +320,7 @@
         body.public-shell-body .form-control:focus,
         body.public-shell-body .form-select:focus {
             border-color: var(--fc-accent);
-            box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.16);
+            box-shadow: 0 0 0 0.2rem rgba(220, 38, 38, 0.16);
             color: var(--fc-text);
         }
 

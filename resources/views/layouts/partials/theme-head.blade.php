@@ -9,10 +9,6 @@
             storedTheme = null;
         }
 
-        var preferredTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-            ? 'dark'
-            : 'light';
-
-        document.documentElement.setAttribute('data-theme', storedTheme || preferredTheme);
+        document.documentElement.setAttribute('data-theme', storedTheme || 'light');
     }());
 </script>

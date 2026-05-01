@@ -22,9 +22,19 @@
             </span>
         </a>
 
-        <button class="dashboard-sidebar__close" type="button" data-dashboard-close aria-label="Cerrar navegación lateral">
-            <i class="fas fa-times"></i>
-        </button>
+        <div class="dashboard-sidebar__actions">
+            <button class="dashboard-sidebar__collapse"
+                    type="button"
+                    data-dashboard-collapse
+                    aria-label="Contraer navegación lateral"
+                    aria-pressed="false">
+                <i class="fas fa-angle-left" data-dashboard-collapse-icon></i>
+            </button>
+
+            <button class="dashboard-sidebar__close" type="button" data-dashboard-close aria-label="Cerrar navegación lateral">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
     </div>
 
     <div class="dashboard-sidebar__body">
@@ -34,7 +44,9 @@
 
                 <nav class="dashboard-sidebar__nav" aria-label="{{ $section['label'] }}">
                     @foreach ($section['items'] as $item)
-                        <a href="{{ $item['url'] }}" class="dashboard-sidebar__link {{ $item['active'] ? 'is-active' : '' }}">
+                        <a href="{{ $item['url'] }}"
+                           class="dashboard-sidebar__link {{ $item['active'] ? 'is-active' : '' }}"
+                           title="{{ $item['label'] }}">
                             <span class="dashboard-sidebar__icon">
                                 <i class="{{ $item['icon'] }}"></i>
                             </span>

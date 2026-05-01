@@ -15,7 +15,6 @@
         ? $user->getRoleNames()->implode(', ')
         : null;
     $pageLabel = $title ?: $appName;
-    $updatedAt = now()->timezone(config('app.timezone'))->format('d/m/Y H:i');
 @endphp
 
 <header class="dashboard-navbar">
@@ -26,21 +25,12 @@
             </button>
 
             <div class="dashboard-navbar__heading">
-                <span class="dashboard-navbar__eyebrow">Panel administrativo</span>
-                <div class="dashboard-navbar__title-row">
-                    <strong class="dashboard-navbar__title">{{ $pageLabel }}</strong>
-                    <span class="dashboard-navbar__divider" aria-hidden="true"></span>
-                    <span class="dashboard-navbar__brand">{{ $appName }}</span>
-                </div>
+                <strong class="dashboard-navbar__title">{{ $pageLabel }}</strong>
+                <span class="dashboard-navbar__brand">{{ $appName }}</span>
             </div>
         </div>
 
         <div class="dashboard-navbar__right">
-            <div class="dashboard-navbar__meta">
-                <span class="dashboard-navbar__meta-label">Última actualización</span>
-                <strong>{{ $updatedAt }}</strong>
-            </div>
-
             <button class="dashboard-theme-toggle" type="button" data-theme-toggle aria-label="Activar modo oscuro">
                 <i class="fas fa-moon" data-theme-icon></i>
                 <span class="dashboard-theme-toggle__label" data-theme-text>Modo oscuro</span>

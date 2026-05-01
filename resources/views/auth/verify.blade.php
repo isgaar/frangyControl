@@ -30,8 +30,8 @@
         gap: 0.5rem;
         padding: 0.45rem 0.75rem;
         border-radius: 999px;
-        background: rgba(56, 189, 248, 0.12);
-        color: #bae6fd;
+        background: rgba(248, 113, 113, 0.14);
+        color: #fecaca;
         font-size: 0.82rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -70,8 +70,8 @@
     }
 
     .verify-btn-primary {
-        color: #04111f;
-        background: linear-gradient(135deg, #7dd3fc, #fbbf24);
+        color: #ffffff;
+        background: #c1121f;
     }
 
     .verify-btn-secondary {

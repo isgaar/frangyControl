@@ -17,10 +17,21 @@
 
     <title>{{ $resolvedPageTitle ?: config('app.name', 'Frangy Control') }}</title>
 
-    <link href="https://fonts.bunny.net/css?family=space-grotesk:500,700|nunito:400,600,700,800" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700,800" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
     @include('layouts.partials.theme-head')
+    <script>
+        (function () {
+            try {
+                if (localStorage.getItem('frangy-control-dashboard-sidebar-collapsed') === 'true') {
+                    document.documentElement.classList.add('dashboard-sidebar-collapsed');
+                }
+            } catch (error) {
+                return;
+            }
+        }());
+    </script>
     @vite(['resources/css/dashboard.css', 'resources/js/dashboard.js'])
     @yield('css')
 </head>

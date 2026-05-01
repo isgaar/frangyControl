@@ -4,9 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
     var sidebar = document.querySelector('[data-dashboard-sidebar]');
     var toggleButton = document.querySelector('[data-dashboard-toggle]');
     var closeButton = document.querySelector('[data-dashboard-close]');
+    var collapseButton = document.querySelector('[data-dashboard-collapse]');
+    var collapseIcon = document.querySelector('[data-dashboard-collapse-icon]');
     var backdrop = document.querySelector('[data-dashboard-backdrop]');
     var resizer = document.querySelector('[data-dashboard-resizer]');
     var sidebarWidthStorageKey = 'frangy-control-dashboard-sidebar-width';
+    var sidebarCollapsedStorageKey = 'frangy-control-dashboard-sidebar-collapsed';
     var defaultSidebarWidth = 320;
     var minSidebarWidth = 260;
     var maxSidebarWidth = 420;
@@ -55,6 +58,46 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function readSidebarCollapsed() {
+        try {
+            return localStorage.getItem(sidebarCollapsedStorageKey) === 'true';
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function updateSidebarCollapseControls(isCollapsed) {
+        if (!collapseButton) {
+            return;
+        }
+
+        collapseButton.setAttribute('aria-pressed', isCollapsed ? 'true' : 'false');
+        collapseButton.setAttribute('aria-label', isCollapsed ? 'Expandir navegación lateral' : 'Contraer navegación lateral');
+
+        if (collapseIcon) {
+            collapseIcon.className = isCollapsed ? 'fas fa-angle-right' : 'fas fa-angle-left';
+        }
+    }
+
+    function setSidebarCollapsed(isCollapsed, persist) {
+        root.classList.toggle('dashboard-sidebar-collapsed', isCollapsed);
+        updateSidebarCollapseControls(isCollapsed);
+
+        if (isCollapsed) {
+            stopSidebarResize();
+        }
+
+        if (!persist) {
+            return;
+        }
+
+        try {
+            localStorage.setItem(sidebarCollapsedStorageKey, isCollapsed ? 'true' : 'false');
+        } catch (error) {
+            return;
+        }
+    }
+
     function stopSidebarResize(event) {
         if (!isResizingSidebar) {
             return;
@@ -91,6 +134,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    setSidebarCollapsed(readSidebarCollapsed(), false);
+
+    if (collapseButton) {
+        collapseButton.addEventListener('click', function () {
+            if (!isDesktopViewport()) {
+                return;
+            }
+
+            setSidebarCollapsed(!root.classList.contains('dashboard-sidebar-collapsed'), true);
+        });
+    }
+
     if (toggleButton) {
         toggleButton.addEventListener('click', function () {
             if (root.classList.contains('dashboard-sidebar-open')) {
@@ -114,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         applySidebarWidth(readSidebarWidth(), false);
 
         resizer.addEventListener('pointerdown', function (event) {
-            if (!isDesktopViewport()) {
+            if (!isDesktopViewport() || root.classList.contains('dashboard-sidebar-collapsed')) {
                 return;
             }
 
@@ -145,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         resizer.addEventListener('keydown', function (event) {
-            if (!isDesktopViewport()) {
+            if (!isDesktopViewport() || root.classList.contains('dashboard-sidebar-collapsed')) {
                 return;
             }
 
