@@ -37,7 +37,7 @@ ADMIN_PASSWORD_VALUE=""
 
 print_usage() {
     cat <<EOF
-Uso: $(basename "$0") [--help] [--clear-cache]
+Uso: $(basename "$0") [--help] [--clear-cache] [--detached]
 
 Lanza el entorno local de Frangy usando podman o docker.
 
@@ -45,8 +45,10 @@ Opciones:
   -h, --help         Muestra esta ayuda y termina.
   --clear-cache      Ejecuta "php artisan optimize:clear" al terminar el arranque
                      o al reutilizar el entorno actual.
+  -d, --detached     Lanza o reutiliza el entorno sin seguir logs en primer plano.
 
 Tambien puedes activar la limpieza con CLEAR_LARAVEL_CACHE_ON_LAUNCH=1.
+Tambien puedes usar FOLLOW_LOGS=0 para el mismo comportamiento de --detached.
 EOF
 }
 
@@ -59,6 +61,9 @@ parse_args() {
                 ;;
             --clear-cache)
                 CLEAR_LARAVEL_CACHE_ON_LAUNCH="1"
+                ;;
+            -d|--detached)
+                FOLLOW_LOGS="0"
                 ;;
             *)
                 echo "Opcion no reconocida: $1" >&2
@@ -129,7 +134,7 @@ prompt_secret_with_default() {
     fi
 
     read -r -s -p "${label} [enter para conservar el actual]: " value || true
-    echo
+    printf '\n' >&2
     printf '%s' "${value:-${default_value}}"
 }
 
@@ -310,6 +315,10 @@ reuse_existing_stack() {
             wait_for_laravel_http "docker"
             ;;
     esac
+
+    echo "Entorno listo."
+    echo "Laravel esta disponible en http://localhost:${HOST_PORT}"
+    echo "MySQL esta expuesto en localhost:${HOST_DB_PORT}"
 }
 
 detect_existing_stack_mode() {
