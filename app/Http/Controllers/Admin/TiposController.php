@@ -4,43 +4,26 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Hash;
 use App\Models\TipoServicio;
 
 class TiposController extends Controller
 {
     public function index(Request $request)
     {
-        $search = "";
-        $limit = 10;
+        $query = [];
 
-        if ($request->has('search')) {
-            $search = $request->input('search');
-
-            if (trim($search) != '') {
-                $data = TipoServicio::where('nombreServicio', 'like', "%$search%")->get();
-            } else {
-                $data = TipoServicio::all();
-            }
-        } else {
-            $data = TipoServicio::all();
+        if ($request->filled('search')) {
+            $query['service_search'] = $request->input('search');
         }
 
-        $currentPage = Paginator::resolveCurrentPage() - 1;
-        $perPage = $limit;
-        $currentPageSearchResults = $data->slice($currentPage * $perPage, $perPage)->all();
-        $data = new LengthAwarePaginator($currentPageSearchResults, count($data), $perPage);
-
-        return view('admin.tipo_servicio.index', ['data' => $data, 'search' => $search, 'page' => $currentPage]);
+        return redirect(route('datosv.index', $query) . '#servicios');
     }
 
     public function create()
     {
-        return view('admin.tipo_servicio.create');
+        return redirect(route('datosv.index', ['open' => 'service']) . '#servicios');
     }
 
     public function store(Request $request)
@@ -72,7 +55,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('tipo_servicio.index'));
+            return redirect(route('datosv.index') . '#servicios');
     
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -147,7 +130,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha editado correctamente el nombre del servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('tipo_servicio.index'));
+            return redirect(route('datosv.index') . '#servicios');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -180,7 +163,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha eliminado correctamente el nombre del servicio');
             Session::flash('status_type', 'warning');
-            return redirect(route('tipo_servicio.index'));
+            return redirect(route('datosv.index') . '#servicios');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();

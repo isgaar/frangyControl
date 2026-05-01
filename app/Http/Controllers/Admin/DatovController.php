@@ -13,32 +13,53 @@ use App\Models\TipoVehiculo;
 
 class DatovController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $brandSearch = trim((string) $request->input('brand_search', ''));
+        $serviceSearch = trim((string) $request->input('service_search', ''));
+        $typeSearch = trim((string) $request->input('type_search', ''));
+
         $dataVehiculos = DatosVehiculo::query()
+            ->when($brandSearch !== '', fn ($query) => $query->where('marca', 'like', "%{$brandSearch}%"))
             ->orderBy('marca')
             ->get();
 
         $dataServicios = TipoServicio::query()
+            ->when($serviceSearch !== '', fn ($query) => $query->where('nombreServicio', 'like', "%{$serviceSearch}%"))
             ->orderBy('nombreServicio')
             ->get();
 
         $dataTiposVehiculos = TipoVehiculo::query()
+            ->when($typeSearch !== '', fn ($query) => $query->where('tipo', 'like', "%{$typeSearch}%"))
             ->orderBy('tipo')
             ->get();
 
-        return view('admin.datos_vehiculo.index', compact('dataVehiculos', 'dataServicios', 'dataTiposVehiculos'));
+        $catalogTotals = [
+            'brands' => DatosVehiculo::count(),
+            'services' => TipoServicio::count(),
+            'types' => TipoVehiculo::count(),
+        ];
+
+        return view('admin.datos_vehiculo.index', compact(
+            'dataVehiculos',
+            'dataServicios',
+            'dataTiposVehiculos',
+            'brandSearch',
+            'serviceSearch',
+            'typeSearch',
+            'catalogTotals'
+        ));
 
     }
 
     public function create()
     {
-        return view('admin.datos_vehiculo.create');
+        return redirect(route('datosv.index', ['open' => 'brand']) . '#marcas');
     }
 
     public function createunique()
     {
-        return view('admin.datos_vehiculo.createunique');
+        return redirect(route('datosv.index', ['open' => 'brand']) . '#marcas');
     }
 
     public function storeunique(Request $request)
@@ -70,7 +91,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente la marca de vehículo');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index'));
+            return redirect(route('datosv.index') . '#marcas');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -163,7 +184,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha editado correctamente la marca');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index'));
+            return redirect(route('datosv.index') . '#marcas');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -196,7 +217,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha eliminado correctamente el nombre', 1);
             Session::flash('status_type', 'warning', 1);
-            return redirect(route('datosv.index'));
+            return redirect(route('datosv.index') . '#marcas');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();

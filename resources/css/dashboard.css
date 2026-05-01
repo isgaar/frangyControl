@@ -694,6 +694,23 @@ html[data-theme="dark"] .resource-warning {
     border-color: var(--dashboard-border);
 }
 
+.modal-content {
+    border: 1px solid var(--dashboard-border);
+    border-radius: var(--dashboard-radius);
+    background: var(--dashboard-surface);
+    color: var(--dashboard-text);
+    box-shadow: var(--dashboard-shadow);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--dashboard-border);
+}
+
+html[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%);
+}
+
 .table {
     color: var(--dashboard-text);
 }
