@@ -117,7 +117,7 @@
                             </form>
                         @endif
 
-                        <a href="{{ route('home') }}" class="verify-btn verify-btn-secondary">
+                        <a href="{{ route('panel.index') }}" class="verify-btn verify-btn-secondary">
                             Ir al panel
                         </a>
                     </div>

@@ -18,12 +18,12 @@ class TiposController extends Controller
             $query['service_search'] = $request->input('search');
         }
 
-        return redirect(route('datosv.index', $query) . '#servicios');
+        return redirect(route('catalogos.index', $query) . '#servicios');
     }
 
     public function create()
     {
-        return redirect(route('datosv.index', ['open' => 'service']) . '#servicios');
+        return redirect(route('catalogos.index', ['open' => 'service']) . '#servicios');
     }
 
     public function store(Request $request)
@@ -55,7 +55,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index') . '#servicios');
+            return redirect(route('catalogos.index') . '#servicios');
     
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -91,7 +91,7 @@ class TiposController extends Controller
     //         DB::commit();
     //         Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
     //         Session::flash('status_type', 'success');
-    //         return redirect(route('tipo_servicio.index'));
+    //         return redirect(route('catalogos.servicios.index'));
 
     //     } catch (\Illuminate\Database\QueryException $ex) {
     //         DB::rollBack();
@@ -130,7 +130,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha editado correctamente el nombre del servicio');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index') . '#servicios');
+            return redirect(route('catalogos.index') . '#servicios');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -163,7 +163,7 @@ class TiposController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha eliminado correctamente el nombre del servicio');
             Session::flash('status_type', 'warning');
-            return redirect(route('datosv.index') . '#servicios');
+            return redirect(route('catalogos.index') . '#servicios');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();

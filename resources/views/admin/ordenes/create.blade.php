@@ -65,7 +65,7 @@
 <div class="form-group">
     <label for="marca">¿El cliente ya está registrado?</label>
     <input type="checkbox" id="deshabilitarCampos" checked> Seleccione el cliente
-    <select class="form-control" id="selectCliente" disabled data-url="{{ route('cliente.list') }}">
+    <select class="form-control" id="selectCliente" disabled data-url="{{ route('ordenes.opciones.clientes') }}">
         <option value="">--seleccione cliente--</option>
     </select>
     {!! Form::hidden('cliente_id', null, ['id' => 'clienteId']) !!}

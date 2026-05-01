@@ -5,7 +5,7 @@ return [
         'name' => env('APP_NAME', 'Frangy Control'),
         'tagline' => 'Centro de servicio y operación',
         'logo' => 'franlogo.png',
-        'home_route' => 'home',
+        'home_route' => 'panel.index',
     ],
 
     'menu' => [
@@ -15,9 +15,9 @@ return [
                 [
                     'label' => 'Inicio',
                     'description' => 'Resumen operativo',
-                    'route' => 'home',
+                    'route' => 'panel.index',
                     'icon' => 'fas fa-home',
-                    'active' => ['home'],
+                    'active' => ['panel.index'],
                 ],
                 [
                     'label' => 'Órdenes',
@@ -41,9 +41,9 @@ return [
                 [
                     'label' => 'Catálogos',
                     'description' => 'Marcas, tipos y servicios',
-                    'route' => 'datosv.index',
+                    'route' => 'catalogos.index',
                     'icon' => 'fas fa-layer-group',
-                    'active' => ['datosv.*', 'tipo_servicio.*', 'tipo_vehiculo.*'],
+                    'active' => ['catalogos.*'],
                     'can' => 'admin.datosv.vehiculosnom',
                 ],
             ],
@@ -54,17 +54,17 @@ return [
                 [
                     'label' => 'Usuarios',
                     'description' => 'Accesos y permisos',
-                    'route' => 'users.index',
+                    'route' => 'usuarios.index',
                     'icon' => 'fas fa-user-shield',
-                    'active' => ['users.*'],
+                    'active' => ['usuarios.*'],
                     'can' => 'admin.users.usuarios',
                 ],
                 [
                     'label' => 'Acerca',
                     'description' => 'Créditos y proyecto',
-                    'route' => 'acerca',
+                    'route' => 'acerca.index',
                     'icon' => 'fas fa-info-circle',
-                    'active' => ['acerca'],
+                    'active' => ['acerca.index'],
                 ],
             ],
         ],

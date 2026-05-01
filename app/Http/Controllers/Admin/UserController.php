@@ -86,7 +86,7 @@ class UserController extends Controller
             Session::flash('status', "Se ha agregado correctamente el usuario");
             Session::flash('status_type', 'success');
 
-            return redirect(route('users.index'))->with('token', $token);
+            return redirect(route('usuarios.index'))->with('token', $token);
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
@@ -157,7 +157,7 @@ class UserController extends Controller
             Cache::forget('catalogos.ordenes.users');
             Session::flash('status', "Se ha editado correctamente el registro");
             Session::flash('status_type', 'success');
-            return redirect(route('users.index'));
+            return redirect(route('usuarios.index'));
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());
@@ -195,7 +195,7 @@ class UserController extends Controller
             Cache::forget('catalogos.ordenes.users');
             Session::flash('status', "Se ha eliminado correctamente el registro");
             Session::flash('status_type', 'success');
-            return redirect(route('users.index'));
+            return redirect(route('usuarios.index'));
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
             Session::flash('status', $ex->getMessage());

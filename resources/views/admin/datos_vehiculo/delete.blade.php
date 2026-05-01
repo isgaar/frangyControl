@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            {!! Form::open(['route' => ['datosv.destroy', $datoVehiculo->id_vehiculo], 'method' => 'get']) !!}
+            {!! Form::open(['route' => ['catalogos.marcas.destroy', $datoVehiculo->id_vehiculo], 'method' => 'get']) !!}
                 <div class="resource-kv mt-4">
                     <div class="resource-kv__item">
                         <span class="resource-kv__label">Marca</span>
@@ -43,7 +43,7 @@
 
                 <div class="resource-confirm-card__footer">
                     <div class="resource-footer-actions">
-                        <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                        <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark">Cancelar</a>
                         <button type="submit" class="btn btn-danger">Eliminar marca</button>
                     </div>
                 </div>

@@ -1127,7 +1127,7 @@
                 return;
             }
 
-            fetch('{{ route('verificar_nombre_usuario') }}', {
+            fetch('{{ route('clientes.verificar_nombre') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

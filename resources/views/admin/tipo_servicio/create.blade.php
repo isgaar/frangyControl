@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.servicios.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::open(['route' => 'tipo_servicio.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+                {!! Form::open(['route' => 'catalogos.servicios.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
                     <div id="camposTipoContainer" class="resource-kv mt-4">
                         <div class="form-group mb-0 resource-kv__item">
                             <label for="tipo-servicio-0">Nombre del servicio</label>
@@ -61,7 +61,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('catalogos.servicios.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-success">Guardar servicios</button>
                         </div>
                     </div>

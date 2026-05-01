@@ -6,7 +6,7 @@
     $pageTitle = 'Acerca del proyecto';
     $pageSubtitle = 'Contexto, créditos y referencias de la aplicación Frangy Control.';
     $breadcrumbs = [
-        ['label' => 'Panel', 'url' => route('home')],
+        ['label' => 'Panel', 'url' => route('panel.index')],
         ['label' => 'Acerca'],
     ];
 

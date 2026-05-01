@@ -54,12 +54,12 @@ class DatovController extends Controller
 
     public function create()
     {
-        return redirect(route('datosv.index', ['open' => 'brand']) . '#marcas');
+        return redirect(route('catalogos.index', ['open' => 'brand']) . '#marcas');
     }
 
     public function createunique()
     {
-        return redirect(route('datosv.index', ['open' => 'brand']) . '#marcas');
+        return redirect(route('catalogos.index', ['open' => 'brand']) . '#marcas');
     }
 
     public function storeunique(Request $request)
@@ -91,7 +91,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente la marca de vehículo');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index') . '#marcas');
+            return redirect(route('catalogos.index') . '#marcas');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -138,7 +138,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se han cargado correctamente los datos a las tablas');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index'));
+            return redirect(route('catalogos.index'));
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -184,7 +184,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha editado correctamente la marca');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index') . '#marcas');
+            return redirect(route('catalogos.index') . '#marcas');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -217,7 +217,7 @@ class DatovController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha eliminado correctamente el nombre', 1);
             Session::flash('status_type', 'warning', 1);
-            return redirect(route('datosv.index') . '#marcas');
+            return redirect(route('catalogos.index') . '#marcas');
 
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();

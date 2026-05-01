@@ -47,12 +47,12 @@
                 </summary>
 
                 <div class="dashboard-user-menu__dropdown">
-                    @if (Route::has('home'))
-                        <a href="{{ route('home') }}">Inicio</a>
+                    @if (Route::has('panel.index'))
+                        <a href="{{ route('panel.index') }}">Inicio</a>
                     @endif
 
-                    @if (Route::has('acerca'))
-                        <a href="{{ route('acerca') }}">Acerca del proyecto</a>
+                    @if (Route::has('acerca.index'))
+                        <a href="{{ route('acerca.index') }}">Acerca del proyecto</a>
                     @endif
 
                     <form method="POST" action="{{ route('logout') }}">

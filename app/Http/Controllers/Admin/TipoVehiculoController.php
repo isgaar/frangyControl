@@ -18,12 +18,12 @@ class TipoVehiculoController extends Controller
             $query['type_search'] = $request->input('search');
         }
 
-        return redirect(route('datosv.index', $query) . '#tipos');
+        return redirect(route('catalogos.index', $query) . '#tipos');
     }
 
     public function create()
     {
-        return redirect(route('datosv.index', ['open' => 'type']) . '#tipos');
+        return redirect(route('catalogos.index', ['open' => 'type']) . '#tipos');
     }
 
     public function store(Request $request)
@@ -55,7 +55,7 @@ class TipoVehiculoController extends Controller
             DB::commit();
             Session::flash('status', 'Se ha agregado correctamente el tipo de vehículo');
             Session::flash('status_type', 'success');
-            return redirect(route('datosv.index') . '#tipos');
+            return redirect(route('catalogos.index') . '#tipos');
     
         } catch (\Illuminate\Database\QueryException $ex) {
             DB::rollBack();
@@ -91,7 +91,7 @@ class TipoVehiculoController extends Controller
 
             $tipoVehiculo->save();
 
-            return redirect(route('datosv.index') . '#tipos')->with('status', 'Se ha editado correctamente el tipo de vehículo')->with('status_type', 'success');
+            return redirect(route('catalogos.index') . '#tipos')->with('status', 'Se ha editado correctamente el tipo de vehículo')->with('status_type', 'success');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
         } catch (\Exception $e) {
@@ -112,7 +112,7 @@ class TipoVehiculoController extends Controller
         try {
             $tipoVehiculo->delete();
 
-            return redirect(route('datosv.index') . '#tipos')->with('status', 'Se ha eliminado correctamente el tipo de vehículo')->with('status_type', 'warning');
+            return redirect(route('catalogos.index') . '#tipos')->with('status', 'Se ha eliminado correctamente el tipo de vehículo')->with('status_type', 'warning');
         } catch (\Illuminate\Database\QueryException $ex) {
             return back()->with('status', $ex->getMessage())->with('status_type', 'error-Query');
         } catch (\Exception $e) {

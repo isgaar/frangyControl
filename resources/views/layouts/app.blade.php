@@ -402,7 +402,7 @@
         <nav class="public-navbar navbar navbar-light bg-white" id="publicNav">
             <div class="container position-relative">
                 <a class="nav-brand navbar-brand"
-                   href="{{ auth()->check() && Route::has('home') ? route('home') : url('/') }}">
+                   href="{{ auth()->check() && Route::has('panel.index') ? route('panel.index') : url('/') }}">
                     <img src="{{ asset('pestaña.png') }}" alt="{{ config('app.name') }}">
                     <span>{{ config('app.name', 'Frangy Control') }}</span>
                 </a>
@@ -427,7 +427,7 @@
                         </button>
 
                         @guest
-                            <a href="{{ route('landing.pages.welcome') }}" class="nav-link-item nav-link">Inicio</a>
+                            <a href="{{ route('landing.inicio') }}" class="nav-link-item nav-link">Inicio</a>
 
                             @if (Route::has('login'))
                                 <a href="{{ route('login') }}" class="nav-btn nav-btn-primary">
@@ -441,8 +441,8 @@
                                 {{ Auth::user()->name }}
                             </span>
 
-                            @if (Route::has('home'))
-                                <a href="{{ route('home') }}" class="nav-link-item nav-link">
+                            @if (Route::has('panel.index'))
+                                <a href="{{ route('panel.index') }}" class="nav-link-item nav-link">
                                     <i class="fas fa-th-large fa-sm me-1"></i>
                                     Control
                                 </a>

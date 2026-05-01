@@ -28,10 +28,10 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('tipo_servicio.create') }}" class="btn btn-primary">
+                    <a href="{{ route('catalogos.servicios.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus-circle me-1"></i> Nuevo servicio
                     </a>
-                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-layer-group me-1"></i> Panel general
                     </a>
                 </div>
@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('tipo_servicio.index') }}" method="get" class="resource-toolbar mt-4"
+            <form action="{{ route('catalogos.servicios.index') }}" method="get" class="resource-toolbar mt-4"
                 style="grid-template-columns: minmax(0, 1fr) auto;">
                 <div class="resource-toolbar__field">
                     <label for="search">Buscar servicio</label>
@@ -77,7 +77,7 @@
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search me-1"></i> Buscar
                     </button>
-                    <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark">
+                    <a href="{{ route('catalogos.servicios.index') }}" class="btn btn-outline-dark">
                         <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
@@ -118,10 +118,10 @@
                                         <td>{{ $row->nombreServicio }}</td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar servicio">
+                                                <a class="btn btn-outline-dark" href="{{ route('catalogos.servicios.edit', $row->id_servicio) }}" title="Editar servicio">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <a class="btn btn-outline-danger" href="{{ route('tipo_servicio.delete', $row->id_servicio) }}" title="Eliminar servicio">
+                                                <a class="btn btn-outline-danger" href="{{ route('catalogos.servicios.delete', $row->id_servicio) }}" title="Eliminar servicio">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -135,7 +135,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $data->count() }} elemento(s) en esta página.</p>
-                    {{ $data->setPath(route('tipo_servicio.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
+                    {{ $data->setPath(route('catalogos.servicios.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

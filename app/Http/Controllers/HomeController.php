@@ -210,7 +210,7 @@ class HomeController extends Controller
             ],
             [
                 'label' => 'Registrar vehículo',
-                'route' => 'datosv.createunique',
+                'route' => 'catalogos.marcas.create',
                 'icon' => 'fas fa-car',
                 'can' => 'admin.datosv.vehiculosnom',
             ],

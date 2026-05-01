@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            {!! Form::open(['route' => ['tipo_servicio.destroy', $tipoServicio->id_servicio], 'method' => 'get']) !!}
+            {!! Form::open(['route' => ['catalogos.servicios.destroy', $tipoServicio->id_servicio], 'method' => 'get']) !!}
                 <div class="resource-kv mt-4">
                     <div class="resource-kv__item">
                         <span class="resource-kv__label">Nombre del servicio</span>
@@ -43,7 +43,7 @@
 
                 <div class="resource-confirm-card__footer">
                     <div class="resource-footer-actions">
-                        <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                        <a href="{{ route('catalogos.servicios.index') }}" class="btn btn-outline-dark">Cancelar</a>
                         <button type="submit" class="btn btn-danger">Eliminar servicio</button>
                     </div>
                 </div>

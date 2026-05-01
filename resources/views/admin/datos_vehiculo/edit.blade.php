@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver al panel
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::model($datoVehiculo, ['route' => ['datosv.update', $datoVehiculo->id_vehiculo], 'method' => 'put']) !!}
+                {!! Form::model($datoVehiculo, ['route' => ['catalogos.marcas.update', $datoVehiculo->id_vehiculo], 'method' => 'put']) !!}
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="marca">Marca</label>
@@ -55,7 +55,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-warning">Actualizar marca</button>
                         </div>
                     </div>

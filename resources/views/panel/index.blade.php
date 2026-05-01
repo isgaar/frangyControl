@@ -6,7 +6,7 @@
     $pageTitle = 'Panel de control';
     $pageSubtitle = 'Punto de entrada rápido para los módulos principales del sistema.';
     $breadcrumbs = [
-        ['label' => 'Panel', 'url' => route('home')],
+        ['label' => 'Panel', 'url' => route('panel.index')],
         ['label' => 'Vista rápida'],
     ];
 @endphp
@@ -17,7 +17,7 @@
         <span class="home-card__eyebrow">Inicio</span>
         <h2 class="mt-2">Resumen operativo</h2>
         <p>Consulta métricas, actividad reciente y alertas desde la pantalla principal.</p>
-        <a href="{{ route('home') }}" class="home-card__link">Ir al inicio</a>
+        <a href="{{ route('panel.index') }}" class="home-card__link">Ir al inicio</a>
     </article>
 
     <article class="dashboard-panel-card">
@@ -31,7 +31,7 @@
         <span class="home-card__eyebrow">Proyecto</span>
         <h2 class="mt-2">Información general</h2>
         <p>Revisa el contexto del sistema, créditos y la referencia técnica del proyecto.</p>
-        <a href="{{ route('acerca') }}" class="home-card__link">Ver acerca</a>
+        <a href="{{ route('acerca.index') }}" class="home-card__link">Ver acerca</a>
     </article>
 </div>
 @endsection

@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.tipos_vehiculo.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::open(['route' => 'tipo_vehiculo.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+                {!! Form::open(['route' => 'catalogos.tipos_vehiculo.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
                     <div id="camposTipoContainer" class="resource-kv mt-4">
                         <div class="form-group mb-0 resource-kv__item">
                             <label for="tipo-vehiculo-0">Tipo de vehículo</label>
@@ -61,7 +61,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('catalogos.tipos_vehiculo.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-success">Guardar tipos</button>
                         </div>
                     </div>

@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver a usuarios
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::model($user, ['route' => ['users.update', $user->id], 'method' => 'put']) !!}
+                {!! Form::model($user, ['route' => ['usuarios.update', $user->id], 'method' => 'put']) !!}
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="name">Nombre del usuario</label>
@@ -81,7 +81,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-warning">Actualizar usuario</button>
                         </div>
                     </div>

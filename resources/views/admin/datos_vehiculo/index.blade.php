@@ -92,14 +92,14 @@
                     </button>
                 </div>
 
-                <form action="{{ route('datosv.index') }}#marcas" method="get" class="resource-toolbar mt-4">
+                <form action="{{ route('catalogos.index') }}#marcas" method="get" class="resource-toolbar mt-4">
                     <div class="resource-toolbar__field">
                         <label for="brand_search">Buscar marca</label>
                         <input id="brand_search" name="brand_search" type="text" class="form-control" value="{{ $brandSearch }}" placeholder="Ejemplo: Toyota">
                     </div>
                     <div class="resource-toolbar__actions">
                         <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Buscar</button>
-                        <a href="{{ route('datosv.index') }}#marcas" class="btn btn-outline-dark">Limpiar</a>
+                        <a href="{{ route('catalogos.index') }}#marcas" class="btn btn-outline-dark">Limpiar</a>
                     </div>
                 </form>
 
@@ -118,10 +118,10 @@
                                         <td>{{ $row->marca }}</td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('datosv.edit', $row->id_vehiculo) }}" title="Editar marca">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.marcas.edit', $row->id_vehiculo) }}" title="Editar marca">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('datosv.delete', $row->id_vehiculo) }}" title="Eliminar marca">
+                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.marcas.delete', $row->id_vehiculo) }}" title="Eliminar marca">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -151,14 +151,14 @@
                     </button>
                 </div>
 
-                <form action="{{ route('datosv.index') }}#tipos" method="get" class="resource-toolbar mt-4">
+                <form action="{{ route('catalogos.index') }}#tipos" method="get" class="resource-toolbar mt-4">
                     <div class="resource-toolbar__field">
                         <label for="type_search">Buscar tipo</label>
                         <input id="type_search" name="type_search" type="text" class="form-control" value="{{ $typeSearch }}" placeholder="Ejemplo: SUV">
                     </div>
                     <div class="resource-toolbar__actions">
                         <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Buscar</button>
-                        <a href="{{ route('datosv.index') }}#tipos" class="btn btn-outline-dark">Limpiar</a>
+                        <a href="{{ route('catalogos.index') }}#tipos" class="btn btn-outline-dark">Limpiar</a>
                     </div>
                 </form>
 
@@ -177,10 +177,10 @@
                                         <td>{{ $row->tipo }}</td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.tipos_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('tipo_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
+                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.tipos_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -210,14 +210,14 @@
                     </button>
                 </div>
 
-                <form action="{{ route('datosv.index') }}#servicios" method="get" class="resource-toolbar mt-4">
+                <form action="{{ route('catalogos.index') }}#servicios" method="get" class="resource-toolbar mt-4">
                     <div class="resource-toolbar__field">
                         <label for="service_search">Buscar servicio</label>
                         <input id="service_search" name="service_search" type="text" class="form-control" value="{{ $serviceSearch }}" placeholder="Ejemplo: Afinación">
                     </div>
                     <div class="resource-toolbar__actions">
                         <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Buscar</button>
-                        <a href="{{ route('datosv.index') }}#servicios" class="btn btn-outline-dark">Limpiar</a>
+                        <a href="{{ route('catalogos.index') }}#servicios" class="btn btn-outline-dark">Limpiar</a>
                     </div>
                 </form>
 
@@ -236,10 +236,10 @@
                                         <td>{{ $row->nombreServicio }}</td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar servicio">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.servicios.edit', $row->id_servicio) }}" title="Editar servicio">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('tipo_servicio.delete', $row->id_servicio) }}" title="Eliminar servicio">
+                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.servicios.delete', $row->id_servicio) }}" title="Eliminar servicio">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -261,7 +261,7 @@
     <div class="modal fade" id="brandModal" tabindex="-1" aria-labelledby="brandModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form action="{{ route('datosv.storeunique') }}" method="post">
+                <form action="{{ route('catalogos.marcas.store') }}" method="post">
                     @csrf
                     <input type="hidden" name="_catalog_modal" value="brand">
                     <div class="modal-header">
@@ -294,7 +294,7 @@
     <div class="modal fade" id="typeModal" tabindex="-1" aria-labelledby="typeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form action="{{ route('tipo_vehiculo.store') }}" method="post">
+                <form action="{{ route('catalogos.tipos_vehiculo.store') }}" method="post">
                     @csrf
                     <input type="hidden" name="_catalog_modal" value="type">
                     <div class="modal-header">
@@ -327,7 +327,7 @@
     <div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
-                <form action="{{ route('tipo_servicio.store') }}" method="post">
+                <form action="{{ route('catalogos.servicios.store') }}" method="post">
                     @csrf
                     <input type="hidden" name="_catalog_modal" value="service">
                     <div class="modal-header">

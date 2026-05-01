@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.servicios.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::model($tipoServicio, ['route' => ['tipo_servicio.update', $tipoServicio->id_servicio], 'method' => 'put']) !!}
+                {!! Form::model($tipoServicio, ['route' => ['catalogos.servicios.update', $tipoServicio->id_servicio], 'method' => 'put']) !!}
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="nombreServicio">Nombre del servicio</label>
@@ -55,7 +55,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('catalogos.servicios.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-warning">Actualizar servicio</button>
                         </div>
                     </div>

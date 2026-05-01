@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('home') }}" method="get" class="resource-toolbar mt-4">
+            <form action="{{ route('panel.index') }}" method="get" class="resource-toolbar mt-4">
                 <div class="resource-toolbar__field">
                     <label for="search" class="form-label">Buscar</label>
                     <input id="search" type="text" name="search" class="form-control" value="{{ $search }}"
@@ -101,7 +101,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-search me-1"></i> Aplicar
                     </button>
-                    <a href="{{ route('home') }}" class="btn btn-outline-dark">
+                    <a href="{{ route('panel.index') }}" class="btn btn-outline-dark">
                         <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>

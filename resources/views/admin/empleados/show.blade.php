@@ -37,7 +37,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver a usuarios
                     </a>
                 </div>
@@ -70,7 +70,7 @@
                 </div>
 
                 <div class="resource-person-card__footer">
-                    <a href="{{ route('users.edit', $user->id) }}" class="btn btn-outline-dark">
+                    <a href="{{ route('usuarios.edit', $user->id) }}" class="btn btn-outline-dark">
                         <i class="fas fa-pen me-1"></i> Editar usuario
                     </a>
                 </div>

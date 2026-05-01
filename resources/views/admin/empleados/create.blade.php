@@ -56,7 +56,7 @@
                     <h3 class="card-title mb-0">Registrar usuario</h3>
                 </div>
 
-                <form method="POST" action="{{ route('users.store') }}" id="adminUserCreateForm" novalidate>
+                <form method="POST" action="{{ route('usuarios.store') }}" id="adminUserCreateForm" novalidate>
                     @csrf
 
                     <div class="card-body">
@@ -160,7 +160,7 @@
 
                     <div class="card-footer text-center">
                         <div class="d-flex justify-content-between">
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-dark">Retroceder</a>
+                            <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark">Retroceder</a>
                             <button type="submit" class="btn btn-success" id="userSubmitButton">
                                 Guardar usuario
                             </button>

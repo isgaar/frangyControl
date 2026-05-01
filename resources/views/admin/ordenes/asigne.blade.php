@@ -52,7 +52,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card card-primary">
-                {!! Form::open(['route' => 'ordenes.store2', 'method' => 'post', 'enctype' => 'multipart/form-data',
+                {!! Form::open(['route' => 'ordenes.cliente_existente.store', 'method' => 'post', 'enctype' => 'multipart/form-data',
                 'id' => 'formulario']) !!}
                 @csrf
                 <div class="card-header bg-danger">

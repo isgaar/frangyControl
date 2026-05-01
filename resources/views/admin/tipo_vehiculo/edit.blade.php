@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.tipos_vehiculo.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::model($tipoVehiculo, ['route' => ['tipo_vehiculo.update', $tipoVehiculo->id_tvehiculo], 'method' => 'put']) !!}
+                {!! Form::model($tipoVehiculo, ['route' => ['catalogos.tipos_vehiculo.update', $tipoVehiculo->id_tvehiculo], 'method' => 'put']) !!}
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="tipo">Tipo de vehículo</label>
@@ -55,7 +55,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('catalogos.tipos_vehiculo.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-warning">Actualizar tipo</button>
                         </div>
                     </div>

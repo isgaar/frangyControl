@@ -28,10 +28,10 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('tipo_vehiculo.create') }}" class="btn btn-primary">
+                    <a href="{{ route('catalogos.tipos_vehiculo.create') }}" class="btn btn-primary">
                         <i class="fas fa-plus-circle me-1"></i> Nuevo tipo
                     </a>
-                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-layer-group me-1"></i> Panel general
                     </a>
                 </div>
@@ -65,7 +65,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('tipo_vehiculo.index') }}" method="get" class="resource-toolbar mt-4"
+            <form action="{{ route('catalogos.tipos_vehiculo.index') }}" method="get" class="resource-toolbar mt-4"
                 style="grid-template-columns: minmax(0, 1fr) auto;">
                 <div class="resource-toolbar__field">
                     <label for="search">Buscar tipo</label>
@@ -77,7 +77,7 @@
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search me-1"></i> Buscar
                     </button>
-                    <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark">
+                    <a href="{{ route('catalogos.tipos_vehiculo.index') }}" class="btn btn-outline-dark">
                         <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
@@ -118,10 +118,10 @@
                                         <td>{{ $row->tipo }}</td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
+                                                <a class="btn btn-outline-dark" href="{{ route('catalogos.tipos_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <a class="btn btn-outline-danger" href="{{ route('tipo_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
+                                                <a class="btn btn-outline-danger" href="{{ route('catalogos.tipos_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -135,7 +135,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $data->count() }} elemento(s) en esta página.</p>
-                    {{ $data->setPath(route('tipo_vehiculo.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
+                    {{ $data->setPath(route('catalogos.tipos_vehiculo.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

@@ -19,19 +19,21 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::check()) {
-        return redirect('/home');
+        return redirect()->route('panel.index');
     }
 
-    return redirect()->route('landing.pages.welcome');
+    return redirect()->route('landing.inicio');
 });
 
 Auth::routes();
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/creditos', [HomeController::class, 'about'])->name('acerca');
+Route::get('/panel', [HomeController::class, 'index'])->name('panel.index');
+Route::redirect('/home', '/panel');
 
-Route::group(['prefix' => 'landing'], function () {
-    Route::get('/welcome', [LandingController::class, 'welcome'])->name('landing.pages.welcome');
-});
+Route::get('/acerca', [HomeController::class, 'about'])->name('acerca.index');
+Route::redirect('/creditos', '/acerca');
 
-Route::post('verificar_nombre_usuario', [OrdenController::class, 'verificarNombreUsuario'])->name('verificar_nombre_usuario');
+Route::get('/inicio', [LandingController::class, 'welcome'])->name('landing.inicio');
+Route::redirect('/landing/welcome', '/inicio');
+
+Route::post('/clientes/verificar-nombre', [OrdenController::class, 'verificarNombreUsuario'])->name('clientes.verificar_nombre');

@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('users.create') }}" class="btn btn-primary">
+                    <a href="{{ route('usuarios.create') }}" class="btn btn-primary">
                         <i class="fas fa-user-plus me-1"></i> Nuevo usuario
                     </a>
                 </div>
@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            <form action="{{ route('users.index') }}" method="get" class="resource-toolbar mt-4" style="grid-template-columns: minmax(0, 1fr) auto;">
+            <form action="{{ route('usuarios.index') }}" method="get" class="resource-toolbar mt-4" style="grid-template-columns: minmax(0, 1fr) auto;">
                 <div class="resource-toolbar__field">
                     <label for="search">Buscar usuario</label>
                     <input type="text" id="search" name="search" class="form-control" value="{{ $search }}"
@@ -73,7 +73,7 @@
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search me-1"></i> Aplicar
                     </button>
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-dark">
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark">
                         <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
@@ -136,15 +136,15 @@
                                         </td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark" href="{{ route('users.show', $row->id) }}" title="Visualizar usuario">
+                                                <a class="btn btn-outline-dark" href="{{ route('usuarios.show', $row->id) }}" title="Visualizar usuario">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 <a class="btn btn-outline-dark {{ $row->id === 1 ? 'disabled' : '' }}"
-                                                    href="{{ route('users.edit', $row->id) }}" title="Editar usuario">
+                                                    href="{{ route('usuarios.edit', $row->id) }}" title="Editar usuario">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
                                                 <a class="btn btn-outline-danger {{ $row->id === 1 ? 'disabled' : '' }}"
-                                                    href="{{ route('users.delete', $row->id) }}" title="Eliminar usuario">
+                                                    href="{{ route('usuarios.delete', $row->id) }}" title="Eliminar usuario">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
                                             </div>
@@ -158,7 +158,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $data->count() }} usuario(s) en esta página.</p>
-                    {{ $data->setPath(route('users.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
+                    {{ $data->setPath(route('usuarios.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

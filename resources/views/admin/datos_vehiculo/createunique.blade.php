@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="resource-hero__actions">
-                    <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-1"></i> Volver al panel
                     </a>
                 </div>
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                {!! Form::open(['route' => 'datosv.storeunique', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+                {!! Form::open(['route' => 'catalogos.marcas.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
                     <div id="camposMarcaContainer" class="resource-kv mt-4">
                         <div class="form-group mb-0 resource-kv__item">
                             <label for="marca-0">Marca</label>
@@ -61,7 +61,7 @@
 
                     <div class="resource-form-card__footer">
                         <div class="resource-footer-actions">
-                            <a href="{{ route('datosv.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                            <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark">Cancelar</a>
                             <button type="submit" class="btn btn-success">Guardar marcas</button>
                         </div>
                     </div>
