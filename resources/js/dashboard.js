@@ -205,6 +205,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
+    document.querySelectorAll('[data-dismiss="alert"]').forEach(function (button) {
+        button.addEventListener('click', function () {
+            var alert = button.closest('.alert');
+
+            if (!alert) {
+                return;
+            }
+
+            alert.remove();
+        });
+    });
+
     window.setTimeout(function () {
         document.querySelectorAll('[data-dashboard-alert]').forEach(function (alert) {
             alert.remove();

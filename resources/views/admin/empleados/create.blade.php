@@ -40,7 +40,7 @@
 @if ($errors->any())
 <div class="alert alert-danger">
     <strong>Revisa el formulario.</strong>
-    <ul class="mb-0 mt-2 pl-3">
+    <ul class="mb-0 mt-2 ps-3">
         @foreach ($errors->all() as $error)
         <li>{{ $error }}</li>
         @endforeach
@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="name">Nombre del usuario</label>
+                            <label for="name" class="form-label">Nombre del usuario</label>
                             <input type="text" name="name" id="name"
                                 class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
                                 maxlength="40" autocomplete="name" required>
@@ -79,7 +79,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="email">Correo electrónico</label>
+                            <label for="email" class="form-label">Correo electrónico</label>
                             <input type="email" name="email" id="email"
                                 class="form-control @error('email') is-invalid @enderror"
                                 value="{{ old('email') }}" autocomplete="email" required>
@@ -93,8 +93,8 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="roles">Rol del usuario</label>
-                            <select name="roles" id="roles" class="form-control @error('roles') is-invalid @enderror"
+                            <label for="roles" class="form-label">Rol del usuario</label>
+                            <select name="roles" id="roles" class="form-select @error('roles') is-invalid @enderror"
                                 required>
                                 <option value="">Seleccione un rol</option>
                                 @foreach ($roles as $role)
@@ -114,17 +114,15 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="password">Contraseña</label>
+                                    <label for="password" class="form-label">Contraseña</label>
                                     <div class="input-group">
                                         <input type="password" name="password" id="password"
                                             class="form-control @error('password') is-invalid @enderror" required
                                             minlength="8" autocomplete="new-password">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                data-toggle-password="password">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-toggle-password="password">
                                                 <i class="fa fa-eye"></i>
-                                            </button>
-                                        </div>
+                                        </button>
                                     </div>
                                     <small class="helper-copy">Debe tener al menos 8 caracteres.</small>
                                     <div class="invalid-feedback">Escribe una contraseña de mínimo 8
@@ -140,17 +138,15 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="password_confirmation">Confirmar contraseña</label>
+                                    <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
                                     <div class="input-group">
                                         <input type="password" name="password_confirmation" id="password_confirmation"
                                             class="form-control" required minlength="8"
                                             autocomplete="new-password">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                data-toggle-password="password_confirmation">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-toggle-password="password_confirmation">
                                                 <i class="fa fa-eye"></i>
-                                            </button>
-                                        </div>
+                                        </button>
                                     </div>
                                     <small class="helper-copy">Repite exactamente la misma contraseña.</small>
                                     <div class="invalid-feedback">Confirma la contraseña del usuario.</div>
@@ -179,7 +175,7 @@
                 <div class="card-body">
                     <h4 class="text-info">Antes de guardar</h4>
                     <p class="mb-2">Estas mejoras ayudan a que el alta sea más clara y rápida para el equipo:</p>
-                    <ul class="pl-3 mb-0">
+                    <ul class="ps-3 mb-0">
                         <li>El formulario valida correo, rol y confirmación de contraseña antes de enviar.</li>
                         <li>El botón de guardar muestra estado de carga y evita doble clic.</li>
                         <li>La contraseña indica si ya cumple el mínimo recomendado.</li>

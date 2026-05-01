@@ -39,10 +39,10 @@
 
             <div class="resource-hero__actions">
                 <a href="{{ route('ordenes.show', $orden->id_ordenes) }}" class="btn btn-outline-light">
-                    <i class="fas fa-eye mr-1"></i> Ver detalle
+                    <i class="fas fa-eye me-1"></i> Ver detalle
                 </a>
                 <a href="{{ route('ordenes.index') }}" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+                    <i class="fas fa-arrow-left me-1"></i> Volver al listado
                 </a>
             </div>
         </div>

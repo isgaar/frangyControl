@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver al módulo
+                        <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
             </div>
@@ -55,7 +55,7 @@
 
                     <div class="resource-footer-actions mt-4">
                         <button type="button" class="btn btn-outline-dark" onclick="agregarCampoTipo()">
-                            <i class="fas fa-plus mr-1"></i> Agregar otro
+                            <i class="fas fa-plus me-1"></i> Agregar otro
                         </button>
                     </div>
 
@@ -83,39 +83,38 @@
     </div>
 @stop
 
-<script>
-    function formatInput(input) {
-        input.value = input.value
-            .replace(/[^A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
-            .replace(/\s+/g, ' ')
-            .trimStart()
-            .replace(/\b\w/g, function(letter) {
-                return letter.toUpperCase();
-            });
-    }
-
-    function agregarCampoTipo() {
-        var camposTipoContainer = document.getElementById('camposTipoContainer');
-        var index = camposTipoContainer.children.length;
-        var tipoField = document.createElement('div');
-        tipoField.className = 'form-group mb-0 resource-kv__item';
-        tipoField.innerHTML = `
-            <div class="d-flex justify-content-between align-items-center mb-3" style="gap:.75rem;">
-                <label for="tipo-servicio-${index}" class="mb-0">Nombre del servicio</label>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarCampoTipo(this)">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-            <input id="tipo-servicio-${index}" type="text" class="form-control" name="tipos[]" required oninput="formatInput(this)">
-        `;
-        camposTipoContainer.appendChild(tipoField);
-    }
-
-    function eliminarCampoTipo(button) {
-        button.closest('.resource-kv__item').remove();
-    }
-</script>
-
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script>
+        function formatInput(input) {
+            input.value = input.value
+                .replace(/[^A-Za-z0-9ÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trimStart()
+                .replace(/\b\w/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+        }
+
+        function agregarCampoTipo() {
+            var camposTipoContainer = document.getElementById('camposTipoContainer');
+            var index = camposTipoContainer.children.length;
+            var tipoField = document.createElement('div');
+            tipoField.className = 'form-group mb-0 resource-kv__item';
+            tipoField.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3" style="gap:.75rem;">
+                    <label for="tipo-servicio-${index}" class="mb-0">Nombre del servicio</label>
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="eliminarCampoTipo(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <input id="tipo-servicio-${index}" type="text" class="form-control" name="tipos[]" required oninput="formatInput(this)">
+            `;
+            camposTipoContainer.appendChild(tipoField);
+        }
+
+        function eliminarCampoTipo(button) {
+            button.closest('.resource-kv__item').remove();
+        }
+    </script>
 @endsection

@@ -29,10 +29,10 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('tipo_vehiculo.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus-circle mr-1"></i> Nuevo tipo
+                        <i class="fas fa-plus-circle me-1"></i> Nuevo tipo
                     </a>
                     <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-layer-group mr-1"></i> Panel general
+                        <i class="fas fa-layer-group me-1"></i> Panel general
                     </a>
                 </div>
             </div>
@@ -75,10 +75,10 @@
 
                 <div class="resource-toolbar__actions">
                     <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search mr-1"></i> Buscar
+                        <i class="fas fa-search me-1"></i> Buscar
                     </button>
                     <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-rotate-left mr-1"></i> Limpiar
+                        <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
             </form>
@@ -108,7 +108,7 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Tipo</th>
-                                    <th class="text-right">Acciones</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -116,7 +116,7 @@
                                     <tr>
                                         <td>#{{ $row->id_tvehiculo }}</td>
                                         <td>{{ $row->tipo }}</td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
                                                     <i class="fas fa-pen"></i>
@@ -135,7 +135,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $data->count() }} elemento(s) en esta página.</p>
-                    {{ $data->setPath(route('tipo_vehiculo.index'))->appends(Request::except('page'))->links('pagination::bootstrap-4') }}
+                    {{ $data->setPath(route('tipo_vehiculo.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

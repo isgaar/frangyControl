@@ -27,12 +27,49 @@ STOP_TIMEOUT="${STOP_TIMEOUT:-10}"
 LOG_TAIL="${LOG_TAIL:-30}"
 FOLLOW_LOGS="${FOLLOW_LOGS:-1}"
 PROMPT_ADMIN_ON_LAUNCH="${PROMPT_ADMIN_ON_LAUNCH:-1}"
+CLEAR_LARAVEL_CACHE_ON_LAUNCH="${CLEAR_LARAVEL_CACHE_ON_LAUNCH:-0}"
 
 STACK_MODE=""
 LOG_FOLLOW_PID=""
 ADMIN_NAME_VALUE=""
 ADMIN_EMAIL_VALUE=""
 ADMIN_PASSWORD_VALUE=""
+
+print_usage() {
+    cat <<EOF
+Uso: $(basename "$0") [--help] [--clear-cache]
+
+Lanza el entorno local de Frangy usando podman o docker.
+
+Opciones:
+  -h, --help         Muestra esta ayuda y termina.
+  --clear-cache      Ejecuta "php artisan optimize:clear" al terminar el arranque
+                     o al reutilizar el entorno actual.
+
+Tambien puedes activar la limpieza con CLEAR_LARAVEL_CACHE_ON_LAUNCH=1.
+EOF
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -h|--help)
+                print_usage
+                exit 0
+                ;;
+            --clear-cache)
+                CLEAR_LARAVEL_CACHE_ON_LAUNCH="1"
+                ;;
+            *)
+                echo "Opcion no reconocida: $1" >&2
+                print_usage >&2
+                exit 1
+                ;;
+        esac
+
+        shift
+    done
+}
 
 ensure_required_files_exist() {
     if [[ ! -f "${ENV_FILE}" ]]; then
@@ -57,6 +94,7 @@ load_environment() {
 
 ensure_required_files_exist
 load_environment
+parse_args "$@"
 
 APP_DB_DATABASE="${DB_DATABASE:-laravel}"
 APP_DB_USERNAME="${DB_USERNAME:-root}"
@@ -353,6 +391,26 @@ wait_for_laravel_http() {
     echo "Laravel no respondio por HTTP tras ${APP_WAIT_TIMEOUT} segundos." >&2
     show_recent_app_logs "${tool}"
     return 1
+}
+
+clear_laravel_cache_if_requested() {
+    local tool="$1"
+
+    if [[ "${CLEAR_LARAVEL_CACHE_ON_LAUNCH}" != "1" ]]; then
+        return 0
+    fi
+
+    echo "Limpiando cache de Laravel (rutas, vistas, configuracion y optimizaciones)..."
+
+    if ! container_exists "${tool}" "${CONTAINER_NAME}"; then
+        echo "No se encontro el contenedor ${CONTAINER_NAME} para limpiar la cache de Laravel." >&2
+        return 1
+    fi
+
+    "${tool}" exec -w /var/www/html "${CONTAINER_NAME}" \
+        php artisan optimize:clear --no-interaction
+
+    echo "Cache de Laravel limpiada correctamente."
 }
 
 follow_laravel_logs() {
@@ -660,6 +718,7 @@ launch_docker_stack() {
 CONTAINER_TOOL="$(detect_container_tool)"
 
 if ! handle_existing_stack_before_launch "${CONTAINER_TOOL}"; then
+    clear_laravel_cache_if_requested "${CONTAINER_TOOL}"
     follow_laravel_logs "${CONTAINER_TOOL}"
     exit 0
 fi
@@ -674,14 +733,17 @@ prompt_admin_configuration
 
 if [[ "${CONTAINER_TOOL}" == "podman" ]]; then
     if try_launch_podman_with_pod; then
+        clear_laravel_cache_if_requested "podman"
         follow_laravel_logs "podman"
         exit 0
     fi
 
     launch_podman_stack_without_pod
+    clear_laravel_cache_if_requested "podman"
     follow_laravel_logs "podman"
     exit 0
 fi
 
 launch_docker_stack
+clear_laravel_cache_if_requested "docker"
 follow_laravel_logs "docker"

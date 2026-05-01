@@ -19,3 +19,5 @@ yarn-error.log
 .codex
 .env
 Plan.md
+plan.md
+node_modules/

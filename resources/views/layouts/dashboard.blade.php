@@ -4,7 +4,8 @@
     $resolvedBreadcrumbs = $breadcrumbs ?? [];
     $brand = config('dashboard.brand', []);
     $menu = app(\App\Support\DashboardMenu::class)->for(auth()->user(), request());
-    $hasLegacyHeader = trim($__env->yieldContent('content_header')) !== '';
+    $legacyHeaderContent = trim($__env->yieldContent('content_header'));
+    $hasLegacyHeader = $legacyHeaderContent !== '';
 @endphp
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
@@ -17,7 +18,7 @@
     <title>{{ $resolvedPageTitle ?: config('app.name', 'Frangy Control') }}</title>
 
     <link href="https://fonts.bunny.net/css?family=space-grotesk:500,700|nunito:400,600,700,800" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
     @include('layouts.partials.theme-head')
     @vite(['resources/css/dashboard.css', 'resources/js/dashboard.js'])
@@ -43,9 +44,11 @@
 
                 @if ($hasLegacyHeader)
                     <section class="dashboard-legacy-header">
-                        @yield('content_header')
+                        {!! $legacyHeaderContent !!}
                     </section>
-                @elseif ($resolvedPageTitle || !empty($resolvedBreadcrumbs))
+                @endif
+
+                @if ($resolvedPageTitle || !empty($resolvedBreadcrumbs))
                     <x-dashboard.page-header
                         :title="$resolvedPageTitle"
                         :subtitle="$resolvedPageSubtitle"
@@ -60,7 +63,7 @@
     </div>
 
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @include('layouts.partials.theme-script')
     @yield('js')
 </body>

@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver al módulo
+                        <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
             </div>

@@ -46,10 +46,10 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('ordenes.registro') }}" class="btn btn-primary">
-                        <i class="fas fa-plus-circle mr-1"></i> Cliente nuevo
+                        <i class="fas fa-plus-circle me-1"></i> Cliente nuevo
                     </a>
                     <a href="{{ route('ordenes.asigne') }}" class="btn btn-outline-light">
-                        <i class="fas fa-user-check mr-1"></i> Cliente existente
+                        <i class="fas fa-user-check me-1"></i> Cliente existente
                     </a>
                 </div>
             </div>
@@ -129,10 +129,10 @@
 
                 <div class="resource-toolbar__actions">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search mr-1"></i> Aplicar
+                        <i class="fas fa-search me-1"></i> Aplicar
                     </button>
                     <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-rotate-left mr-1"></i> Limpiar
+                        <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
             </form>
@@ -171,7 +171,7 @@
                                     <th>Vehículo</th>
                                     <th>Placas</th>
                                     <th>Encargado</th>
-                                    <th class="text-right">Acciones</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -195,7 +195,7 @@
                                         <td>{{ $row->vehiculo->marca }}</td>
                                         <td>{{ $row->placas }}</td>
                                         <td>{{ $row->user->name }}</td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark" href="{{ route('ordenes.show', $row->id_ordenes) }}"
                                                     title="Visualizar a detalle">
@@ -226,7 +226,7 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-danger text-white">
                                                         <h5 class="modal-title" id="deleteConfirmationModalLabel{{ $row->id_ordenes }}">Eliminar orden</h5>
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Cerrar">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
@@ -234,7 +234,7 @@
                                                         ¿Seguro que deseas eliminar la orden <strong>#{{ $row->id_ordenes }}</strong>?
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-dark" data-dismiss="modal">Cancelar</button>
+                                                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cancelar</button>
                                                         <form method="POST" action="{{ route('ordenes.destroy', $row->id_ordenes) }}">
                                                             @csrf
                                                             @method('DELETE')
@@ -253,7 +253,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $ordenes->count() }} elemento(s) en esta página.</p>
-                    {{ $ordenes->appends(Request::except('page'))->links('pagination::bootstrap-4') }}
+                    {{ $ordenes->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

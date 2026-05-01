@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('users.create') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus mr-1"></i> Nuevo usuario
+                        <i class="fas fa-user-plus me-1"></i> Nuevo usuario
                     </a>
                 </div>
             </div>
@@ -71,10 +71,10 @@
 
                 <div class="resource-toolbar__actions">
                     <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search mr-1"></i> Aplicar
+                        <i class="fas fa-search me-1"></i> Aplicar
                     </button>
                     <a href="{{ route('users.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-rotate-left mr-1"></i> Limpiar
+                        <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
             </form>
@@ -105,7 +105,7 @@
                                     <th>Usuario</th>
                                     <th>Correo electrónico</th>
                                     <th>Rol</th>
-                                    <th class="text-right">Acciones</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -125,7 +125,7 @@
                                                     {{ $initials ?: 'U' }}
                                                 </div>
                                                 <div>
-                                                    <div class="font-weight-bold">{{ $row->name }}</div>
+                                                    <div class="fw-bold">{{ $row->name }}</div>
                                                     <small class="text-muted">ID {{ $row->id }}</small>
                                                 </div>
                                             </div>
@@ -134,7 +134,7 @@
                                         <td>
                                             <span class="resource-pill">{{ $roleName }}</span>
                                         </td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark" href="{{ route('users.show', $row->id) }}" title="Visualizar usuario">
                                                     <i class="fas fa-eye"></i>
@@ -158,7 +158,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $data->count() }} usuario(s) en esta página.</p>
-                    {{ $data->setPath(route('users.index'))->appends(Request::except('page'))->links('pagination::bootstrap-4') }}
+                    {{ $data->setPath(route('users.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

@@ -174,7 +174,7 @@
 @if ($errors->any())
 <div class="alert alert-danger">
     <strong>Hay datos pendientes por corregir.</strong>
-    <ul class="mb-0 mt-2 pl-3">
+    <ul class="mb-0 mt-2 ps-3">
         @foreach ($errors->all() as $error)
         <li>{{ $error }}</li>
         @endforeach
@@ -199,7 +199,7 @@
                         <button type="button" class="btn btn-light btn-sm order-help-toggle" data-toggle="collapse"
                             data-target="#ordenHelpPanel" aria-expanded="{{ $errors->any() ? 'true' : 'false' }}"
                             aria-controls="ordenHelpPanel">
-                            <i class="fas fa-life-ring mr-1"></i> Ayuda rápida
+                            <i class="fas fa-life-ring me-1"></i> Ayuda rápida
                         </button>
                     </div>
                 </div>
@@ -246,7 +246,7 @@
                         <input type="checkbox" class="custom-control-input" id="usarClienteExistente"
                             name="usar_cliente_existente" value="1" {{ old('usar_cliente_existente') ? 'checked' : '' }}>
                         <label class="custom-control-label" for="usarClienteExistente">Usar cliente ya registrado</label>
-                        <div class="helper-copy ml-4">Activa esta opción si el cliente ya existe y quieres rellenar sus
+                        <div class="helper-copy ms-4">Activa esta opción si el cliente ya existe y quieres rellenar sus
                             datos automáticamente.</div>
                     </div>
 
@@ -660,7 +660,7 @@
                                 <label class="custom-control-label" for="clienteAcepta">
                                     Confirmo que el cliente acepta la orden y la información capturada.
                                 </label>
-                                <small class="helper-copy d-block ml-4 mt-1">Este paso habilita el envío y reduce
+                                <small class="helper-copy d-block ms-4 mt-1">Este paso habilita el envío y reduce
                                     registros accidentales.</small>
                                 <div class="text-danger mt-2 d-none" id="clienteAceptaError">
                                     Debes confirmar la aceptación del cliente antes de guardar.

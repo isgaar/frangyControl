@@ -1,19 +1,18 @@
 <script>
     (function () {
-        var root = document.documentElement;
+        var storageKey = 'frangy-control-theme';
+        var storedTheme = null;
 
         try {
-            var storedTheme = localStorage.getItem('frangy-control-theme');
-            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            var theme = storedTheme === 'light' || storedTheme === 'dark'
-                ? storedTheme
-                : (prefersDark ? 'dark' : 'light');
-
-            root.dataset.theme = theme;
-            root.style.colorScheme = theme;
+            storedTheme = localStorage.getItem(storageKey);
         } catch (error) {
-            root.dataset.theme = 'light';
-            root.style.colorScheme = 'light';
+            storedTheme = null;
         }
+
+        var preferredTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+
+        document.documentElement.setAttribute('data-theme', storedTheme || preferredTheme);
     }());
 </script>

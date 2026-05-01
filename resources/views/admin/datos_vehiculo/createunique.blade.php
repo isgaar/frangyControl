@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('datosv.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver al panel
+                        <i class="fas fa-arrow-left me-1"></i> Volver al panel
                     </a>
                 </div>
             </div>
@@ -55,7 +55,7 @@
 
                     <div class="resource-footer-actions mt-4">
                         <button type="button" class="btn btn-outline-dark" onclick="agregarCampoMarca()">
-                            <i class="fas fa-plus mr-1"></i> Agregar otra
+                            <i class="fas fa-plus me-1"></i> Agregar otra
                         </button>
                     </div>
 

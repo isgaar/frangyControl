@@ -8,6 +8,7 @@
         --login-bg: #08111f;
         --login-surface: rgba(8, 17, 31, 0.78);
         --login-surface-soft: rgba(255, 255, 255, 0.08);
+        --login-elevated: rgba(8, 17, 31, 0.38);
         --login-border: rgba(255, 255, 255, 0.16);
         --login-text: #f8fafc;
         --login-text-soft: rgba(226, 232, 240, 0.82);
@@ -16,6 +17,29 @@
         --login-secondary: #f59e0b;
         --login-danger: #f87171;
         --login-shadow: 0 28px 80px rgba(2, 6, 23, 0.42);
+        --login-input-bg: rgba(255, 255, 255, 0.06);
+        --login-input-bg-focus: rgba(255, 255, 255, 0.08);
+        --login-input-border: rgba(255, 255, 255, 0.12);
+        --login-link: #bae6fd;
+        --login-link-hover: #e0f2fe;
+        --login-button-text: #04111f;
+    }
+
+    html[data-theme='light'] {
+        --login-bg: #eef4ff;
+        --login-surface: rgba(255, 255, 255, 0.9);
+        --login-surface-soft: rgba(37, 99, 235, 0.08);
+        --login-elevated: rgba(255, 255, 255, 0.76);
+        --login-border: rgba(148, 163, 184, 0.2);
+        --login-text: #0f172a;
+        --login-text-soft: #475569;
+        --login-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+        --login-input-bg: rgba(255, 255, 255, 0.94);
+        --login-input-bg-focus: rgba(255, 255, 255, 1);
+        --login-input-border: rgba(148, 163, 184, 0.28);
+        --login-link: #1d4ed8;
+        --login-link-hover: #1e40af;
+        --login-button-text: #ffffff;
     }
 
     body {
@@ -26,6 +50,14 @@
             radial-gradient(circle at top left, rgba(56, 189, 248, 0.22), transparent 30%),
             radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.18), transparent 26%),
             linear-gradient(135deg, rgba(8, 17, 31, 0.96), rgba(15, 23, 42, 0.9)),
+            url('{{ asset("fondos/image1.jpg") }}') center/cover fixed;
+    }
+
+    html[data-theme='light'] body {
+        background:
+            radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 30%),
+            radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.12), transparent 24%),
+            linear-gradient(180deg, rgba(238, 244, 255, 0.96), rgba(248, 250, 252, 0.98)),
             url('{{ asset("fondos/image1.jpg") }}') center/cover fixed;
     }
 
@@ -137,8 +169,8 @@
         width: fit-content;
         padding: 0.55rem 0.9rem;
         border-radius: 999px;
-        background: rgba(8, 17, 31, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--login-elevated);
+        border: 1px solid var(--login-border);
         color: var(--login-text);
         font-size: 0.88rem;
         font-weight: 700;
@@ -181,8 +213,8 @@
     .login-badges span,
     .login-showcase-stat {
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        background: rgba(8, 17, 31, 0.36);
+        border: 1px solid var(--login-border);
+        background: var(--login-elevated);
         color: var(--login-text);
     }
 
@@ -203,8 +235,8 @@
         grid-template-columns: auto 1fr;
         gap: 0.9rem;
         padding: 1rem 1.1rem;
-        background: rgba(8, 17, 31, 0.38);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--login-elevated);
+        border: 1px solid var(--login-border);
         border-radius: 20px;
     }
 
@@ -292,8 +324,8 @@
         object-fit: contain;
         padding: 0.4rem;
         border-radius: 18px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--login-surface-soft);
+        border: 1px solid var(--login-border);
     }
 
     .login-card-brand small {
@@ -354,13 +386,13 @@
     .login-password-toggle,
     .login-check-input {
         border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid var(--login-input-border);
     }
 
     .login-input {
         min-height: 54px;
         padding: 0.95rem 1rem;
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--login-input-bg);
         color: var(--login-text);
         transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
@@ -371,7 +403,7 @@
 
     .login-input:focus {
         color: var(--login-text);
-        background: rgba(255, 255, 255, 0.08);
+        background: var(--login-input-bg-focus);
         border-color: rgba(56, 189, 248, 0.55);
         box-shadow: 0 0 0 0.25rem rgba(14, 165, 233, 0.15);
     }
@@ -395,7 +427,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--login-surface-soft);
         color: var(--login-text-soft);
         cursor: pointer;
         transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
@@ -403,7 +435,7 @@
 
     .login-password-toggle:hover,
     .login-password-toggle:focus {
-        background: rgba(255, 255, 255, 0.1);
+        background: var(--login-elevated);
         color: var(--login-text);
         border-color: rgba(56, 189, 248, 0.4);
     }
@@ -441,8 +473,8 @@
         width: 1.1rem;
         height: 1.1rem;
         margin-top: 0;
-        background-color: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.25);
+        background-color: var(--login-surface-soft);
+        border-color: var(--login-border);
     }
 
     .login-check-input:checked {
@@ -451,14 +483,14 @@
     }
 
     .login-link {
-        color: #bae6fd;
+        color: var(--login-link);
         font-weight: 700;
         text-decoration: none;
     }
 
     .login-link:hover,
     .login-link:focus {
-        color: #e0f2fe;
+        color: var(--login-link-hover);
         text-decoration: underline;
     }
 
@@ -469,7 +501,7 @@
         border-radius: 18px;
         font-weight: 800;
         letter-spacing: 0.02em;
-        color: #04111f;
+        color: var(--login-button-text);
         background: linear-gradient(135deg, #7dd3fc, #fbbf24);
         box-shadow: 0 18px 32px rgba(14, 165, 233, 0.18);
         transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;

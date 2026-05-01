@@ -9,7 +9,7 @@
     <title>@yield('title', config('app.name', 'Frangy Control'))</title>
 
     <link href="https://fonts.bunny.net/css?family=space-grotesk:500,700|nunito:400,600,700,800" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ asset('vendor/fontawesome-free/css/all.min.css') }}">
     @include('layouts.partials.theme-head')
     @yield('css')
@@ -446,7 +446,7 @@
 
                             @if (Route::has('home'))
                                 <a href="{{ route('home') }}" class="nav-link-item nav-link">
-                                    <i class="fas fa-th-large fa-sm mr-1"></i>
+                                    <i class="fas fa-th-large fa-sm me-1"></i>
                                     Control
                                 </a>
                             @endif
@@ -470,7 +470,7 @@
     </div>
 
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
-    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         (function () {

@@ -1,27 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-
+<!doctype html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('landing.include.head')
 </head>
-
-<body id="page-top">
-    <!--Navigation-->
-    <!--<a class="menu-toggle rounded" href="#"><i class="fas fa-bars"></i></a>
-    <nav id="sidebar-wrapper">-->
-
+<body id="page-top" class="body-space">
     @include('landing.include.menu')
 
-    <!--Section-->
-
-    <body class="body-space">
+    <main>
         @yield('contenido')
-    </body>
-    <!--Footer-->
-    <footer>
-@include('landing.include.footer')
+    </main>
+
+    <footer class="mt-auto">
+        @include('landing.include.footer')
     </footer>
-    <!--Scripts-->
+
+    @include('landing.include.script')
 </body>
-@include('landing.include.script')
 </html>

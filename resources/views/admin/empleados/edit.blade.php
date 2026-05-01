@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('users.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver a usuarios
+                        <i class="fas fa-arrow-left me-1"></i> Volver a usuarios
                     </a>
                 </div>
             </div>
@@ -67,17 +67,15 @@
                             <label for="password">Nueva contraseña</label>
                             <div class="input-group">
                                 <input type="password" name="password" id="password" class="form-control" placeholder="Deja en blanco para conservar la actual">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('password', this)">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                </div>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('password', this)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
                             </div>
                         </div>
 
                         <div class="form-group mb-0">
                             <label for="roles">Rol</label>
-                            {!! Form::select('roles', $roles->pluck('name', 'id'), null, ['class' => 'form-control', 'id' => 'roles']) !!}
+                            {!! Form::select('roles', $roles->pluck('name', 'id'), null, ['class' => 'form-select', 'id' => 'roles']) !!}
                         </div>
                     </div>
 
@@ -105,26 +103,25 @@
     </div>
 @stop
 
-<script>
-    function capitalizeInput(input) {
-        input.value = input.value.replace(/\b\w/g, function(letter) {
-            return letter.toUpperCase();
-        });
-    }
-
-    function togglePasswordVisibility(fieldId, button) {
-        var field = document.getElementById(fieldId);
-        var icon = button.querySelector('i');
-
-        field.type = field.type === 'password' ? 'text' : 'password';
-
-        if (icon) {
-            icon.classList.toggle('fa-eye');
-            icon.classList.toggle('fa-eye-slash');
-        }
-    }
-</script>
-
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script>
+        function capitalizeInput(input) {
+            input.value = input.value.replace(/\b\w/g, function(letter) {
+                return letter.toUpperCase();
+            });
+        }
+
+        function togglePasswordVisibility(fieldId, button) {
+            var field = document.getElementById(fieldId);
+            var icon = button.querySelector('i');
+
+            field.type = field.type === 'password' ? 'text' : 'password';
+
+            if (icon) {
+                icon.classList.toggle('fa-eye');
+                icon.classList.toggle('fa-eye-slash');
+            }
+        }
+    </script>
 @endsection

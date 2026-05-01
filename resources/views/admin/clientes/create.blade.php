@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('clientes.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver al directorio
+                        <i class="fas fa-arrow-left me-1"></i> Volver al directorio
                     </a>
                 </div>
             </div>
@@ -109,36 +109,35 @@
     </div>
 @stop
 
-<script>
-    function formatNameInput(input) {
-        input.value = input.value
-            .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
-            .replace(/\s+/g, ' ')
-            .trimStart()
-            .replace(/\b\w/g, function(letter) {
-                return letter.toUpperCase();
-            });
-    }
-
-    function truncatePhoneNumber(input) {
-        input.value = input.value.replace(/\D/g, '').slice(0, 10);
-    }
-
-    function validateEmail(input) {
-        input.value = input.value
-            .replace(/[^a-zA-Z0-9@._-]/g, '')
-            .toLowerCase()
-            .slice(0, 30);
-    }
-
-    function formatRFC(event) {
-        event.target.value = event.target.value
-            .replace(/[^A-Za-z0-9]/g, '')
-            .toUpperCase()
-            .slice(0, 13);
-    }
-</script>
-
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script>
+        function formatNameInput(input) {
+            input.value = input.value
+                .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trimStart()
+                .replace(/\b\w/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+        }
+
+        function truncatePhoneNumber(input) {
+            input.value = input.value.replace(/\D/g, '').slice(0, 10);
+        }
+
+        function validateEmail(input) {
+            input.value = input.value
+                .replace(/[^a-zA-Z0-9@._-]/g, '')
+                .toLowerCase()
+                .slice(0, 30);
+        }
+
+        function formatRFC(event) {
+            event.target.value = event.target.value
+                .replace(/[^A-Za-z0-9]/g, '')
+                .toUpperCase()
+                .slice(0, 13);
+        }
+    </script>
 @endsection

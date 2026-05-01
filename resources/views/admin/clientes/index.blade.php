@@ -35,7 +35,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('clientes.create') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus mr-1"></i> Nuevo cliente
+                        <i class="fas fa-user-plus me-1"></i> Nuevo cliente
                     </a>
                 </div>
             </div>
@@ -69,7 +69,7 @@
 
                 @if ($search)
                     <div class="resource-pill">
-                        <i class="fas fa-magnifying-glass"></i> "{{ $search }}"
+                        <i class="fas fa-search"></i> "{{ $search }}"
                     </div>
                 @endif
             </div>
@@ -83,7 +83,7 @@
 
                 <div class="resource-toolbar__field">
                     <label for="limit">Mostrar</label>
-                    <select name="limit" id="limit" class="form-control">
+                    <select name="limit" id="limit" class="form-select">
                         <option value="6" {{ (string) $limit === '6' ? 'selected' : '' }}>6 tarjetas</option>
                         <option value="9" {{ (string) $limit === '9' ? 'selected' : '' }}>9 tarjetas</option>
                         <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 tarjetas</option>
@@ -94,7 +94,7 @@
 
                 <div class="resource-toolbar__field">
                     <label for="sort_by">Ordenar por</label>
-                    <select name="sort_by" id="sort_by" class="form-control">
+                    <select name="sort_by" id="sort_by" class="form-select">
                         <option value="id_cliente" {{ $sortBy === 'id_cliente' ? 'selected' : '' }}>ID</option>
                         <option value="nombreCompleto" {{ $sortBy === 'nombreCompleto' ? 'selected' : '' }}>Nombre</option>
                     </select>
@@ -102,7 +102,7 @@
 
                 <div class="resource-toolbar__field">
                     <label for="sort_order">Dirección</label>
-                    <select name="sort_order" id="sort_order" class="form-control">
+                    <select name="sort_order" id="sort_order" class="form-select">
                         <option value="asc" {{ $sortOrder === 'asc' ? 'selected' : '' }}>Ascendente</option>
                         <option value="desc" {{ $sortOrder === 'desc' ? 'selected' : '' }}>Descendente</option>
                     </select>
@@ -110,10 +110,10 @@
 
                 <div class="resource-toolbar__actions">
                     <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search mr-1"></i> Aplicar
+                        <i class="fas fa-search me-1"></i> Aplicar
                     </button>
                     <a href="{{ route('clientes.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-rotate-left mr-1"></i> Limpiar
+                        <i class="fas fa-undo-alt me-1"></i> Limpiar
                     </a>
                 </div>
             </form>
@@ -165,8 +165,11 @@
                             </div>
 
                             <div class="resource-person-card__footer">
+                                <a class="btn btn-outline-dark" href="{{ route('clientes.show', $cliente->id_cliente) }}" title="Ver cliente">
+                                    <i class="fas fa-eye me-1"></i> Ver
+                                </a>
                                 <a class="btn btn-outline-dark" href="{{ route('clientes.edit', $cliente->id_cliente) }}" title="Editar cliente">
-                                    <i class="fas fa-user-pen mr-1"></i> Editar tarjeta
+                                    <i class="fas fa-user-edit me-1"></i> Editar tarjeta
                                 </a>
                             </div>
                         </article>
@@ -175,7 +178,7 @@
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
                     <p class="mb-0 text-muted">Mostrando {{ $data->count() }} registro(s) en esta página.</p>
-                    {{ $data->appends(request()->except('page'))->links() }}
+                    {{ $data->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
         </section>

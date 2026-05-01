@@ -15,7 +15,7 @@
     @if (session('status'))
         <div class="alert alert-{{ $flashClass }} alert-dismissible fade show shadow-sm" role="alert">
             <strong>{{ session('status') }}</strong>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Cerrar">
+            <button type="button" class="close" data-bs-dismiss="alert" aria-label="Cerrar">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
@@ -32,10 +32,10 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('datosv.create') }}" class="btn btn-primary">
-                        <i class="fas fa-layer-group mr-1"></i> Carga general
+                        <i class="fas fa-layer-group me-1"></i> Carga general
                     </a>
                     <a href="{{ route('datosv.createunique') }}" class="btn btn-outline-light">
-                        <i class="fas fa-car-side mr-1"></i> Nueva marca
+                        <i class="fas fa-car-side me-1"></i> Nueva marca
                     </a>
                 </div>
             </div>
@@ -70,7 +70,7 @@
 
                     <div class="resource-cta-group">
                         <a href="{{ route('datosv.createunique') }}" class="btn btn-outline-dark btn-sm">
-                            <i class="fas fa-plus mr-1"></i> Agregar
+                            <i class="fas fa-plus me-1"></i> Agregar
                         </a>
                     </div>
                 </div>
@@ -81,14 +81,14 @@
                             <thead>
                                 <tr>
                                     <th>Marca</th>
-                                    <th class="text-right">Acciones</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($dataVehiculos as $row)
                                     <tr>
                                         <td>{{ $row->marca }}</td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark btn-sm" href="{{ route('datosv.edit', $row->id_vehiculo) }}" title="Editar marca">
                                                     <i class="fas fa-pen"></i>
@@ -120,10 +120,10 @@
 
                     <div class="resource-cta-group">
                         <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-dark btn-sm">
-                            <i class="fas fa-arrow-right mr-1"></i> Ver módulo
+                            <i class="fas fa-arrow-right me-1"></i> Ver módulo
                         </a>
                         <a href="{{ route('tipo_vehiculo.create') }}" class="btn btn-outline-dark btn-sm">
-                            <i class="fas fa-plus mr-1"></i> Nuevo
+                            <i class="fas fa-plus me-1"></i> Nuevo
                         </a>
                     </div>
                 </div>
@@ -134,14 +134,14 @@
                             <thead>
                                 <tr>
                                     <th>Tipo</th>
-                                    <th class="text-right">Acciones</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($dataTiposVehiculos as $row)
                                     <tr>
                                         <td>{{ $row->tipo }}</td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark btn-sm" href="{{ route('tipo_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
                                                     <i class="fas fa-pen"></i>
@@ -173,10 +173,10 @@
 
                     <div class="resource-cta-group">
                         <a href="{{ route('tipo_servicio.index') }}" class="btn btn-outline-dark btn-sm">
-                            <i class="fas fa-arrow-right mr-1"></i> Ver módulo
+                            <i class="fas fa-arrow-right me-1"></i> Ver módulo
                         </a>
                         <a href="{{ route('tipo_servicio.create') }}" class="btn btn-outline-dark btn-sm">
-                            <i class="fas fa-plus mr-1"></i> Nuevo
+                            <i class="fas fa-plus me-1"></i> Nuevo
                         </a>
                     </div>
                 </div>
@@ -187,14 +187,14 @@
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
-                                    <th class="text-right">Acciones</th>
+                                    <th class="text-end">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($dataServicios as $row)
                                     <tr>
                                         <td>{{ $row->nombreServicio }}</td>
-                                        <td class="text-right">
+                                        <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark btn-sm" href="{{ route('tipo_servicio.edit', $row->id_servicio) }}" title="Editar servicio">
                                                     <i class="fas fa-pen"></i>

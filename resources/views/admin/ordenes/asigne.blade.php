@@ -39,10 +39,10 @@
 
             <div class="resource-hero__actions">
                 <a href="{{ route('ordenes.registro') }}" class="btn btn-outline-light">
-                    <i class="fas fa-user-plus mr-1"></i> Cliente nuevo
+                    <i class="fas fa-user-plus me-1"></i> Cliente nuevo
                 </a>
                 <a href="{{ route('ordenes.index') }}" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left mr-1"></i> Volver al listado
+                    <i class="fas fa-arrow-left me-1"></i> Volver al listado
                 </a>
             </div>
         </div>

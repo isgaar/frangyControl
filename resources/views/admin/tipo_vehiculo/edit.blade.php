@@ -29,7 +29,7 @@
 
                 <div class="resource-hero__actions">
                     <a href="{{ route('tipo_vehiculo.index') }}" class="btn btn-outline-light">
-                        <i class="fas fa-arrow-left mr-1"></i> Volver al módulo
+                        <i class="fas fa-arrow-left me-1"></i> Volver al módulo
                     </a>
                 </div>
             </div>
@@ -76,18 +76,17 @@
     </div>
 @stop
 
-<script>
-    function formatInput(input) {
-        input.value = input.value
-            .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
-            .replace(/\s+/g, ' ')
-            .trimStart()
-            .replace(/\b\w/g, function(letter) {
-                return letter.toUpperCase();
-            });
-    }
-</script>
-
 @section('js')
     <script src="{{ asset('js/validatorFields.js') }}"></script>
+    <script>
+        function formatInput(input) {
+            input.value = input.value
+                .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]/g, '')
+                .replace(/\s+/g, ' ')
+                .trimStart()
+                .replace(/\b\w/g, function(letter) {
+                    return letter.toUpperCase();
+                });
+        }
+    </script>
 @endsection

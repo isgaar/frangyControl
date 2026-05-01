@@ -1,307 +1,213 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Inicio')
+@section('title', 'Panel de control')
 
 @php
-    $currentHour = (int) now()->timezone(config('app.timezone'))->format('H');
-    $timeOfDay = $currentHour >= 5 && $currentHour < 12 ? 'morning' : ($currentHour >= 12 && $currentHour < 18 ? 'afternoon' : 'evening');
-    $greetingMessage = $timeOfDay === 'morning' ? 'Buenos días' : ($timeOfDay === 'afternoon' ? 'Buenas tardes' : 'Buenas noches');
-    $greetingIcon = $timeOfDay === 'evening' ? asset('moon.svg') : asset('sun.svg');
-    $username = auth()->user()->name ?? 'Usuario';
-    $pageTitle = 'Inicio';
-    $pageSubtitle = 'Resumen operativo del taller con alertas, búsqueda rápida y actividad reciente.';
+    $pageTitle = 'Panel de control';
+    $pageSubtitle = 'Resumen operativo del taller, accesos rápidos y órdenes recientes.';
     $breadcrumbs = [
-        ['label' => 'Panel', 'url' => route('home')],
-        ['label' => 'Inicio'],
+        ['label' => 'Panel'],
     ];
-
-    $statusTones = [
-        'cancelada' => 'danger',
-        'finalizada' => 'success',
-        'en proceso' => 'info',
-    ];
-    $canViewVehicles = auth()->user() && method_exists(auth()->user(), 'can')
-        ? auth()->user()->can('admin.datosv.vehiculosnom')
-        : false;
 @endphp
 
 @section('content')
-<div class="home-grid">
-    <section class="home-hero">
-        <div class="home-hero__top">
-            <div class="home-hero__copy">
-                <span class="home-card__eyebrow">Operación diaria</span>
-                <h2 class="home-hero__title">{{ $greetingMessage }}, {{ $username }}</h2>
-                <p class="mb-0">
-                    Aquí tienes una vista clara del estado del taller, accesos rápidos y los registros que más
-                    probablemente necesitarás revisar hoy.
-                </p>
-            </div>
-
-            <div>
-                <img src="{{ $greetingIcon }}" alt="Estado del día" class="home-hero__icon">
-                <div class="home-hero__meta mt-3">
-                    <i class="far fa-clock"></i>
-                    <span>{{ now()->timezone(config('app.timezone'))->format('d/m/Y H:i') }}</span>
+    <div class="resource-page">
+        <section class="resource-hero">
+            <div class="resource-hero__top">
+                <div class="resource-hero__copy">
+                    <span class="resource-hero__eyebrow">Vista general</span>
+                    <h1 class="resource-hero__title">Operación del taller</h1>
+                    <p>Consulta métricas clave, revisa órdenes recientes y entra rápido a los módulos más usados.</p>
                 </div>
-            </div>
-        </div>
 
-        <form action="{{ route('home') }}" method="GET" class="home-search">
-            <div class="home-search__field">
-                <label for="search">Búsqueda global</label>
-                <input
-                    id="search"
-                    name="search"
-                    type="text"
-                    value="{{ $search }}"
-                    placeholder="Orden, cliente, placas, vehículo o encargado">
-            </div>
-
-            <div class="home-search__field">
-                <label for="limit">Resultados</label>
-                <select id="limit" name="limit">
-                    @foreach ([5, 10, 15, 20] as $option)
-                        <option value="{{ $option }}" {{ (int) $limit === $option ? 'selected' : '' }}>{{ $option }}</option>
+                <div class="resource-hero__actions">
+                    @foreach ($quickActions as $action)
+                        <a href="{{ route($action['route']) }}" class="btn {{ $loop->first ? 'btn-primary' : 'btn-outline-light' }}">
+                            <i class="{{ $action['icon'] }} me-1"></i> {{ $action['label'] }}
+                        </a>
                     @endforeach
-                </select>
+                </div>
             </div>
 
-            <div class="home-search__field">
-                <label for="order">Orden</label>
-                <select id="order" name="order">
-                    <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Más recientes</option>
-                    <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>Más antiguas</option>
-                </select>
-            </div>
-
-            <div class="home-search__actions">
-                <button type="submit" class="home-search__btn">Buscar</button>
-
-                @if ($search !== '' || (int) $limit !== 5 || $order !== 'desc')
-                    <a href="{{ route('home') }}" class="home-search__btn home-search__btn--ghost">Limpiar</a>
-                @endif
-            </div>
-        </form>
-
-        @if ($quickActions->isNotEmpty())
-            <div class="home-quick-actions">
-                @foreach ($quickActions as $action)
-                    <a href="{{ route($action['route']) }}">
-                        <i class="{{ $action['icon'] }} mr-2"></i>
-                        {{ $action['label'] }}
-                    </a>
+            <div class="resource-metrics">
+                @foreach ($stats as $stat)
+                    <article class="resource-metric">
+                        <span class="resource-metric__label">
+                            <i class="{{ $stat['icon'] }} me-1 text-{{ $stat['accent'] }}"></i>
+                            {{ $stat['label'] }}
+                        </span>
+                        <p class="resource-metric__value">{{ $stat['value'] }}</p>
+                        <p class="resource-metric__copy">{{ $stat['caption'] }}</p>
+                    </article>
                 @endforeach
             </div>
-        @endif
-    </section>
+        </section>
 
-    <section class="home-stats">
-        @foreach ($stats as $stat)
-            <a href="{{ $stat['url'] }}" class="home-stat">
-                <div class="home-stat__top">
-                    <span class="home-card__eyebrow">{{ $stat['label'] }}</span>
-                    <span class="home-stat__icon is-{{ $stat['accent'] }}">
-                        <i class="{{ $stat['icon'] }}"></i>
-                    </span>
-                </div>
-                <div class="home-stat__value">{{ number_format($stat['value']) }}</div>
-                <p class="home-stat__caption">{{ $stat['caption'] }}</p>
-            </a>
-        @endforeach
-    </section>
-
-    <section class="home-insights">
-        <article class="home-card">
-            <div class="home-card__header">
-                <div>
-                    <span class="home-card__eyebrow">Alertas</span>
-                    <h3 class="home-card__title">Atención inmediata</h3>
-                </div>
-                <span class="dashboard-badge is-warning">{{ $operationalAlerts->count() }} activas</span>
-            </div>
-
-            <div class="home-list">
-                @forelse ($operationalAlerts as $alert)
-                    <div class="home-list__item">
-                        <div class="home-list__row">
-                            <p class="home-list__title">{{ $alert['title'] }}</p>
-                            <span class="dashboard-badge is-{{ $alert['tone'] }}">{{ $alert['count'] }}</span>
-                        </div>
-                        <p class="home-list__subtitle">{{ $alert['message'] }}</p>
-                    </div>
-                @empty
-                    <p class="dashboard-empty">No hay alertas operativas urgentes en este momento.</p>
-                @endforelse
-            </div>
-        </article>
-
-        <article class="home-card">
-            <div class="home-card__header">
-                <div>
-                    <span class="home-card__eyebrow">Contexto</span>
-                    <h3 class="home-card__title">Recomendaciones del día</h3>
-                </div>
-                <span class="dashboard-badge is-info">{{ $dashboardProfile['primary_role'] }}</span>
-            </div>
-
-            <div class="home-list">
-                @foreach ($operationalMessages as $message)
-                    <div class="home-list__item">
-                        <div class="home-list__row">
-                            <p class="home-list__title">{{ $message['title'] }}</p>
-                            <span class="dashboard-badge is-{{ $message['tone'] }}">{{ $message['eyebrow'] }}</span>
-                        </div>
-                        <p class="home-list__subtitle">{{ $message['message'] }}</p>
-                    </div>
-                @endforeach
-            </div>
-        </article>
-    </section>
-
-    <section class="dashboard-grid dashboard-grid--3 home-recent">
-        <article class="home-card">
-            <div class="home-card__header">
-                <div>
-                    <span class="home-card__eyebrow">Actividad reciente</span>
-                    <h3 class="home-card__title">Órdenes guardadas</h3>
-                </div>
-                <a href="{{ route('ordenes.index') }}" class="home-card__link">Ver todas</a>
-            </div>
-
-            <div class="home-list">
-                @forelse ($recentOrders as $recentOrder)
-                    <a href="{{ $recentOrder['url'] }}" class="home-list__item">
-                        <div class="home-list__row">
-                            <p class="home-list__title">Orden #{{ $recentOrder['id'] }}</p>
-                            <span class="dashboard-badge is-{{ $statusTones[$recentOrder['status']] ?? 'warning' }}">
-                                {{ ucwords($recentOrder['status']) }}
-                            </span>
-                        </div>
-                        <p class="home-list__meta">{{ $recentOrder['created_at'] }}</p>
-                        <p class="home-list__subtitle">{{ $recentOrder['cliente'] }} · {{ $recentOrder['vehiculo'] }}</p>
-                        <p class="home-list__meta">{{ $recentOrder['servicio'] }}</p>
-                    </a>
-                @empty
-                    <p class="dashboard-empty">Todavía no hay órdenes registradas.</p>
-                @endforelse
-            </div>
-        </article>
-
-        <article class="home-card">
-            <div class="home-card__header">
-                <div>
-                    <span class="home-card__eyebrow">Actividad reciente</span>
-                    <h3 class="home-card__title">Clientes guardados</h3>
-                </div>
-                <a href="{{ route('clientes.index') }}" class="home-card__link">Ver clientes</a>
-            </div>
-
-            <div class="home-list">
-                @forelse ($recentClients as $client)
-                    <a href="{{ route('clientes.show', $client->id_cliente) }}" class="home-list__item">
-                        <div class="home-list__row">
-                            <p class="home-list__title">{{ $client->nombreCompleto }}</p>
-                            <span class="dashboard-badge is-info">{{ optional($client->created_at)->format('d/m/Y') }}</span>
-                        </div>
-                        <p class="home-list__meta">{{ optional($client->created_at)->format('H:i') ?: 'Sin hora' }}</p>
-                        <p class="home-list__subtitle">{{ $client->telefono ?: 'Sin teléfono' }}</p>
-                        <p class="home-list__meta">{{ $client->correo ?: 'Sin correo' }}</p>
-                    </a>
-                @empty
-                    <p class="dashboard-empty">Todavía no hay clientes registrados.</p>
-                @endforelse
-            </div>
-        </article>
-
-        @if ($canViewVehicles)
-            <article class="home-card">
-                <div class="home-card__header">
+        @if ($operationalAlerts->isNotEmpty())
+            <section class="resource-panel">
+                <div class="resource-panel__header">
                     <div>
-                        <span class="home-card__eyebrow">Actividad reciente</span>
-                        <h3 class="home-card__title">Vehículos guardados</h3>
+                        <span class="resource-panel__eyebrow">Atención</span>
+                        <h2 class="resource-panel__title">Alertas operativas</h2>
+                        <p class="resource-panel__copy">Puntos que conviene revisar antes de continuar con el trabajo diario.</p>
                     </div>
-                    <a href="{{ route('datosv.index') }}" class="home-card__link">Ver catálogo</a>
                 </div>
 
-                <div class="home-list">
-                    @forelse ($recentVehicles as $vehicle)
-                        <a href="{{ route('datosv.index') }}" class="home-list__item">
+                <div class="resource-card-grid mt-4">
+                    @foreach ($operationalAlerts as $alert)
+                        <article class="alert alert-{{ $alert['tone'] }} mb-0">
+                            <strong>{{ $alert['title'] }}: {{ $alert['count'] }}</strong>
+                            <p class="mb-0 mt-1">{{ $alert['message'] }}</p>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
+        @endif
+
+        <section class="resource-panel">
+            <div class="resource-panel__header">
+                <div>
+                    <span class="resource-panel__eyebrow">Órdenes</span>
+                    <h2 class="resource-panel__title">Listado operativo</h2>
+                    <p class="resource-panel__copy">Filtra por cliente, vehículo, placas, servicio, responsable o folio.</p>
+                </div>
+            </div>
+
+            <form action="{{ route('home') }}" method="get" class="resource-toolbar mt-4">
+                <div class="resource-toolbar__field">
+                    <label for="search" class="form-label">Buscar</label>
+                    <input id="search" type="text" name="search" class="form-control" value="{{ $search }}"
+                        placeholder="Cliente, placas, servicio o folio">
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="limit" class="form-label">Mostrar</label>
+                    <select id="limit" name="limit" class="form-select">
+                        @foreach ([5, 10, 15, 25] as $option)
+                            <option value="{{ $option }}" @selected((int) $limit === $option)>{{ $option }} registros</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="order" class="form-label">Orden</label>
+                    <select id="order" name="order" class="form-select">
+                        <option value="desc" @selected($order === 'desc')>Más recientes</option>
+                        <option value="asc" @selected($order === 'asc')>Más antiguas</option>
+                    </select>
+                </div>
+
+                <div class="resource-toolbar__actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-1"></i> Aplicar
+                    </button>
+                    <a href="{{ route('home') }}" class="btn btn-outline-dark">
+                        <i class="fas fa-undo-alt me-1"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+
+            <div class="resource-table-wrap mt-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Cliente</th>
+                                <th>Vehículo</th>
+                                <th>Servicio</th>
+                                <th>Estado</th>
+                                <th class="text-end">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($ordenes as $orden)
+                                <tr>
+                                    <td>#{{ $orden->id_ordenes }}</td>
+                                    <td>{{ optional($orden->cliente)->nombreCompleto ?? 'Sin cliente' }}</td>
+                                    <td>
+                                        {{ optional($orden->vehiculo)->marca ?? 'Sin vehículo' }}
+                                        @if (!empty($orden->placas))
+                                            <span class="d-block text-muted">{{ $orden->placas }}</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ optional($orden->servicio)->nombreServicio ?? 'Sin servicio' }}</td>
+                                    <td>
+                                        <span class="badge text-bg-secondary">{{ $orden->status ?? 'Sin estado' }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ route('ordenes.show', $orden->id_ordenes) }}" class="btn btn-outline-dark btn-sm">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="resource-empty mb-0">No hay órdenes para mostrar con los filtros actuales.</div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
+                <p class="mb-0 text-muted">Mostrando {{ $ordenes->count() }} orden(es) en esta página.</p>
+                {{ $ordenes->links('pagination::bootstrap-5') }}
+            </div>
+        </section>
+
+        <div class="resource-catalog-grid">
+            <section class="resource-overview-card">
+                <span class="resource-panel__eyebrow">Actividad</span>
+                <h2 class="resource-overview-card__title">Órdenes recientes</h2>
+                <div class="home-list mt-3">
+                    @forelse ($recentOrders as $order)
+                        <a class="home-list__item" href="{{ $order['url'] }}">
                             <div class="home-list__row">
-                                <p class="home-list__title">{{ $vehicle->marca }}</p>
-                                <span class="dashboard-badge is-success">{{ optional($vehicle->created_at)->format('d/m/Y') }}</span>
+                                <p class="home-list__title">#{{ $order['id'] }} · {{ $order['cliente'] }}</p>
+                                <span class="badge text-bg-info">{{ $order['status'] }}</span>
                             </div>
-                            <p class="home-list__meta">{{ optional($vehicle->created_at)->format('H:i') ?: 'Sin hora' }}</p>
-                            <p class="home-list__subtitle">Registro #{{ $vehicle->id_vehiculo }}</p>
-                            <p class="home-list__meta">Marca disponible en el catálogo</p>
+                            <p class="home-list__subtitle">{{ $order['servicio'] }} · {{ $order['created_at'] }}</p>
                         </a>
                     @empty
-                        <p class="dashboard-empty">Todavía no hay vehículos registrados.</p>
+                        <div class="resource-empty">Sin órdenes recientes.</div>
                     @endforelse
                 </div>
-            </article>
-        @endif
-    </section>
+            </section>
 
-    <section class="home-table">
-        <div class="home-table__header">
-            <div>
-                <span class="home-card__eyebrow">Resultados</span>
-                <h3 class="home-table__title">Últimas órdenes</h3>
-            </div>
-            <a href="{{ route('ordenes.index') }}" class="home-card__link">Ir al módulo completo</a>
-        </div>
-
-        @if ($search !== '')
-            <p class="home-table__meta">
-                Mostrando {{ $ordenes->total() }} coincidencias para <strong>"{{ $search }}"</strong>.
-            </p>
-        @endif
-
-        <div class="table-responsive">
-            <table class="table mb-0">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Estado</th>
-                        <th>Cliente</th>
-                        <th>Servicio</th>
-                        <th>Vehículo</th>
-                        <th>Encargado/a</th>
-                        <th>Entrega</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($ordenes as $row)
-                        <tr>
-                            <td>{{ $row->id_ordenes }}</td>
-                            <td>
-                                <span class="dashboard-badge is-{{ $statusTones[$row->status] ?? 'warning' }}">
-                                    {{ ucwords($row->status) }}
-                                </span>
-                            </td>
-                            <td>{{ ucwords(optional($row->cliente)->nombreCompleto ?? 'Sin cliente') }}</td>
-                            <td>{{ optional($row->servicio)->nombreServicio ?? 'Sin servicio' }}</td>
-                            <td>{{ optional($row->vehiculo)->marca ?? 'Sin vehículo' }}</td>
-                            <td>{{ optional($row->user)->name ?? 'Sin asignar' }}</td>
-                            <td>{{ $row->fechaEntrega ? \Illuminate\Support\Carbon::parse($row->fechaEntrega)->format('d/m/Y') : 'Sin fecha' }}</td>
-                        </tr>
+            <section class="resource-overview-card">
+                <span class="resource-panel__eyebrow">Clientes</span>
+                <h2 class="resource-overview-card__title">Últimos registros</h2>
+                <div class="home-list mt-3">
+                    @forelse ($recentClients as $client)
+                        <div class="home-list__item">
+                            <p class="home-list__title">{{ $client->nombreCompleto }}</p>
+                            <p class="home-list__subtitle">{{ $client->telefono }} · {{ $client->correo }}</p>
+                        </div>
                     @empty
-                        <tr>
-                            <td colspan="7" class="text-center text-muted py-4">No hay órdenes para mostrar.</td>
-                        </tr>
+                        <div class="resource-empty">Sin clientes recientes.</div>
                     @endforelse
-                </tbody>
-            </table>
+                </div>
+            </section>
+
+            <section class="resource-overview-card">
+                <span class="resource-panel__eyebrow">Mensajes</span>
+                <h2 class="resource-overview-card__title">Lectura rápida</h2>
+                <div class="home-list mt-3">
+                    @foreach ($operationalMessages as $message)
+                        <article class="home-list__item">
+                            <div class="home-list__row">
+                                <p class="home-list__title">{{ $message['title'] }}</p>
+                                <span class="badge text-bg-{{ $message['tone'] }}">{{ $message['eyebrow'] }}</span>
+                            </div>
+                            <p class="home-list__subtitle">{{ $message['message'] }}</p>
+                        </article>
+                    @endforeach
+                </div>
+            </section>
         </div>
-
-        <p class="home-table__meta">Mostrando {{ $ordenes->count() }} resultados en la página actual.</p>
-
-        @if ($ordenes->hasPages())
-            <div class="mt-3">
-                {{ $ordenes->links('pagination::bootstrap-4') }}
-            </div>
-        @endif
-    </section>
-</div>
+    </div>
 @endsection

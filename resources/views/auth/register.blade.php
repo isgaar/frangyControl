@@ -32,7 +32,7 @@
                     @if ($errors->any())
                     <div class="alert alert-danger">
                         <strong>No pudimos completar el registro.</strong>
-                        <ul class="mb-0 mt-2 pl-3">
+                        <ul class="mb-0 mt-2 ps-3">
                             @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
                             @endforeach
@@ -48,7 +48,7 @@
                         @csrf
 
                         <div class="form-group mb-3">
-                            <label for="name">{{ __('Nombre') }}</label>
+                            <label for="name" class="form-label">{{ __('Nombre') }}</label>
                             <input id="name" type="text" name="name"
                                 class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
                                 required autocomplete="name" autofocus maxlength="60">
@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="email">{{ __('Correo Electrónico') }}</label>
+                            <label for="email" class="form-label">{{ __('Correo Electrónico') }}</label>
                             <input id="email" type="email" name="email"
                                 class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
                                 required autocomplete="email">
@@ -78,17 +78,15 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="password">{{ __('Contraseña') }}</label>
+                                    <label for="password" class="form-label">{{ __('Contraseña') }}</label>
                                     <div class="input-group">
                                         <input id="password" type="password" name="password"
                                             class="form-control @error('password') is-invalid @enderror" required
                                             autocomplete="new-password" minlength="8">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                data-toggle-password="password">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-toggle-password="password">
                                                 <i class="fa fa-eye"></i>
-                                            </button>
-                                        </div>
+                                        </button>
                                     </div>
                                     <small class="register-note">Debe tener al menos 8 caracteres.</small>
                                     <div class="invalid-feedback">Crea una contraseña de mínimo 8 caracteres.</div>
@@ -102,16 +100,14 @@
 
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="password-confirm">{{ __('Confirmar Contraseña') }}</label>
+                                    <label for="password-confirm" class="form-label">{{ __('Confirmar Contraseña') }}</label>
                                     <div class="input-group">
                                         <input id="password-confirm" type="password" name="password_confirmation"
                                             class="form-control" required autocomplete="new-password" minlength="8">
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button"
-                                                data-toggle-password="password-confirm">
+                                        <button class="btn btn-outline-secondary" type="button"
+                                            data-toggle-password="password-confirm">
                                                 <i class="fa fa-eye"></i>
-                                            </button>
-                                        </div>
+                                        </button>
                                     </div>
                                     <small class="register-note">Repite exactamente la contraseña para evitar errores de acceso.</small>
                                     <div class="invalid-feedback">Confirma la contraseña.</div>

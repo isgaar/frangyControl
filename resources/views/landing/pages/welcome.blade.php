@@ -6,6 +6,7 @@
         --landing-bg: #07131f;
         --landing-surface: rgba(7, 19, 31, 0.76);
         --landing-surface-soft: rgba(255, 255, 255, 0.06);
+        --landing-surface-elevated: rgba(7, 19, 31, 0.4);
         --landing-border: rgba(255, 255, 255, 0.12);
         --landing-text: #f8fafc;
         --landing-text-soft: rgba(226, 232, 240, 0.78);
@@ -13,6 +14,21 @@
         --landing-primary-strong: #0ea5e9;
         --landing-accent: #f59e0b;
         --landing-shadow: 0 30px 80px rgba(2, 6, 23, 0.38);
+        --landing-button-text: #04111f;
+    }
+
+    html[data-theme='light'] {
+        --landing-bg: #eef4ff;
+        --landing-surface: rgba(255, 255, 255, 0.9);
+        --landing-surface-soft: rgba(37, 99, 235, 0.06);
+        --landing-surface-elevated: rgba(255, 255, 255, 0.74);
+        --landing-border: rgba(148, 163, 184, 0.2);
+        --landing-text: #0f172a;
+        --landing-text-soft: #475569;
+        --landing-primary: #2563eb;
+        --landing-primary-strong: #1d4ed8;
+        --landing-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+        --landing-button-text: #ffffff;
     }
 
     body {
@@ -23,6 +39,14 @@
             radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 28%),
             radial-gradient(circle at bottom right, rgba(245, 158, 11, 0.16), transparent 26%),
             linear-gradient(135deg, rgba(7, 19, 31, 0.96), rgba(15, 23, 42, 0.92)),
+            url('{{ asset("fondos/image2.jpg") }}') center/cover fixed;
+    }
+
+    html[data-theme='light'] body {
+        background:
+            radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 28%),
+            radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.12), transparent 22%),
+            linear-gradient(180deg, rgba(238, 244, 255, 0.97), rgba(248, 250, 252, 0.99)),
             url('{{ asset("fondos/image2.jpg") }}') center/cover fixed;
     }
 
@@ -142,8 +166,8 @@
         gap: 0.55rem;
         padding: 0.55rem 0.95rem;
         border-radius: 999px;
-        background: rgba(7, 19, 31, 0.42);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--landing-surface-elevated);
+        border: 1px solid var(--landing-border);
         color: var(--landing-text);
         font-size: 0.88rem;
         font-weight: 800;
@@ -197,14 +221,14 @@
     }
 
     .landing-btn-primary {
-        color: #04111f;
+        color: var(--landing-button-text);
         background: linear-gradient(135deg, #7dd3fc, #fbbf24);
         box-shadow: 0 18px 34px rgba(14, 165, 233, 0.18);
     }
 
     .landing-btn-primary:hover,
     .landing-btn-primary:focus {
-        color: #04111f;
+        color: var(--landing-button-text);
         transform: translateY(-1px);
         box-shadow: 0 24px 40px rgba(14, 165, 233, 0.22);
     }
@@ -232,8 +256,8 @@
     .landing-badges span,
     .landing-mini-stat {
         border-radius: 999px;
-        background: rgba(7, 19, 31, 0.36);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--landing-surface-elevated);
+        border: 1px solid var(--landing-border);
     }
 
     .landing-badges span {
@@ -255,7 +279,7 @@
         gap: 0.9rem;
         padding: 1rem 1.1rem;
         border-radius: 22px;
-        background: rgba(7, 19, 31, 0.42);
+        background: var(--landing-surface-elevated);
     }
 
     .landing-feature-index {
@@ -316,8 +340,8 @@
         object-fit: contain;
         padding: 0.4rem;
         border-radius: 18px;
-        background: rgba(255, 255, 255, 0.08);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: var(--landing-surface-soft);
+        border: 1px solid var(--landing-border);
     }
 
     .landing-brand small {
@@ -377,8 +401,8 @@
     .landing-section-card {
         padding: 1.35rem;
         border-radius: 24px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: var(--landing-surface-elevated);
+        border: 1px solid var(--landing-border);
     }
 
     .landing-section-card h3 {
