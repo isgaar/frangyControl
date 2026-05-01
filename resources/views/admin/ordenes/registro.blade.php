@@ -754,7 +754,8 @@
                                         </div>
                                         <div class="order-mode-card__actions">
                                             <button type="button" class="btn btn-outline-dark btn-sm" id="abrirBuscadorCliente"
-                                                data-bs-toggle="modal" data-bs-target="#clienteSearchModal">
+                                                data-bs-toggle="modal" data-bs-target="#clienteSearchModal"
+                                                {{ $usingExistingClient ? '' : 'disabled' }}>
                                                 <i class="fas fa-search me-1"></i> Buscar cliente
                                             </button>
                                         </div>
@@ -1062,7 +1063,7 @@
                                     <option value="">Selecciona un empleado</option>
                                     @foreach ($users as $user)
                                     <option value="{{ $user->id }}"
-                                        {{ (string) old('user_id') === (string) $user->id ? 'selected' : '' }}>
+                                        {{ (string) old('user_id', $attendingUserId ?? '') === (string) $user->id ? 'selected' : '' }}>
                                         {{ $user->name }}
                                     </option>
                                     @endforeach
@@ -1308,6 +1309,7 @@
         var existingClientError = document.getElementById('clienteExistenteError');
         var duplicateHint = document.getElementById('clienteExistenteHint');
         var selectedClientSummary = document.getElementById('selectedClientSummary');
+        var openClientSearchButton = document.getElementById('abrirBuscadorCliente');
         var clientSearchModal = document.getElementById('clienteSearchModal');
         var clientSearchInput = document.getElementById('clienteSearchInput');
         var clientSearchResults = document.getElementById('clienteSearchResults');
@@ -1602,6 +1604,11 @@
 
             existingClientBox.classList.toggle('d-none', !usingExistingClient);
             existingClientSelect.required = false;
+
+            if (openClientSearchButton) {
+                openClientSearchButton.disabled = !usingExistingClient;
+                openClientSearchButton.setAttribute('aria-disabled', usingExistingClient ? 'false' : 'true');
+            }
 
             ['nombreCompleto', 'telefono', 'correo', 'rfc'].forEach(function (key) {
                 fields[key].readOnly = usingExistingClient;

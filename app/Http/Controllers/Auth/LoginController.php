@@ -39,6 +39,9 @@ class LoginController extends Controller
 
         // Intentar autenticar al usuario con las credenciales proporcionadas
         if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
+            $request->session()->put('last_activity_at', now()->timestamp);
+
             // Si las credenciales son válidas, redireccionar al destino previsto (generalmente la página de inicio)
             return redirect()->intended($this->redirectTo);
         } else {
@@ -49,5 +52,4 @@ class LoginController extends Controller
         }
     }
 }
-
 

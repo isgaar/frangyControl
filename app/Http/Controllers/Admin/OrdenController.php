@@ -38,11 +38,10 @@ class OrdenController extends Controller
         $query = Ordenes::query()->with(['cliente', 'vehiculo', 'servicio', 'user']);
 
         if (trim($search) != '') {
-            $query->where(function ($query) use ($search) {
+            $matchingClientIds = Cliente::matchingSearchIds($search);
+
+            $query->where(function ($query) use ($search, $matchingClientIds) {
                 $query->where('id_ordenes', 'like', "%$search%")
-                    ->orWhereHas('cliente', function ($query) use ($search) {
-                        $query->where('nombreCompleto', 'like', "%$search%");
-                    })
                     ->orWhereHas('vehiculo', function ($query) use ($search) {
                         $query->where('marca', 'like', "%$search%");
                     })
@@ -53,6 +52,10 @@ class OrdenController extends Controller
                     ->orWhereHas('user', function ($query) use ($search) {
                         $query->where('name', 'like', "%$search%");
                     });
+
+                if ($matchingClientIds->isNotEmpty()) {
+                    $query->orWhereIn('cliente_id', $matchingClientIds->all());
+                }
             });
         }
 
@@ -87,7 +90,7 @@ class OrdenController extends Controller
     public function verificarNombreUsuario(Request $request)
     {
         $nombreCompleto = trim((string) $request->input('nombreCompleto'));
-        $exists = $nombreCompleto !== '' && Cliente::where('nombreCompleto', $nombreCompleto)->exists();
+        $exists = $nombreCompleto !== '' && Cliente::existsWithSensitiveValue('nombreCompleto', $nombreCompleto);
 
         return response()->json(['exists' => $exists]);
     }
@@ -106,7 +109,10 @@ class OrdenController extends Controller
 
     public function store(Request $request)
     {
-        $request->merge($this->normalizedOrderInput($request));
+        $request->merge(array_merge(
+            $this->normalizedOrderInput($request),
+            ['user_id' => $request->input('user_id') ?: $request->user()?->id]
+        ));
 
         $validated = $request->validate(
             $this->orderValidationRules($request->boolean('usar_cliente_existente')),
@@ -246,8 +252,9 @@ class OrdenController extends Controller
         return response()->json(
             Cliente::query()
                 ->select(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
-                ->orderBy('nombreCompleto')
                 ->get()
+                ->sortBy(fn (Cliente $cliente) => mb_strtolower($cliente->nombreCompleto))
+                ->values()
         );
     }
 
@@ -294,6 +301,23 @@ class OrdenController extends Controller
 
     private function registroCatalogos(): array
     {
+        $authUser = auth()->user();
+        $users = Cache::remember('catalogos.ordenes.users', now()->addMinutes(10), function () {
+            return User::query()
+                ->select(['id', 'name'])
+                ->where('id', '!=', 1)
+                ->orderBy('name')
+                ->get();
+        });
+
+        if ($authUser) {
+            $users = $users
+                ->reject(fn ($user) => (int) $user->id === (int) $authUser->id)
+                ->push($authUser)
+                ->sortBy('name')
+                ->values();
+        }
+
         return [
             'datosVehiculo' => Cache::remember('catalogos.ordenes.vehiculos', now()->addMinutes(10), function () {
                 return DatosVehiculo::query()
@@ -313,19 +337,13 @@ class OrdenController extends Controller
                     ->orderBy('nombreServicio')
                     ->get();
             }),
-            'users' => Cache::remember('catalogos.ordenes.users', now()->addMinutes(10), function () {
-                return User::query()
-                    ->select(['id', 'name'])
-                    ->where('id', '!=', 1)
-                    ->orderBy('name')
-                    ->get();
-            }),
+            'users' => $users,
+            'attendingUserId' => $authUser?->id,
             'clientes' => Cache::remember('catalogos.ordenes.clientes', now()->addMinutes(10), function () {
                 return Cliente::query()
                     ->select(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
-                    ->orderBy('nombreCompleto')
                     ->get();
-            }),
+            })->sortBy(fn (Cliente $cliente) => mb_strtolower($cliente->nombreCompleto))->values(),
         ];
     }
 
@@ -356,10 +374,10 @@ class OrdenController extends Controller
         return [
             'usar_cliente_existente' => ['nullable', 'boolean'],
             'cliente_existente_id' => [$usingExistingClient ? 'required' : 'nullable', 'exists:clientes,id_cliente'],
-            'nombreCompleto' => $usingExistingClient ? ['nullable'] : ['required', 'string', 'max:100', Rule::unique('clientes', 'nombreCompleto')],
-            'telefono' => $usingExistingClient ? ['nullable'] : ['required', 'digits:10', Rule::unique('clientes', 'telefono')],
-            'correo' => $usingExistingClient ? ['nullable'] : ['required', 'email', 'max:30', Rule::unique('clientes', 'correo')],
-            'rfc' => $usingExistingClient ? ['nullable'] : ['required', 'string', 'min:12', 'max:13', Rule::unique('clientes', 'rfc')],
+            'nombreCompleto' => $usingExistingClient ? ['nullable'] : ['required', 'string', 'max:100', $this->uniqueClientValueRule('nombreCompleto', 'Ese cliente ya existe. Usa la opción de cliente registrado.')],
+            'telefono' => $usingExistingClient ? ['nullable'] : ['required', 'digits:10', $this->uniqueClientValueRule('telefono', 'Ese teléfono ya está registrado.')],
+            'correo' => $usingExistingClient ? ['nullable'] : ['required', 'email', 'max:30', $this->uniqueClientValueRule('correo', 'Ese correo electrónico ya está registrado.')],
+            'rfc' => $usingExistingClient ? ['nullable'] : ['required', 'string', 'min:12', 'max:13', $this->uniqueClientValueRule('rfc', 'Ese RFC ya está registrado.')],
             'vehiculo_id' => ['required', 'exists:datos_vehiculo,id_vehiculo'],
             'tvehiculo_id' => ['required', 'exists:tipo_vehiculo,id_tvehiculo'],
             'servicio_id' => ['required', 'exists:tipo_servicio,id_servicio'],
@@ -428,6 +446,15 @@ class OrdenController extends Controller
             'photos.*.mimes' => 'Las fotografías deben estar en formato JPG o PNG.',
             'photos.*.max' => 'Cada fotografía puede pesar hasta 2 MB.',
         ];
+    }
+
+    private function uniqueClientValueRule(string $field, string $message): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($field, $message): void {
+            if (Cliente::existsWithSensitiveValue($field, (string) $value)) {
+                $fail($message);
+            }
+        };
     }
 
     private function orderValidationAttributes(): array
@@ -681,6 +708,7 @@ class OrdenController extends Controller
             $cliente->correo = $request->input('correo');
             $cliente->rfc = $request->input('rfc');
             $cliente->save(); // Guarda los cambios en la tabla 'clientes'
+            Cache::forget('catalogos.ordenes.clientes');
 
             $orden->save(); // Guarda los cambios en la tabla 'ordenes'
 

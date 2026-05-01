@@ -31,11 +31,7 @@ class AuthController extends Controller
         //Nos guardamos el usuario y la contraseña para realizar la petición de token a JWTAuth
         $credentials = $request->only('email', 'password');
         //Devolvemos la respuesta con el token del usuario
-        return response()->json([
-            'message' => '¡El usuario ha sido exitosamente creado!',
-            'token' => JWTAuth::attempt($credentials),
-            'user' => $user
-        ], Response::HTTP_OK);
+        return $this->respondWithToken(JWTAuth::attempt($credentials), $user, '¡El usuario ha sido exitosamente creado!');
     }
     //Funcion que utilizaremos para hacer login
     public function authenticate(Request $request)
@@ -66,10 +62,7 @@ class AuthController extends Controller
             ], 500);
         }
         //Devolvemos el token
-        return response()->json([
-            'token' => $token,
-            'user' => Auth::user()
-        ]);
+        return $this->respondWithToken($token, Auth::user());
     }
     public function logout(Request $request)
     {
@@ -108,5 +101,16 @@ class AuthController extends Controller
             ], 401);
         //Devolvemos los datos del usuario si todo va bien. 
         return response()->json(['user' => $user]);
+    }
+
+    private function respondWithToken(string $token, User $user, ?string $message = null)
+    {
+        return response()->json(array_filter([
+            'message' => $message,
+            'token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => config('jwt.ttl', 60) * 60,
+            'user' => $user,
+        ]), Response::HTTP_OK);
     }
 }

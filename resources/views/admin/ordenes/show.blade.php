@@ -15,363 +15,226 @@
     </div>
 </div>
 @endif
-
 @stop
 
 @section('content')
-<style>
-.form-control[disabled] {
-    opacity: 9.7;
-    cursor: not-allowed;
-}
+@php
+    $cliente = $orden->cliente;
+    $fechaEntrega = $orden->fechaEntrega
+        ? \Carbon\Carbon::parse($orden->fechaEntrega)->format('d/m/Y')
+        : 'Sin fecha';
+    $statusTone = match ($orden->status) {
+        'finalizada' => 'success',
+        'cancelada' => 'danger',
+        default => 'info',
+    };
 
-.order-photo-gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: .75rem;
-    margin-top: 1rem;
-}
+    $clientFields = [
+        ['label' => 'Nombre completo', 'value' => $cliente?->nombreCompleto ?? 'Sin cliente'],
+        ['label' => 'Teléfono', 'value' => $cliente?->telefono ?? 'Sin teléfono'],
+        ['label' => 'Correo electrónico', 'value' => $cliente?->correo ?? 'Sin correo'],
+        ['label' => 'RFC', 'value' => $cliente?->rfc ?: 'Sin RFC'],
+    ];
 
-.order-photo-gallery__item {
-    border: 1px solid var(--dashboard-border);
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--dashboard-surface-soft);
-}
+    $vehicleFields = [
+        ['label' => 'Marca', 'value' => $orden->vehiculo?->marca ?? 'Sin marca'],
+        ['label' => 'Tipo de vehículo', 'value' => $orden->tipoVehiculo?->tipo ?? 'Sin tipo'],
+        ['label' => 'Línea', 'value' => $orden->modelo ?: 'Sin línea'],
+        ['label' => 'Año', 'value' => $orden->yearVehiculo ?: 'Sin año'],
+        ['label' => 'Color', 'value' => $orden->color ?: 'Sin color'],
+        ['label' => 'Placas', 'value' => $orden->placas ?: 'Sin placas'],
+        ['label' => 'Kilometraje', 'value' => $orden->kilometraje ? $orden->kilometraje . ' km' : 'Sin kilometraje'],
+        ['label' => 'Motor', 'value' => $orden->motor ?: 'Sin motor'],
+        ['label' => 'Cilindros', 'value' => $orden->cilindros ?: 'Sin dato'],
+        ['label' => 'No. serie', 'value' => $orden->noSerievehiculo ?: 'Sin serie'],
+    ];
 
-.order-photo-gallery__item img {
-    display: block;
-    width: 100%;
-    height: 130px;
-    object-fit: cover;
-}
-</style>
+    $orderFields = [
+        ['label' => 'Tipo de servicio', 'value' => $orden->servicio?->nombreServicio ?? 'Sin servicio'],
+        ['label' => 'Atiende', 'value' => $orden->user?->name ?? 'Sin responsable'],
+        ['label' => 'Refacciones', 'value' => $orden->retiroRefacciones ? 'Retiró refacciones' : 'No retiró refacciones'],
+        ['label' => 'Fecha de entrega', 'value' => $fechaEntrega],
+        ['label' => 'Estado', 'value' => ucfirst($orden->status ?? 'sin estado'), 'tone' => $statusTone],
+    ];
 
-<div class="resource-page">
+    if (!is_null($orden->motivo)) {
+        $orderFields[] = ['label' => 'Motivo', 'value' => $orden->motivo];
+    }
+
+    $notes = [
+        ['label' => 'Observaciones internas', 'value' => $orden->observacionesInt ?: 'Sin observaciones internas.'],
+        ['label' => 'Recomendaciones del cliente', 'value' => $orden->recomendacionesCliente ?: 'Sin recomendaciones.'],
+        ['label' => 'Detalles del servicio', 'value' => $orden->detallesOrden ?: 'Sin detalles.'],
+    ];
+@endphp
+
+<div class="resource-page order-detail-page">
     <section class="resource-hero">
         <div class="resource-hero__top">
             <div class="resource-hero__copy">
                 <span class="resource-hero__eyebrow">Órdenes</span>
                 <h1 class="resource-hero__title">Detalle de la orden #{{ $orden->id_ordenes }}</h1>
-                <p>Consulta cliente, unidad, servicio, estado y acciones rápidas desde una vista más clara.</p>
+                <p>Consulta cliente, unidad, servicio, estado y evidencia fotográfica desde una vista limpia.</p>
             </div>
 
             <div class="resource-hero__actions">
                 <a href="{{ route('ordenes.edit', $orden->id_ordenes) }}" class="btn btn-primary">
                     <i class="fas fa-pen me-1"></i> Editar orden
                 </a>
+                <a href="{{ route('ordenes.export', $orden->id_ordenes) }}" class="btn btn-outline-dark">
+                    <i class="fas fa-file-pdf me-1"></i> Exportar PDF
+                </a>
                 <a href="{{ route('ordenes.index') }}" class="btn btn-outline-light">
-                    <i class="fas fa-arrow-left me-1"></i> Volver al listado
+                    <i class="fas fa-arrow-left me-1"></i> Volver
                 </a>
             </div>
         </div>
+
+        <div class="resource-metrics">
+            <article class="resource-metric">
+                <span class="resource-metric__label">Estado</span>
+                <p class="resource-metric__value order-metric-status order-metric-status--{{ $statusTone }}">
+                    {{ ucfirst($orden->status ?? 'sin estado') }}
+                </p>
+                <p class="resource-metric__copy">Seguimiento actual de la orden.</p>
+            </article>
+            <article class="resource-metric">
+                <span class="resource-metric__label">Entrega</span>
+                <p class="resource-metric__value">{{ $fechaEntrega }}</p>
+                <p class="resource-metric__copy">Fecha comprometida con el cliente.</p>
+            </article>
+            <article class="resource-metric">
+                <span class="resource-metric__label">Evidencia</span>
+                <p class="resource-metric__value">{{ $orden->fotografias->count() }}</p>
+                <p class="resource-metric__copy">Fotografia(s) cargadas.</p>
+            </article>
+        </div>
     </section>
 
-<div class="card">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card card-primary">
-                <div class="card-header bg-danger">
-                    <h3 class="card-title">Información del cliente</h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <label for="nombreCompleto">Nombre completo</label>
-                        <input type="text" name="nombreCompleto" class="form-control"
-                            value="{{ $orden->cliente->nombreCompleto }}" disabled>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="text" name="telefono" class="form-control" value="{{ $orden->cliente->telefono }}"
-                            disabled>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="correo">Correo electrónico</label>
-                        <input type="text" name="correo" class="form-control" value="{{ $orden->cliente->correo }}"
-                            disabled>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="correo">RFC</label>
-                        <input type="text" name="rfc" class="form-control" value="{{ $orden->cliente->rfc }}" disabled>
-                    </div>
-
-
+    <div class="order-detail-grid">
+        <section class="resource-panel">
+            <div class="resource-panel__header">
+                <div>
+                    <span class="resource-panel__eyebrow">Cliente</span>
+                    <h2 class="resource-panel__title">Información del cliente</h2>
+                    <p class="resource-panel__copy">Datos de contacto asociados a esta orden.</p>
                 </div>
             </div>
-        </div>
 
-        <div class="col-md-6">
-            <div class="card card-primary">
-                <div class="card-header bg-danger">
-                    <h3 class="card-title">Datos de la unidad</h3>
+            <div class="order-readonly-grid mt-4">
+                @foreach ($clientFields as $field)
+                <div class="order-readonly-field">
+                    <span>{{ $field['label'] }}</span>
+                    <strong>{{ $field['value'] }}</strong>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <div class="form-group">
+                @endforeach
+            </div>
+        </section>
 
-                                    <label for="vehiculo_id">Marca</label>
-                                    <select name="vehiculo_id" class="form-control" id="vehiculo_id" disabled>
-
-                                        @foreach ($datosVehiculo as $vehiculo)
-                                        <option value="{{ $vehiculo->id_vehiculo }}">{{ $orden->vehiculo->marca }}
-                                        </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                            </div>
-                            <div class="form-group">
-                                <label for="tvehiculo_id">Tipo de Vehículo</label>
-                                <select name="tvehiculo_id" class="form-control" id="tvehiculo_id" disabled>
-                                    @foreach ($tiposVehiculo as $tipoVehiculo)
-                                    <option value="{{ $tipoVehiculo->id_tvehiculo }}">{{ $orden->tipoVehiculo->tipo }}
-                                    </option>
-                                    @endforeach
-                                </select>
-
-                            </div>
-                            <div class="form-group">
-                                <label for="motor">Línea</label>
-                                {!! Form::text('modelo', $orden->modelo, ['class' => 'form-control', 'id' => 'modelo',
-                                'disabled']) !!}
-
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="yearVehiculo">Año</label>
-                                {!! Form::text('yearVehiculo', $orden->yearVehiculo, ['class' => 'form-control', 'id' =>
-                                'yearVehiculo',
-                                'disabled']) !!}
-                            </div>
-                            <div class="form-group">
-                                <label for="color">Color</label>
-                                {!! Form::text('color', $orden->color, ['class' => 'form-control', 'id' => 'color',
-                                'disabled']) !!}
-                            </div>
-                            <div class="form-group">
-                                <label for="placas">Placas</label>
-                                {!! Form::text('placas', $orden->placas, ['class' => 'form-control', 'id' => 'placas',
-                                'disabled']) !!}
-                                @error('placas')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-                                <label for="kilometraje">Kilometraje</label>
-
-                                <div class="input-group">
-                                    {!! Form::text('kilometraje', $orden->kilometraje, ['class' => 'form-control', 'id'
-                                    =>
-                                    'kilometraje', 'disabled']) !!}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">Km</span>
-                                    </div>
-                                </div>
-                                @error('kilometraje')
-                                <span class="text-danger">{{ $message }}</span>
-                                @enderror
-                            </div>
-
-                            <div class="form-group">
-                                <label for="motor">Motor</label>
-                                {!! Form::text('motor', $orden->motor, ['class' => 'form-control', 'id' => 'motor',
-                                'disabled']) !!}
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-
-                            <div class="form-group">
-
-                                <div class="form-group">
-                                    <label for="cilindros">Cilindros</label>
-                                    {!! Form::text('cilindros', $orden->cilindros, ['class' => 'form-control', 'id' =>
-                                    'cilindros', 'disabled']) !!}
-
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="numSerie">No. Serie</label>
-                                    {!! Form::text('noSerievehiculo', $orden->noSerievehiculo, ['class' =>
-                                    'form-control', 'id' =>
-                                    'noSerievehiculo', 'disabled']) !!}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <section class="resource-panel">
+            <div class="resource-panel__header">
+                <div>
+                    <span class="resource-panel__eyebrow">Unidad</span>
+                    <h2 class="resource-panel__title">Datos del vehículo</h2>
+                    <p class="resource-panel__copy">Identificación y características de la unidad recibida.</p>
                 </div>
             </div>
-        </div>
+
+            <div class="order-readonly-grid mt-4">
+                @foreach ($vehicleFields as $field)
+                <div class="order-readonly-field">
+                    <span>{{ $field['label'] }}</span>
+                    <strong>{{ $field['value'] }}</strong>
+                </div>
+                @endforeach
+            </div>
+        </section>
     </div>
 
-    <div class="row justify-content-center mt-4">
-        <div class="col-md-12">
-            <div class="card card-primary">
-                <div class="card-header bg-danger">
-                    <h3 class="card-title">Datos de la orden #{{$orden->id_ordenes}}
-                    </h3>
-                </div>
-                <div class="card-body">
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="servicio_id">Tipo de Servicio</label>
-                                    <select name="servicio_id" class="form-control" id="servicio_id" disabled>
-                                        @foreach ($tiposServicio as $tipoServicio)
-                                        <option value="{{ $tipoServicio->id_servicio }}">
-                                            {{  $orden->servicio->nombreServicio }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+    <section class="resource-panel">
+        <div class="resource-panel__header">
+            <div>
+                <span class="resource-panel__eyebrow">Servicio</span>
+                <h2 class="resource-panel__title">Datos de la orden</h2>
+                <p class="resource-panel__copy">Responsable, estado, fechas y notas operativas del servicio.</p>
+            </div>
+        </div>
 
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="user_id">Atiende</label>
-                                    <select name="user_id" class="form-control" id="user_id" disabled>
-                                        @foreach ($users as $user)
-                                        <option value="{{ $user->id }}">{{ $orden->user->name }}</option>
-                                        @endforeach
-                                    </select>
+        <div class="order-readonly-grid mt-4">
+            @foreach ($orderFields as $field)
+            <div class="order-readonly-field">
+                <span>{{ $field['label'] }}</span>
+                @if (!empty($field['tone']))
+                <strong class="order-status-pill order-status-pill--{{ $field['tone'] }}">{{ $field['value'] }}</strong>
+                @else
+                <strong>{{ $field['value'] }}</strong>
+                @endif
+            </div>
+            @endforeach
+            <div class="order-readonly-field order-readonly-field--check">
+                <span>Autorizacion</span>
+                <strong><i class="fas fa-check-circle me-1"></i> El cliente acepto</strong>
+            </div>
+        </div>
 
-                                </div>
-                            </div>
-                        </div>
+        <div class="order-note-grid mt-4">
+            @foreach ($notes as $note)
+            <div class="order-note-box">
+                <span>{{ $note['label'] }}</span>
+                <p>{{ $note['value'] }}</p>
+            </div>
+            @endforeach
+        </div>
+    </section>
 
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="observacionesInt">Observaciones internas (Recepción)</label>
-                                    {!! Form::textarea('observacionesInt', $orden->observacionesInt, ['class' =>
-                                    'form-control', 'id' =>
-                                    'observacionesInt', 'disabled']) !!}
-                                </div>
+    <section class="resource-panel">
+        <div class="resource-panel__header">
+            <div>
+                <span class="resource-panel__eyebrow">Evidencia</span>
+                <h2 class="resource-panel__title">Evidencia fotografica</h2>
+                <p class="resource-panel__copy">Imágenes cargadas para documentar la recepción o el estado de la unidad.</p>
+            </div>
+        </div>
 
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="recomendacionesCliente">Recomendaciones del cliente</label>
-                                    {!! Form::textarea('recomendacionesCliente', $orden->recomendacionesCliente,
-                                    ['class' => 'form-control', 'id'
-                                    => 'recomendacionesCliente', 'disabled']) !!}
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label for="detallesOrden">Detalles del servicio</label>
-                                    {!! Form::textarea('detallesOrden', $orden->detallesOrden, ['class' =>
-                                    'form-control', 'id' =>
-                                    'detallesOrden', 'disabled']) !!}
-                                </div>
-                            </div>
-                        </div>
+        @if ($orden->fotografias->isNotEmpty())
+        <div class="order-photo-gallery mt-4">
+            @foreach ($orden->fotografias as $index => $fotografia)
+            <a class="order-photo-card"
+                href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
+                target="_blank" rel="noopener">
+                <span class="order-photo-card__media">
+                    <img src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
+                        alt="Fotografia de evidencia {{ $index + 1 }} de la orden {{ $orden->id_ordenes }}">
+                </span>
+                <span class="order-photo-card__footer">
+                    <span>
+                        <strong>Evidencia {{ $index + 1 }}</strong>
+                        <small>Click para abrir en tamaño completo</small>
+                    </span>
+                    <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                </span>
+            </a>
+            @endforeach
+        </div>
+        @else
+        <div class="resource-empty mt-4">
+            Esta orden todavía no tiene fotografías cargadas.
+        </div>
+        @endif
+    </section>
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="retiroRefacciones">Refacciones</label>
-                                    {!! Form::select('retiroRefacciones', [false => 'No retiró', true => 'Retiró'],
-                                    $orden->retiroRefacciones ? true : false, ['class' => 'form-control', 'id' =>
-                                    'retiroRefacciones', 'disabled']) !!}
-
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fechaEntrega">Fecha de entrega</label>
-                                    <?php
-                                    $fechaEntrega = \Carbon\Carbon::createFromFormat('Y-m-d', $orden->fechaEntrega)->format('d/m/Y');
-                                    ?>
-                                    {!! Form::text('fechaEntrega', $fechaEntrega, ['class' => 'form-control', 'id' =>
-                                    'fechaEntrega', 'disabled']) !!}
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="status">Estado</label>
-                                    <select name="status" class="form-control" disabled>
-                                        <option value="en proceso"
-                                            {{ $orden->status == 'en proceso' ? 'selected' : '' }}>En proceso</option>
-                                        <option value="cancelada" {{ $orden->status == 'cancelada' ? 'selected' : '' }}>
-                                            Cancelada</option>
-                                        <option value="finalizada"
-                                            {{ $orden->status == 'finalizada' ? 'selected' : '' }}>Finalizada</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6 {{ !is_null($orden->motivo) ? '' : 'dashboard-hidden' }}" id="motivo-field">
-                                <div class="form-group">
-                                    <label for="motivo">Motivo</label>
-                                    {!! Form::text('motivo',  $orden->motivo, ['class' => 'form-control', 'id' => 'motivo',
-                                    'disabled' => true]) !!}
-                                    @error('motivo')
-                                    <span class="text-danger">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-
-
-                        </div>
-                        <div class="form-group">
-                            <input type="checkbox" id="myCheckbox" disabled checked>
-                            <label for="myCheckbox">El cliente aceptó</label>
-                        </div>
-
-                        @if ($orden->fotografias->isNotEmpty())
-                        <div class="form-group">
-                            <label>Evidencia fotográfica</label>
-                            <div class="order-photo-gallery">
-                                @foreach ($orden->fotografias as $fotografia)
-                                <a class="order-photo-gallery__item"
-                                    href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
-                                    target="_blank" rel="noopener">
-                                    <img src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
-                                        alt="Fotografía de evidencia de la orden">
-                                </a>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
-
-                    </div>
-                </div>
-
-                <div class="card-footer text-center">
-                    <div class="d-flex justify-content-between">
-                        <a type="button" href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                        <button type="button" class="btn btn-warning"
-                            onclick="window.location.href = '{{ route('ordenes.edit', ['id_ordenes' => $orden->id_ordenes]) }}'">
-                            <i class="fas fa-undo-alt"></i> Editar o actualizar esta orden
-                        </button>
-
-                        <button type="button" class="btn btn-info"
-                            onclick="window.location.href = '{{ route('ordenes.export', ['id_ordenes' => $orden->id_ordenes]) }}'">
-                            <i class="fas fa-file-pdf"></i>Exportar a PDF
-                        </button>
-
-                    </div>
-                </div>
-                </div>
-                @stop
-
-                @section('js')
-                <script src="{{ asset('js/validatorFields.js') }}">
-
-                </script>
-                @endsection
+    <section class="resource-panel">
+        <div class="resource-footer-actions justify-content-end">
+            <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">
+                <i class="fas fa-arrow-left me-1"></i> Retroceder
+            </a>
+            <a href="{{ route('ordenes.edit', $orden->id_ordenes) }}" class="btn btn-primary">
+                <i class="fas fa-pen me-1"></i> Editar o actualizar
+            </a>
+            <a href="{{ route('ordenes.export', $orden->id_ordenes) }}" class="btn btn-outline-dark">
+                <i class="fas fa-file-pdf me-1"></i> Exportar a PDF
+            </a>
+        </div>
+    </section>
+</div>
+@endsection

@@ -39,11 +39,10 @@ class HomeController extends Controller
         $query = Ordenes::query()->with(['cliente', 'vehiculo', 'servicio', 'user']);
 
         if (trim($search) !== '') {
-            $query->where(function ($query) use ($search) {
+            $matchingClientIds = Cliente::matchingSearchIds($search);
+
+            $query->where(function ($query) use ($search, $matchingClientIds) {
                 $query->where('id_ordenes', 'like', "%$search%")
-                    ->orWhereHas('cliente', function ($query) use ($search) {
-                        $query->where('nombreCompleto', 'like', "%$search%");
-                    })
                     ->orWhereHas('vehiculo', function ($query) use ($search) {
                         $query->where('marca', 'like', "%$search%");
                     })
@@ -54,6 +53,10 @@ class HomeController extends Controller
                     ->orWhereHas('user', function ($query) use ($search) {
                         $query->where('name', 'like', "%$search%");
                     });
+
+                if ($matchingClientIds->isNotEmpty()) {
+                    $query->orWhereIn('cliente_id', $matchingClientIds->all());
+                }
             });
         }
 
