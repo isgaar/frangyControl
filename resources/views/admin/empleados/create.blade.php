@@ -1,5 +1,7 @@
 @extends('layouts.dashboard')
 
+@section('title', 'Registrar usuario')
+
 @section('content_header')
 @if (Session::has('status'))
 <div class="col-md-12 alert-section">
@@ -17,23 +19,69 @@
 
 @section('content')
 <style>
-    .register-user-panel {
-        border-radius: 14px;
-        border: 1px solid rgba(13, 110, 253, 0.12);
-        box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+    .user-form-grid {
+        display: grid;
+        gap: 1rem;
     }
 
-    .register-user-panel .card-header {
-        border-bottom: 0;
+    .user-form-grid--split {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     }
 
+    .access-note {
+        display: flex;
+        align-items: flex-start;
+        gap: .75rem;
+        padding: 1rem;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 12px;
+        background: var(--dashboard-surface-soft);
+        color: var(--dashboard-text);
+    }
+
+    .access-note__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: var(--dashboard-primary-soft);
+        color: var(--dashboard-primary);
+    }
+
+    .access-note__title {
+        margin: 0;
+        font-weight: 800;
+    }
+
+    .access-note__copy,
     .helper-copy {
-        font-size: 0.88rem;
-        color: #6c757d;
+        color: var(--dashboard-muted);
+        font-size: .88rem;
+    }
+
+    .access-note__copy {
+        margin: .2rem 0 0;
     }
 
     .password-check {
-        font-size: 0.88rem;
+        color: var(--dashboard-muted);
+        font-size: .88rem;
+        min-height: 1.25rem;
+    }
+
+    .password-check.text-success {
+        color: var(--bs-success) !important;
+    }
+
+    .password-check.text-danger {
+        color: var(--bs-danger) !important;
+    }
+
+    .password-toggle {
+        min-width: 44px;
     }
 </style>
 
@@ -48,141 +96,151 @@
 </div>
 @endif
 
-<div class="card-body px-0">
-    <div class="row">
-        <div class="col-lg-8">
-            <div class="card card-primary register-user-panel">
-                <div class="card-header bg-info">
-                    <h3 class="card-title mb-0">Registrar usuario</h3>
+<div class="resource-page">
+    <section class="resource-hero">
+        <div class="resource-hero__top">
+            <div class="resource-hero__copy">
+                <span class="resource-hero__eyebrow">Accesos y permisos</span>
+                <h1 class="resource-hero__title">Registrar usuario</h1>
+                <p>Crea una cuenta para el equipo y asigna el rol correcto dentro del panel administrativo.</p>
+            </div>
+
+            <div class="resource-hero__actions">
+                <a href="{{ route('usuarios.index') }}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left me-1"></i> Volver a usuarios
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="resource-form-layout">
+        <section class="resource-form-card">
+            <div class="resource-form-card__header">
+                <div>
+                    <span class="resource-form-card__eyebrow">Formulario</span>
+                    <h2 class="resource-form-card__title">Datos de acceso</h2>
+                    <p class="resource-form-card__copy">Completa el perfil, rol y contraseña inicial del nuevo usuario.</p>
                 </div>
+            </div>
 
-                <form method="POST" action="{{ route('usuarios.store') }}" id="adminUserCreateForm" novalidate>
-                    @csrf
+            <form method="POST" action="{{ route('usuarios.store') }}" id="adminUserCreateForm" novalidate>
+                @csrf
 
-                    <div class="card-body">
-                        <div class="alert alert-light border">
-                            Completa los datos básicos del usuario, asigna un rol y confirma la contraseña antes de
-                            guardar.
-                        </div>
-
-                        <div class="form-group">
-                            <label for="name" class="form-label">Nombre del usuario</label>
-                            <input type="text" name="name" id="name"
-                                class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
-                                maxlength="40" autocomplete="name" required>
-                            <small class="helper-copy">Usa el nombre y apellido del empleado, tal como quedará en el
-                                panel.</small>
-                            <div class="invalid-feedback">Escribe el nombre completo del usuario.</div>
-                            @error('name')
-                            <span class="text-danger d-block mt-1">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="email" class="form-label">Correo electrónico</label>
-                            <input type="email" name="email" id="email"
-                                class="form-control @error('email') is-invalid @enderror"
-                                value="{{ old('email') }}" autocomplete="email" required>
-                            <small class="helper-copy">Este correo se usará para iniciar sesión y recuperar acceso si
-                                hace falta.</small>
-                            <div class="invalid-feedback">Ingresa un correo válido, por ejemplo:
-                                usuario@dominio.com.</div>
-                            @error('email')
-                            <span class="text-danger d-block mt-1">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <label for="roles" class="form-label">Rol del usuario</label>
-                            <select name="roles" id="roles" class="form-select @error('roles') is-invalid @enderror"
-                                required>
-                                <option value="">Seleccione un rol</option>
-                                @foreach ($roles as $role)
-                                <option value="{{ $role->id }}" {{ (string) old('roles') === (string) $role->id ? 'selected' : '' }}>
-                                    {{ $role->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                            <small class="helper-copy">El rol define qué módulos puede ver y administrar el
-                                usuario.</small>
-                            <div class="invalid-feedback">Selecciona un rol para continuar.</div>
-                            @error('roles')
-                            <span class="text-danger d-block mt-1">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="password" class="form-label">Contraseña</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password" id="password"
-                                            class="form-control @error('password') is-invalid @enderror" required
-                                            minlength="8" autocomplete="new-password">
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            data-toggle-password="password">
-                                                <i class="fa fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    <small class="helper-copy">Debe tener al menos 8 caracteres.</small>
-                                    <div class="invalid-feedback">Escribe una contraseña de mínimo 8
-                                        caracteres.</div>
-                                    <div id="passwordStrength" class="password-check mt-2 text-muted">
-                                        La contraseña aún no cumple el mínimo recomendado.
-                                    </div>
-                                    @error('password')
-                                    <span class="text-danger d-block mt-1">{{ $message }}</span>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
-                                    <div class="input-group">
-                                        <input type="password" name="password_confirmation" id="password_confirmation"
-                                            class="form-control" required minlength="8"
-                                            autocomplete="new-password">
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            data-toggle-password="password_confirmation">
-                                                <i class="fa fa-eye"></i>
-                                        </button>
-                                    </div>
-                                    <small class="helper-copy">Repite exactamente la misma contraseña.</small>
-                                    <div class="invalid-feedback">Confirma la contraseña del usuario.</div>
-                                    <div id="passwordMatch" class="password-check mt-2 text-muted">
-                                        La confirmación debe coincidir para habilitar un alta segura.
-                                    </div>
-                                </div>
-                            </div>
+                <div class="user-form-grid mt-4">
+                    <div class="access-note">
+                        <span class="access-note__icon" aria-hidden="true">
+                            <i class="fas fa-user-shield"></i>
+                        </span>
+                        <div>
+                            <p class="access-note__title">Alta administrativa</p>
+                            <p class="access-note__copy">Usa un correo vigente y un rol acorde con las actividades reales del usuario.</p>
                         </div>
                     </div>
 
-                    <div class="card-footer text-center">
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                            <button type="submit" class="btn btn-success" id="userSubmitButton">
-                                Guardar usuario
-                            </button>
+                    <div class="form-group mb-0">
+                        <label for="name" class="form-label">Nombre del usuario</label>
+                        <input type="text" name="name" id="name"
+                            class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}"
+                            maxlength="40" autocomplete="name" required>
+                        <small class="helper-copy">Nombre y apellido como aparecerán en el panel.</small>
+                        <div class="invalid-feedback">Escribe el nombre completo del usuario.</div>
+                        @error('name')
+                        <span class="text-danger d-block mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="email" class="form-label">Correo electrónico</label>
+                        <input type="email" name="email" id="email"
+                            class="form-control @error('email') is-invalid @enderror"
+                            value="{{ old('email') }}" autocomplete="email" required>
+                        <small class="helper-copy">Correo que usará para iniciar sesión.</small>
+                        <div class="invalid-feedback">Ingresa un correo válido, por ejemplo: usuario@dominio.com.</div>
+                        @error('email')
+                        <span class="text-danger d-block mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-0">
+                        <label for="roles" class="form-label">Rol del usuario</label>
+                        <select name="roles" id="roles" class="form-select @error('roles') is-invalid @enderror" required>
+                            <option value="">Seleccione un rol</option>
+                            @foreach ($roles as $role)
+                            <option value="{{ $role->id }}" {{ (string) old('roles') === (string) $role->id ? 'selected' : '' }}>
+                                {{ $role->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <small class="helper-copy">El rol define los módulos administrativos disponibles.</small>
+                        <div class="invalid-feedback">Selecciona un rol para continuar.</div>
+                        @error('roles')
+                        <span class="text-danger d-block mt-1">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <div class="user-form-grid user-form-grid--split">
+                        <div class="form-group mb-0">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <div class="input-group">
+                                <input type="password" name="password" id="password"
+                                    class="form-control @error('password') is-invalid @enderror" required
+                                    minlength="8" autocomplete="new-password">
+                                <button class="btn btn-outline-dark password-toggle" type="button"
+                                    data-toggle-password="password" title="Mostrar u ocultar contraseña">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="helper-copy">Debe tener al menos 8 caracteres.</small>
+                            <div class="invalid-feedback">Escribe una contraseña de mínimo 8 caracteres.</div>
+                            <div id="passwordStrength" class="password-check mt-2">
+                                La contraseña aún no cumple el mínimo recomendado.
+                            </div>
+                            @error('password')
+                            <span class="text-danger d-block mt-1">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="password_confirmation" class="form-label">Confirmar contraseña</label>
+                            <div class="input-group">
+                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                    class="form-control" required minlength="8" autocomplete="new-password">
+                                <button class="btn btn-outline-dark password-toggle" type="button"
+                                    data-toggle-password="password_confirmation" title="Mostrar u ocultar contraseña">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <small class="helper-copy">Repite exactamente la misma contraseña.</small>
+                            <div class="invalid-feedback">Confirma la contraseña del usuario.</div>
+                            <div id="passwordMatch" class="password-check mt-2">
+                                La confirmación debe coincidir para habilitar un alta segura.
+                            </div>
                         </div>
                     </div>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-lg-4 mt-4 mt-lg-0">
-            <div class="card register-user-panel border-0">
-                <div class="card-body">
-                    <h4 class="text-info">Antes de guardar</h4>
-                    <p class="mb-2">Estas mejoras ayudan a que el alta sea más clara y rápida para el equipo:</p>
-                    <ul class="ps-3 mb-0">
-                        <li>El formulario valida correo, rol y confirmación de contraseña antes de enviar.</li>
-                        <li>El botón de guardar muestra estado de carga y evita doble clic.</li>
-                        <li>La contraseña indica si ya cumple el mínimo recomendado.</li>
-                    </ul>
                 </div>
-            </div>
-        </div>
+
+                <div class="resource-form-card__footer">
+                    <div class="resource-footer-actions w-100">
+                        <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark">Cancelar</a>
+                        <button type="submit" class="btn btn-primary ms-sm-auto" id="userSubmitButton">
+                            <i class="fas fa-save me-1"></i> Guardar usuario
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <aside class="resource-side-card">
+            <span class="resource-form-card__eyebrow">Criterios</span>
+            <h2 class="resource-form-card__title">Antes de guardar</h2>
+            <p class="resource-side-card__copy">Una cuenta clara facilita auditoría, soporte y seguimiento operativo.</p>
+
+            <ul class="resource-side-card__list mt-4">
+                <li>Asigna solo el rol necesario para sus responsabilidades.</li>
+                <li>Usa un correo activo al que el usuario tenga acceso.</li>
+                <li>Entrega la contraseña inicial por un canal privado.</li>
+            </ul>
+        </aside>
     </div>
 </div>
 @stop
@@ -211,7 +269,7 @@
                 strength.className = 'password-check mt-2 text-success';
             } else {
                 strength.textContent = 'La contraseña aún no cumple el mínimo recomendado.';
-                strength.className = 'password-check mt-2 text-muted';
+                strength.className = 'password-check mt-2';
             }
         }
 
@@ -219,7 +277,7 @@
             if (!confirmation.value) {
                 confirmation.setCustomValidity('');
                 match.textContent = 'La confirmación debe coincidir para habilitar un alta segura.';
-                match.className = 'password-check mt-2 text-muted';
+                match.className = 'password-check mt-2';
                 return;
             }
 

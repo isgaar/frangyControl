@@ -163,6 +163,214 @@
         background: var(--dashboard-surface-soft);
     }
 
+    .order-mode-card__content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .order-mode-card__actions {
+        display: flex;
+        align-items: center;
+        gap: .5rem;
+        margin-left: auto;
+    }
+
+    .order-client-check {
+        display: grid;
+        gap: .35rem;
+        min-width: min(100%, 310px);
+    }
+
+    .order-client-check__button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: .55rem;
+        width: max-content;
+        max-width: 100%;
+        min-height: 40px;
+        padding: .5rem .85rem;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 999px;
+        background: var(--dashboard-surface);
+        color: var(--dashboard-text);
+        font-weight: 800;
+        text-align: left;
+        white-space: normal;
+    }
+
+    .order-client-check__button:hover,
+    .order-client-check__button:focus {
+        border-color: color-mix(in srgb, var(--dashboard-primary) 40%, var(--dashboard-border));
+        background: var(--dashboard-primary-soft);
+        color: var(--dashboard-primary-strong);
+    }
+
+    .order-client-check__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: var(--dashboard-primary-soft);
+        color: var(--dashboard-primary);
+        font-size: .78rem;
+    }
+
+    .btn-check:checked + .order-client-check__button {
+        border-color: var(--dashboard-primary);
+        background: var(--dashboard-primary);
+        color: #fff;
+        box-shadow: 0 10px 24px color-mix(in srgb, var(--dashboard-primary) 26%, transparent);
+    }
+
+    .btn-check:checked + .order-client-check__button .order-client-check__icon {
+        background: rgba(255, 255, 255, .18);
+        color: #fff;
+    }
+
+    .btn-check:focus + .order-client-check__button {
+        border-color: var(--dashboard-primary);
+        box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--dashboard-primary) 22%, transparent);
+    }
+
+    .selected-client-summary {
+        display: grid;
+        gap: .2rem;
+        margin-top: .75rem;
+        padding: .75rem .85rem;
+        border: 1px solid color-mix(in srgb, var(--dashboard-primary) 32%, var(--dashboard-border));
+        border-radius: 8px;
+        background: var(--dashboard-primary-soft);
+        color: var(--dashboard-text);
+    }
+
+    .selected-client-summary strong {
+        font-size: .95rem;
+        line-height: 1.25;
+    }
+
+    .selected-client-summary span {
+        color: var(--dashboard-muted);
+        font-size: .85rem;
+    }
+
+    .client-search-modal .modal-body {
+        display: grid;
+        gap: .85rem;
+    }
+
+    .client-search-modal__eyebrow {
+        display: block;
+        color: var(--dashboard-muted);
+        font-size: .78rem;
+        font-weight: 800;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+    }
+
+    .client-search-input .input-group-text {
+        border-color: var(--dashboard-border);
+        background: var(--dashboard-surface-soft);
+        color: var(--dashboard-primary);
+    }
+
+    .client-search-meta {
+        min-height: 1.25rem;
+        color: var(--dashboard-muted);
+        font-size: .86rem;
+        font-weight: 700;
+    }
+
+    .client-search-results {
+        display: grid;
+        gap: .55rem;
+        max-height: 420px;
+        overflow: auto;
+        padding-right: .15rem;
+    }
+
+    .client-search-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: .75rem;
+        align-items: center;
+        padding: .8rem;
+        border: 1px solid var(--dashboard-border);
+        border-radius: 8px;
+        background: var(--dashboard-surface);
+    }
+
+    .client-search-item.is-selected {
+        border-color: color-mix(in srgb, var(--dashboard-primary) 48%, var(--dashboard-border));
+        background: var(--dashboard-primary-soft);
+    }
+
+    .client-search-item__content {
+        display: grid;
+        gap: .35rem;
+        min-width: 0;
+    }
+
+    .client-search-item__name {
+        overflow: hidden;
+        color: var(--dashboard-text);
+        font-weight: 800;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .client-search-item__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .35rem .7rem;
+        color: var(--dashboard-muted);
+        font-size: .84rem;
+    }
+
+    .client-search-empty {
+        padding: 1rem;
+        border: 1px dashed var(--dashboard-border);
+        border-radius: 8px;
+        color: var(--dashboard-muted);
+        text-align: center;
+    }
+
+    .order-submit-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .45rem;
+        min-height: 40px;
+        padding-inline: 1rem;
+        border-color: var(--dashboard-primary);
+        background: var(--dashboard-primary);
+        color: #fff;
+        font-weight: 800;
+        box-shadow: 0 10px 24px color-mix(in srgb, var(--dashboard-primary) 22%, transparent);
+    }
+
+    .order-submit-button:hover,
+    .order-submit-button:focus {
+        border-color: var(--dashboard-primary-strong);
+        background: var(--dashboard-primary-strong);
+        color: #fff;
+    }
+
+    .order-submit-button:disabled,
+    .order-submit-button.disabled {
+        border-color: color-mix(in srgb, var(--dashboard-primary) 34%, var(--dashboard-border));
+        background: color-mix(in srgb, var(--dashboard-primary) 12%, var(--dashboard-surface));
+        color: color-mix(in srgb, var(--dashboard-primary-strong) 72%, var(--dashboard-muted));
+        box-shadow: none;
+        opacity: 1;
+    }
+
     .photo-uploader {
         display: grid;
         gap: .75rem;
@@ -404,8 +612,7 @@
         color: var(--dashboard-text);
     }
 
-    .custom-switch .custom-control-label,
-    .custom-checkbox .custom-control-label {
+    .form-check-label {
         font-weight: 600;
     }
 
@@ -417,6 +624,14 @@
         .order-help-toggle {
             width: 100%;
             justify-content: center;
+        }
+
+        .client-search-item {
+            grid-template-columns: 1fr;
+        }
+
+        .client-search-item .btn {
+            width: 100%;
         }
     }
 
@@ -524,38 +739,53 @@
                                 </div>
 
                                 <div class="order-mode-card">
-                                    <div class="custom-control custom-switch mb-0">
-                                        <input type="checkbox" class="custom-control-input" id="usarClienteExistente"
-                                            name="usar_cliente_existente" value="1" {{ $usingExistingClient ? 'checked' : '' }}>
-                                        <label class="custom-control-label" for="usarClienteExistente">Usar cliente ya registrado</label>
-                                        <div class="helper-copy ms-4">Activa esta opción si el cliente ya existe y quieres rellenar sus
-                                            datos automáticamente.</div>
+                                    <div class="order-mode-card__content">
+                                        <div class="order-client-check">
+                                            <input type="checkbox" class="btn-check" id="usarClienteExistente"
+                                                name="usar_cliente_existente" value="1" autocomplete="off" {{ $usingExistingClient ? 'checked' : '' }}>
+                                            <label class="btn order-client-check__button" for="usarClienteExistente">
+                                                <span class="order-client-check__icon" aria-hidden="true">
+                                                    <i class="fas fa-user-check"></i>
+                                                </span>
+                                                <span>Usar cliente ya registrado</span>
+                                            </label>
+                                            <div class="helper-copy">Activa esta opción si el cliente ya existe y quieres rellenar sus
+                                                datos automáticamente.</div>
+                                        </div>
+                                        <div class="order-mode-card__actions">
+                                            <button type="button" class="btn btn-outline-dark btn-sm" id="abrirBuscadorCliente"
+                                                data-bs-toggle="modal" data-bs-target="#clienteSearchModal">
+                                                <i class="fas fa-search me-1"></i> Buscar cliente
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="form-group {{ $usingExistingClient ? '' : 'd-none' }}" id="clienteExistenteBox">
-                                    <label for="cliente_existente_id">Cliente registrado</label>
-                                    <select name="cliente_existente_id" id="cliente_existente_id"
-                                        class="form-control @error('cliente_existente_id') is-invalid @enderror">
-                                        <option value="">Selecciona un cliente</option>
-                                        @foreach ($clientes as $cliente)
-                                        <option value="{{ $cliente->id_cliente }}"
-                                            data-nombre="{{ $cliente->nombreCompleto }}"
-                                            data-telefono="{{ $cliente->telefono }}"
-                                            data-correo="{{ $cliente->correo }}"
-                                            data-rfc="{{ $cliente->rfc }}"
-                                            {{ (string) old('cliente_existente_id') === (string) $cliente->id_cliente ? 'selected' : '' }}>
-                                            {{ $cliente->nombreCompleto }} - {{ $cliente->telefono }}
-                                        </option>
-                                        @endforeach
-                                    </select>
+                                    <input type="hidden" name="cliente_existente_id" id="cliente_existente_id"
+                                        value="{{ old('cliente_existente_id') }}">
+                                    <div class="selected-client-summary d-none" id="selectedClientSummary" aria-live="polite"></div>
                                     <small class="helper-copy">El sistema cargará nombre, teléfono, correo y RFC del cliente
                                         seleccionado.</small>
-                                    <div class="invalid-feedback">Selecciona un cliente registrado.</div>
+                                    <div class="text-danger mt-2 d-none" id="clienteExistenteError">Selecciona un cliente registrado.</div>
                                     @error('cliente_existente_id')
                                     <span class="text-danger d-block mt-1">{{ $message }}</span>
                                     @enderror
                                 </div>
+
+                                <select id="clienteDirectorySource" class="d-none" hidden aria-hidden="true" tabindex="-1">
+                                    <option value="">Selecciona un cliente</option>
+                                    @foreach ($clientes as $cliente)
+                                    <option value="{{ $cliente->id_cliente }}"
+                                        data-nombre="{{ $cliente->nombreCompleto }}"
+                                        data-telefono="{{ $cliente->telefono }}"
+                                        data-correo="{{ $cliente->correo }}"
+                                        data-rfc="{{ $cliente->rfc }}"
+                                        {{ (string) old('cliente_existente_id') === (string) $cliente->id_cliente ? 'selected' : '' }}>
+                                        {{ $cliente->nombreCompleto }} - {{ $cliente->telefono }}
+                                    </option>
+                                    @endforeach
+                                </select>
 
                                 <div id="clienteExistenteHint" class="alert alert-warning d-none py-2">
                                     Ya existe un cliente con ese nombre. Puedes activar "Usar cliente ya registrado" para cargarlo
@@ -992,12 +1222,12 @@
                         </div>
 
                         <div class="col-md-12">
-                            <div class="custom-control custom-checkbox mt-2">
-                                <input type="checkbox" class="custom-control-input" id="clienteAcepta">
-                                <label class="custom-control-label" for="clienteAcepta">
+                            <div class="form-check mt-2">
+                                <input type="checkbox" class="form-check-input" id="clienteAcepta">
+                                <label class="form-check-label" for="clienteAcepta">
                                     Confirmo que el cliente acepta la orden y la información capturada.
                                 </label>
-                                <small class="helper-copy d-block ms-4 mt-1">Este paso habilita el envío y reduce
+                                <small class="helper-copy d-block mt-1">Este paso habilita el envío y reduce
                                     registros accidentales.</small>
                                 <div class="text-danger mt-2 d-none" id="clienteAceptaError">
                                     Debes confirmar la aceptación del cliente antes de guardar.
@@ -1014,13 +1244,47 @@
                 <div class="card-footer text-center">
                     <div class="d-flex justify-content-between flex-wrap dashboard-inline-gap">
                         <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark">Retroceder</a>
-                        <button type="submit" class="btn btn-info" id="submitButton" disabled>Guardar orden</button>
+                        <button type="submit" class="btn order-submit-button" id="submitButton" disabled>
+                            <i class="fas fa-save"></i> Guardar orden
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </form>
+
+<div class="modal fade" id="clienteSearchModal" tabindex="-1" aria-labelledby="clienteSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content client-search-modal">
+            <div class="modal-header">
+                <div>
+                    <span class="client-search-modal__eyebrow">Clientes registrados</span>
+                    <h2 class="modal-title fs-5" id="clienteSearchModalLabel">Buscar cliente</h2>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <label class="form-label" for="clienteSearchInput">Buscar</label>
+                    <div class="input-group client-search-input">
+                        <span class="input-group-text" aria-hidden="true">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="search" class="form-control" id="clienteSearchInput"
+                            placeholder="Nombre, teléfono, correo o RFC" autocomplete="off">
+                    </div>
+                </div>
+                <div class="client-search-meta" id="clienteSearchCount" aria-live="polite"></div>
+                <div class="client-search-results" id="clienteSearchResults" role="list"></div>
+                <div class="client-search-empty d-none" id="clienteSearchEmpty">Sin coincidencias.</div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 @stop
 
 @section('css')
@@ -1040,7 +1304,15 @@
         var existingToggle = document.getElementById('usarClienteExistente');
         var existingClientBox = document.getElementById('clienteExistenteBox');
         var existingClientSelect = document.getElementById('cliente_existente_id');
+        var clientDirectorySource = document.getElementById('clienteDirectorySource');
+        var existingClientError = document.getElementById('clienteExistenteError');
         var duplicateHint = document.getElementById('clienteExistenteHint');
+        var selectedClientSummary = document.getElementById('selectedClientSummary');
+        var clientSearchModal = document.getElementById('clienteSearchModal');
+        var clientSearchInput = document.getElementById('clienteSearchInput');
+        var clientSearchResults = document.getElementById('clienteSearchResults');
+        var clientSearchEmpty = document.getElementById('clienteSearchEmpty');
+        var clientSearchCount = document.getElementById('clienteSearchCount');
         var photoInput = document.getElementById('photos');
         var photoUploader = document.getElementById('photoUploader');
         var photoDropzone = document.getElementById('photoDropzone');
@@ -1052,6 +1324,7 @@
         var helpPanel = document.getElementById('ordenHelpPanel');
         var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         var pendingPhotoUploads = 0;
+        var clientDirectory = [];
 
         var fields = {
             nombreCompleto: document.getElementById('nombreCompleto'),
@@ -1143,6 +1416,10 @@
                 .trim();
         }
 
+        function normalizeSearchText(value) {
+            return normalizeClientName(value);
+        }
+
         function findClientOptionByName(name) {
             var normalizedName = normalizeClientName(name);
 
@@ -1150,16 +1427,181 @@
                 return null;
             }
 
-            return Array.from(existingClientSelect.options).find(function (option) {
+            return Array.from(clientDirectorySource.options).find(function (option) {
                 return option.value && normalizeClientName(option.dataset.nombre) === normalizedName;
             }) || null;
+        }
+
+        function findClientOptionById(clientId) {
+            if (!clientId) {
+                return null;
+            }
+
+            return Array.from(clientDirectorySource.options).find(function (option) {
+                return option.value === String(clientId);
+            }) || null;
+        }
+
+        function optionToClient(option) {
+            var client = {
+                id: option.value,
+                nombre: option.dataset.nombre || option.textContent.trim(),
+                telefono: option.dataset.telefono || '',
+                correo: option.dataset.correo || '',
+                rfc: option.dataset.rfc || ''
+            };
+
+            client.searchText = normalizeSearchText([
+                client.nombre,
+                client.telefono,
+                client.correo,
+                client.rfc
+            ].join(' '));
+
+            return client;
+        }
+
+        function refreshClientDirectory() {
+            clientDirectory = Array.from(clientDirectorySource.options)
+                .filter(function (option) {
+                    return !!option.value;
+                })
+                .map(optionToClient);
+        }
+
+        function clientMetaParts(client) {
+            return [
+                client.telefono,
+                client.correo,
+                client.rfc
+            ].filter(function (value) {
+                return !!value;
+            });
+        }
+
+        function updateSelectedClientSummary() {
+            if (!selectedClientSummary) {
+                return;
+            }
+
+            var selectedOption = findClientOptionById(existingClientSelect.value);
+
+            selectedClientSummary.innerHTML = '';
+
+            if (!existingToggle.checked || !selectedOption || !selectedOption.value) {
+                selectedClientSummary.classList.add('d-none');
+                return;
+            }
+
+            var client = optionToClient(selectedOption);
+            var name = document.createElement('strong');
+            var meta = document.createElement('span');
+
+            name.textContent = client.nombre;
+            meta.textContent = clientMetaParts(client).join(' - ');
+
+            selectedClientSummary.appendChild(name);
+
+            if (meta.textContent) {
+                selectedClientSummary.appendChild(meta);
+            }
+
+            selectedClientSummary.classList.remove('d-none');
+        }
+
+        function renderClientSearchResults() {
+            if (!clientSearchResults || !clientSearchEmpty || !clientSearchCount) {
+                return;
+            }
+
+            var query = normalizeSearchText(clientSearchInput ? clientSearchInput.value : '');
+            var terms = query.split(' ').filter(function (term) {
+                return !!term;
+            });
+            var matches = clientDirectory.filter(function (client) {
+                return terms.every(function (term) {
+                    return client.searchText.indexOf(term) !== -1;
+                });
+            });
+            var visibleMatches = matches.slice(0, 40);
+
+            clientSearchResults.innerHTML = '';
+
+            visibleMatches.forEach(function (client) {
+                var item = document.createElement('div');
+                var content = document.createElement('div');
+                var name = document.createElement('div');
+                var meta = document.createElement('div');
+                var button = document.createElement('button');
+                var selected = existingClientSelect.value === client.id;
+
+                item.className = 'client-search-item' + (selected ? ' is-selected' : '');
+                item.setAttribute('role', 'listitem');
+
+                content.className = 'client-search-item__content';
+                name.className = 'client-search-item__name';
+                meta.className = 'client-search-item__meta';
+                name.textContent = client.nombre;
+
+                clientMetaParts(client).forEach(function (part) {
+                    var metaItem = document.createElement('span');
+                    metaItem.textContent = part;
+                    meta.appendChild(metaItem);
+                });
+
+                content.appendChild(name);
+                content.appendChild(meta);
+
+                button.type = 'button';
+                button.className = selected ? 'btn btn-outline-dark btn-sm' : 'btn btn-primary btn-sm';
+                button.innerHTML = selected
+                    ? '<i class="fas fa-check me-1"></i> Seleccionado'
+                    : '<i class="fas fa-user-check me-1"></i> Elegir';
+                button.addEventListener('click', function () {
+                    selectClientById(client.id);
+                });
+
+                item.appendChild(content);
+                item.appendChild(button);
+                clientSearchResults.appendChild(item);
+            });
+
+            if (clientDirectory.length === 0) {
+                clientSearchCount.textContent = '0 clientes registrados';
+                clientSearchEmpty.textContent = 'No hay clientes registrados.';
+            } else if (terms.length > 0) {
+                clientSearchCount.textContent = matches.length + ' coincidencia' + (matches.length === 1 ? '' : 's');
+                clientSearchEmpty.textContent = 'Sin coincidencias.';
+            } else {
+                clientSearchCount.textContent = 'Mostrando ' + visibleMatches.length + ' de ' + clientDirectory.length;
+                clientSearchEmpty.textContent = 'No hay clientes registrados.';
+            }
+
+            clientSearchEmpty.classList.toggle('d-none', visibleMatches.length > 0);
+        }
+
+        function selectClientById(clientId) {
+            if (!clientId) {
+                return;
+            }
+
+            existingToggle.checked = true;
+            existingClientSelect.value = clientId;
+            updateClientMode();
+            duplicateHint.classList.add('d-none');
+            validateAllFields();
+            renderClientSearchResults();
+
+            if (clientSearchModal && window.bootstrap) {
+                bootstrap.Modal.getOrCreateInstance(clientSearchModal).hide();
+            }
         }
 
         function updateClientMode() {
             var usingExistingClient = existingToggle.checked;
 
             existingClientBox.classList.toggle('d-none', !usingExistingClient);
-            existingClientSelect.required = usingExistingClient;
+            existingClientSelect.required = false;
 
             ['nombreCompleto', 'telefono', 'correo', 'rfc'].forEach(function (key) {
                 fields[key].readOnly = usingExistingClient;
@@ -1175,10 +1617,17 @@
             if (!usingExistingClient) {
                 existingClientSelect.value = '';
             }
+
+            if (existingClientError) {
+                existingClientError.classList.add('d-none');
+            }
+
+            updateSelectedClientSummary();
+            renderClientSearchResults();
         }
 
         function populateExistingClient() {
-            var selectedOption = existingClientSelect.options[existingClientSelect.selectedIndex];
+            var selectedOption = findClientOptionById(existingClientSelect.value);
 
             if (!selectedOption || !selectedOption.value) {
                 return;
@@ -1415,12 +1864,17 @@
             var validators = [
                 function () {
                     if (existingToggle.checked) {
-                        return validateField(existingClientSelect, function (field) {
-                            return {
-                                valid: !!field.value,
-                                message: 'Selecciona un cliente registrado.'
-                            };
-                        });
+                        var hasClient = !!existingClientSelect.value;
+
+                        if (existingClientError) {
+                            existingClientError.classList.toggle('d-none', hasClient);
+                        }
+
+                        return hasClient;
+                    }
+
+                    if (existingClientError) {
+                        existingClientError.classList.add('d-none');
                     }
 
                     return true;
@@ -1755,8 +2209,25 @@
 
         existingClientSelect.addEventListener('change', function () {
             populateExistingClient();
+            updateSelectedClientSummary();
+            renderClientSearchResults();
             validateAllFields();
         });
+
+        if (clientSearchInput) {
+            clientSearchInput.addEventListener('input', renderClientSearchResults);
+        }
+
+        if (clientSearchModal) {
+            clientSearchModal.addEventListener('shown.bs.modal', function () {
+                renderClientSearchResults();
+
+                if (clientSearchInput) {
+                    clientSearchInput.focus();
+                    clientSearchInput.select();
+                }
+            });
+        }
 
         acceptCheckbox.addEventListener('change', function () {
             updateAcceptanceState(false);
@@ -1824,6 +2295,7 @@
             window.FormHelpers.attachSubmitLoading(form, '#submitButton', 'Guardando orden...');
         }
 
+        refreshClientDirectory();
         updateClientMode();
         syncHelpMode();
         refreshPhotoStatus();
