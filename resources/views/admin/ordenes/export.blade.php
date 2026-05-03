@@ -2,140 +2,170 @@
 date_default_timezone_set('America/Mexico_City');
 ?>
 <style>
+@page {
+    size: letter portrait;
+    margin: 8mm 10mm 8mm 10mm;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    font-size: 10px;
+}
+
 .card {
     font-family: Arial, sans-serif;
-    font-size: 12px;
+    font-size: 10px;
     width: 100%;
-    margin-bottom: 20px;
     border: 2px solid #ccc;
     border-radius: 4px;
-    padding: 5px;
+    padding: 5px 7px;
 }
 
 .form-value {
-    margin-bottom: 6px;
+    margin-bottom: 3px;
     font-family: Arial, sans-serif;
 }
 
 .small-text {
     font-family: Arial, sans-serif;
-    font-size: 8.2px;
+    font-size: 7px;
+    line-height: 1.25;
 }
 
-table {
+/* ===== HEADER ===== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.header .logo img {
+    height: 48px;
+}
+
+.header table {
     border-collapse: separate;
-    border-spacing: 10% 10%;
-    /* Ajusta el valor de 10px según tus preferencias */
+    border-spacing: 6px 2px;
+}
+
+.header table th {
+    text-align: center;
+    vertical-align: bottom;
+    width: 150px;
+    font-size: 10px;
+}
+
+/* ===== DOS COLUMNAS ===== */
+.left-column {
+    float: left;
+    width: 48%;
+    padding-right: 5px;
+}
+
+.right-column {
+    float: right;
+    width: 49%;
+}
+
+.dashboard-clear {
+    clear: both;
 }
 
 .card-title {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin: 3px 0 4px 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
 }
 
 label {
     display: block;
     font-weight: bold;
+    margin-bottom: 0px;
 }
 
-th {
-    text-align: center;
-    vertical-align: bottom;
-    width: 350px;
-}
-
-input[type="text"],
-textarea {
-    width: 100%;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    resize: none;
-    font-size: 8.7px;
-    font-family: Arial, sans-serif;
-    /* Evitar que el usuario pueda redimensionar */
-}
-
-.input-group-append {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 5px;
-}
-
-.input-group-text {
-    padding: 2px;
-}
-
-.form-group {
-    margin-bottom: 10px;
-}
-
-.form-check label {
-    font-weight: normal;
-}
-
-.form-checkbox-label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.form-checkbox-label input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-.left-column {
-    float: left;
-    width: 50%;
-    margin: 5px;
-}
-
-.right-column {
-    float: right;
-    width: 45%;
-    margin: 5px;
-}
-
-.limited-textarea {
-    height: 20em;
-    /* Mostrar solo 25 líneas */
-}
-
+/* ===== DATOS DEL SERVICIO ===== */
 .centered-form {
     display: flex;
     justify-content: center;
-    align-items: center;
     flex-wrap: wrap;
 }
 
 .centered-form .form-group {
-    width: 95%;
+    width: 96%;
+    margin-bottom: 4px;
 }
 
-.header {
+/* ===== TEXTAREAS: se ajustan al contenido ===== */
+textarea {
+    width: 100%;
+    padding: 3px 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+    font-size: 8.5px;
+    font-family: Arial, sans-serif;
+    /* Sin altura fija — el JS la ajustará al contenido */
+    overflow: hidden;
+    min-height: 28px;
+}
+
+/* ===== CHECKBOX ===== */
+.form-checkbox-label {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    margin-bottom: 3px;
 }
 
-.header .logo img {
-    height: 60px;
+.form-checkbox-label input[type="checkbox"] {
+    margin-right: 5px;
+    width: auto;
 }
 
-.header .icon img {
-    height: 40px;
+/* ===== TABLA FECHAS ===== */
+.dates-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 6px 2px;
+    margin-top: 3px;
 }
 
-.date-row {
+.dates-table th {
+    text-align: center;
+    vertical-align: top;
+    font-size: 9px;
+    font-weight: normal;
+    width: 50%;
+}
+
+/* ===== FOOTER LEGAL ===== */
+.footer {
+    margin-top: 4px;
+    border-top: 1px solid #ccc;
+    padding-top: 3px;
+}
+
+/* ===== SERVICE DATA: dos columnas para tipo/encargado ===== */
+.service-top {
     display: flex;
-    justify-content: space-between;
+    gap: 10px;
+    width: 96%;
+    margin: 0 auto 4px auto;
+}
+
+.service-top .form-group {
+    flex: 1;
+    margin-bottom: 0;
 }
 </style>
-
-
-
 
 <div class="card">
     <div class="header">
@@ -143,82 +173,80 @@ textarea {
             <img src="{{ public_path('franlogo.png') }}" alt="Logo">
             <div>Fecha de exportación:
                 {{ \Carbon\Carbon::now('America/Mexico_City')->locale('es_ES')->isoFormat('LLLL') }}</div>
-
         </div>
 
         <table>
             <tr>
-                <th> <label class="form-label" for="nombreCompleto">N0. Orden en sistema</label>
+                <th>
+                    <label>N0. Orden en sistema</label>
                     <div class="form-value">{{ strtoupper($orden->id_ordenes) }}</div>
                 </th>
-                <th> @if ($orden->status != 'en proceso')
-
-                    <label class="form-label" for="nombreCompleto">Orden</label>
-                    <div class="form-value">{{ strtoupper($orden->status) }}</div>
+                <th>
+                    @if ($orden->status != 'en proceso')
+                        <label>Orden</label>
+                        <div class="form-value">{{ strtoupper($orden->status) }}</div>
                     @endif
                 </th>
             </tr>
             <tr>
                 <td></td>
-                <td>@if (!is_null($orden->motivo))
-                    <label>Motivo: </label> {{ ucwords($orden->motivo) }}
+                <td>
+                    @if (!is_null($orden->motivo))
+                        <label>Motivo: </label> {{ ucwords($orden->motivo) }}
                     @endif
                 </td>
             </tr>
         </table>
-
-
-
-
     </div>
+
     <div class="row">
         <div class="left-column">
             <h3 class="card-title">Datos del propietario</h3>
 
-            <label class="form-label" for="nombreCompleto">Nombre o razón social</label>
+            <label>Nombre o razón social</label>
             <div class="form-value">{{ strtoupper($orden->cliente->nombreCompleto) }}</div>
 
-            <label class="form-label" for="telefono">Teléfono</label>
+            <label>Teléfono</label>
             <div class="form-value">{{ strtoupper($orden->cliente->telefono) }}</div>
 
-            <label class="form-label" for="correo">Correo electrónico</label>
+            <label>Correo electrónico</label>
             <div class="form-value">{{ $orden->cliente->correo }}</div>
 
-            <label class="form-label" for="rfc">RFC</label>
+            <label>RFC</label>
             <div class="form-value">{{ strtoupper($orden->cliente->rfc) }}</div>
         </div>
 
         <div class="right-column">
             <h3 class="card-title">Datos de la unidad</h3>
 
-            <label class="form-label" for="vehiculo_id">Marca</label>
+            <label>Marca</label>
             <div class="form-value">{{ strtoupper($orden->vehiculo->marca) }}</div>
 
-            <label class="form-label" for="tvehiculo_id">Tipo de Vehículo</label>
+            <label>Tipo de Vehículo</label>
             <div class="form-value">{{ strtoupper($orden->tipoVehiculo->tipo) }}</div>
 
-            <label class="form-label" for="modelo">Línea</label>
+            <label>Línea</label>
             <div class="form-value">{{ strtoupper($orden->modelo) }}</div>
 
-            <label class="form-label" for="yearVehiculo">Año</label>
+            <label>Año</label>
             <div class="form-value">{{ $orden->yearVehiculo }}</div>
 
-            <label class="form-label" for="color">Color</label>
+            <label>Color</label>
             <div class="form-value">{{ strtoupper($orden->color) }}</div>
 
-            <label class="form-label" for="placas">Placas</label>
+            <label>Placas</label>
             <div class="form-value">{{ strtoupper($orden->placas) }}</div>
 
-            <label class="form-label" for="kilometraje">Kilometraje</label>
+            <label>Kilometraje</label>
             <div class="form-value">{{ $orden->kilometraje }} KM</div>
 
-            <label class="form-label" for="motor">Motor</label>
+            <label>Motor</label>
             <div class="form-value">{{ strtoupper($orden->motor) }}</div>
 
-            <label class="form-label" for="cilindros">Cilindros</label>
+            <label>Cilindros</label>
             <div class="form-value">{{ strtoupper($orden->cilindros) }}</div>
 
-            <label class="form-label" for="numSerie">No. Serie</label>
+            <label>No. Serie</label>
             <div class="form-value">{{ strtoupper($orden->noSerievehiculo) }}</div>
         </div>
 
@@ -226,43 +254,42 @@ textarea {
 
         <h3 class="card-title">Datos del servicio</h3>
 
-        <div class="centered-form">
+        {{-- Tipo de servicio y encargado en la misma fila --}}
+        <div class="service-top">
             <div class="form-group">
-                <label class="form-label" for="servicio_id">Tipo de Servicio:</label>
+                <label>Tipo de Servicio:</label>
                 <div class="form-value">{{ strtoupper($orden->servicio->nombreServicio) }}</div>
             </div>
-
             <div class="form-group">
-                <label class="form-label" for="user_id">Encargado(a):</label>
+                <label>Encargado(a):</label>
                 <div class="form-value">{{ strtoupper($orden->user->name) }}</div>
             </div>
+            <div class="form-group">
+                <label>Refacciones:</label>
+                <div class="form-value">{{ $orden->retiroRefacciones ? 'Retiró' : 'No retiró' }}</div>
+            </div>
+            <div class="form-group">
+                <label>Fecha de entrega:</label>
+                <div class="form-value">
+                    {{ \Carbon\Carbon::parse($orden->fechaEntrega)->locale('es_ES')->isoFormat('LL') }}
+                </div>
+            </div>
+        </div>
 
+        <div class="centered-form">
             <div class="form-group">
                 <label for="observacionesInt">Observaciones internas (Recepción)</label>
-                <textarea name="observacionesInt" class="limited-textarea"
-                    disabled>{{ $orden->observacionesInt }}</textarea>
+                <textarea id="ta1" name="observacionesInt" disabled>{{ $orden->observacionesInt }}</textarea>
             </div>
 
             <div class="form-group">
                 <label for="recomendacionesCliente">Recomendaciones del cliente</label>
-                <textarea name="recomendacionesCliente" class="limited-textarea"
-                    disabled>{{ $orden->recomendacionesCliente }}</textarea>
+                <textarea id="ta2" name="recomendacionesCliente" disabled>{{ $orden->recomendacionesCliente }}</textarea>
             </div>
 
             <div class="form-group">
                 <label for="detallesOrden">Detalles del servicio</label>
-                <textarea name="detallesOrden" class="limited-textarea" disabled>{{ $orden->detallesOrden }}</textarea>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" for="retiroRefacciones">Refacciones:</label>
-                <div class="form-value">{{ $orden->retiroRefacciones ? 'Retiró' : 'No retiró' }}</div>
-            </div>
-
-            <div class="form-group">
-                <label class="form-label" for="fechaEntrega">Fecha de entrega:</label>
-                <div class="form-value">
-                    {{ \Carbon\Carbon::parse($orden->fechaEntrega)->locale('es_ES')->isoFormat('LL') }}</div>
+                <textarea id="ta3" name="detallesOrden" disabled>{{ $orden->detallesOrden }}</textarea>
             </div>
 
             <div class="form-group">
@@ -271,7 +298,8 @@ textarea {
                     El cliente aceptó
                 </label>
             </div>
-            <table>
+
+            <table class="dates-table">
                 <tr>
                     <th>
                         <label>Fecha de registro:</label>
@@ -287,8 +315,8 @@ textarea {
             <div class="footer">
                 <p class="small-text">
                     PRESTACIÓN DE SERVICIOS DE REPARACIÓN Y/O MANTENIMIENTO DE VEHÍCULOS QUE CELEBRAN POR UNA PARTE
-                    LLANTERA Y MECÁNICA AUTOMOTRÍZ FRANGY COMO “EL PRESTADOR DEL SERVICIO” Y POR LA OTRA PARTE “EL
-                    CONSUMIDOR”, CUYOS NOMBRES Y DATOS CONSTAN EN LA CARÁTULA DE ESTA ORDEN DE SERVICIO, TOMANDO EN
+                    LLANTERA Y MECÁNICA AUTOMOTRÍZ FRANGY COMO "EL PRESTADOR DEL SERVICIO" Y POR LA OTRA PARTE "EL
+                    CONSUMIDOR", CUYOS NOMBRES Y DATOS CONSTAN EN LA CARÁTULA DE ESTA ORDEN DE SERVICIO, TOMANDO EN
                     CUENTA LOS SIGUIENTES:
                     <br><br>
                     TERMINOS Y CONDICIONES
@@ -296,7 +324,7 @@ textarea {
                     PRIMERA. EL PRESTADOR DEL SERVICIO realizará todas las operaciones y composturas descritas en la
                     presente ORDEN DE SERVICIO, solicitadas por EL CONSUMIDOR, a las que se someterá el vehículo
                     para obtener condiciones de funcionamiento de acuerdo al estado en que se encuentra. SEGUNDA. El
-                    precio total de los servicios contratados se establece en el “presupuesto” que forma parte de la
+                    precio total de los servicios contratados se establece en el "presupuesto" que forma parte de la
                     presente y se describe en el anverso, el cual será pagado por EL CONSUMIDOR, de la siguiente
                     forma: Al momento de celebrar el presente contrato por concepto de anticipo la cantidad que se
                     indica y el resto en la fecha de entrega del vehículo o cuando reciba su unidad. Todo pago
@@ -337,6 +365,21 @@ textarea {
                 </p>
             </div>
         </div>
-
     </div>
 </div>
+
+{{-- Auto-ajuste de textareas al contenido real antes de imprimir/exportar --}}
+<script>
+(function () {
+    function autoResize(el) {
+        el.style.height = 'auto';
+        el.style.height = (el.scrollHeight) + 'px';
+    }
+
+    var ids = ['ta1', 'ta2', 'ta3'];
+    ids.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) autoResize(el);
+    });
+})();
+</script>
