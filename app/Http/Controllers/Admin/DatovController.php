@@ -18,20 +18,21 @@ class DatovController extends Controller
         $brandSearch = trim((string) $request->input('brand_search', ''));
         $serviceSearch = trim((string) $request->input('service_search', ''));
         $typeSearch = trim((string) $request->input('type_search', ''));
+        $order = $request->input('order') === 'desc' ? 'desc' : 'asc';
 
         $dataVehiculos = DatosVehiculo::query()
             ->when($brandSearch !== '', fn ($query) => $query->where('marca', 'like', "%{$brandSearch}%"))
-            ->orderBy('marca')
+            ->orderBy('marca', $order)
             ->get();
 
         $dataServicios = TipoServicio::query()
             ->when($serviceSearch !== '', fn ($query) => $query->where('nombreServicio', 'like', "%{$serviceSearch}%"))
-            ->orderBy('nombreServicio')
+            ->orderBy('nombreServicio', $order)
             ->get();
 
         $dataTiposVehiculos = TipoVehiculo::query()
             ->when($typeSearch !== '', fn ($query) => $query->where('tipo', 'like', "%{$typeSearch}%"))
-            ->orderBy('tipo')
+            ->orderBy('tipo', $order)
             ->get();
 
         $catalogTotals = [
@@ -47,6 +48,7 @@ class DatovController extends Controller
             'brandSearch',
             'serviceSearch',
             'typeSearch',
+            'order',
             'catalogTotals'
         ));
 

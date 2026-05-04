@@ -62,14 +62,14 @@
         <section class="resource-panel">
             <div class="resource-panel__header">
                 <div>
-                    <span class="resource-panel__eyebrow">Búsqueda</span>
-                    <h2 class="resource-panel__title">Refina el directorio</h2>
-                    <p class="resource-panel__copy">Puedes combinar búsqueda, cantidad por página y orden del listado.</p>
+                    <span class="resource-panel__eyebrow">Filtros</span>
+                    <h2 class="resource-panel__title">Buscar y ordenar</h2>
+                    <p class="resource-panel__copy">Encuentra por nombre, teléfono, correo o RFC y ajusta la cantidad de tarjetas visibles.</p>
                 </div>
 
-                @if ($search)
+                @if ($search || (string) $limit !== '10' || $sortBy !== 'id_cliente' || $sortOrder !== 'asc')
                     <div class="resource-pill">
-                        <i class="fas fa-search"></i> "{{ $search }}"
+                        <i class="fas fa-filter"></i> Filtro activo
                     </div>
                 @endif
             </div>
@@ -82,13 +82,13 @@
                 </div>
 
                 <div class="resource-toolbar__field">
-                    <label for="limit">Mostrar</label>
+                    <label for="limit">Registros</label>
                     <select name="limit" id="limit" class="form-select">
-                        <option value="6" {{ (string) $limit === '6' ? 'selected' : '' }}>6 tarjetas</option>
-                        <option value="9" {{ (string) $limit === '9' ? 'selected' : '' }}>9 tarjetas</option>
-                        <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 tarjetas</option>
-                        <option value="12" {{ (string) $limit === '12' ? 'selected' : '' }}>12 tarjetas</option>
-                        <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 tarjetas</option>
+                        <option value="6" {{ (string) $limit === '6' ? 'selected' : '' }}>6 por página</option>
+                        <option value="9" {{ (string) $limit === '9' ? 'selected' : '' }}>9 por página</option>
+                        <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 por página</option>
+                        <option value="12" {{ (string) $limit === '12' ? 'selected' : '' }}>12 por página</option>
+                        <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 por página</option>
                     </select>
                 </div>
 
@@ -122,11 +122,16 @@
         <section class="resource-panel">
             <div class="resource-panel__header">
                 <div>
-                    <span class="resource-panel__eyebrow">Tarjetas</span>
+                    <span class="resource-panel__eyebrow">Listado</span>
                     <h2 class="resource-panel__title">Clientes registrados</h2>
                     <p class="resource-panel__copy">
-                        {{ $data->total() }} tarjeta(s) encontradas.
+                        {{ $data->total() }} registro(s) encontrados. Página
+                        {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}.
                     </p>
+                </div>
+
+                <div class="resource-pill">
+                    <i class="fas fa-id-card"></i> Límite {{ $data->isEmpty() ? 0 : $data->perPage() }}
                 </div>
             </div>
 

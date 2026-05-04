@@ -509,7 +509,7 @@ build_live_source_mount_args() {
     fi
 
     add_live_source_mount_if_exists "${ROOT_DIR}/app" "/var/www/html/app"
-    add_live_source_mount_if_exists "${ROOT_DIR}/bootstrap" "/var/www/html/bootstrap"
+    add_live_source_mount_if_exists "${ROOT_DIR}/bootstrap/app.php" "/var/www/html/bootstrap/app.php"
     add_live_source_mount_if_exists "${ROOT_DIR}/config" "/var/www/html/config"
     add_live_source_mount_if_exists "${ROOT_DIR}/database" "/var/www/html/database"
     add_live_source_mount_if_exists "${ROOT_DIR}/public" "/var/www/html/public"

@@ -435,6 +435,7 @@ html[data-theme="dark"] .dashboard-navbar {
 .resource-form-card,
 .resource-side-card,
 .resource-overview-card,
+.resource-catalog-block,
 .resource-confirm-card {
     border-radius: var(--dashboard-radius);
     padding: 1.25rem;
@@ -455,6 +456,7 @@ html[data-theme="dark"] .dashboard-navbar {
 .resource-form-card,
 .resource-side-card,
 .resource-overview-card,
+.resource-catalog-block,
 .resource-confirm-card {
     border: 1px solid var(--dashboard-border);
     background: var(--dashboard-surface);
@@ -598,7 +600,8 @@ html[data-theme="dark"] .resource-warning {
 }
 
 .resource-form-card__title,
-.resource-overview-card__title {
+.resource-overview-card__title,
+.resource-catalog-block__title {
     margin: 0;
 }
 

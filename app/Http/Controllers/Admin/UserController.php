@@ -16,25 +16,28 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $search = $request->input('search', '');
-        $limit = 5;
+        $search = trim((string) $request->input('search', ''));
+        $limit = in_array((int) $request->input('limit', 5), [5, 10, 15], true)
+            ? (int) $request->input('limit', 5)
+            : 5;
+        $order = $request->input('order') === 'desc' ? 'desc' : 'asc';
 
         $data = User::query()
-            ->when(trim($search) !== '', function ($query) use ($search) {
+            ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($innerQuery) use ($search) {
                     $innerQuery->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('name')
+            ->orderBy('name', $order)
             ->paginate($limit)
             ->withQueryString();
 
         if ($data->isEmpty()) {
             $message = "No hay registros de \"$search\"";
-            return view('admin.empleados.index', ['data' => $data, 'search' => $search, 'message' => $message]);
+            return view('admin.empleados.index', compact('data', 'search', 'limit', 'order', 'message'));
         } else {
-            return view('admin.empleados.index', ['data' => $data, 'search' => $search]);
+            return view('admin.empleados.index', compact('data', 'search', 'limit', 'order'));
         }
     }
 

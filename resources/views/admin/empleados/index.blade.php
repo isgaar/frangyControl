@@ -18,6 +18,11 @@
 @stop
 
 @section('content')
+    @php
+        $limit = $limit ?? request('limit', $data->perPage());
+        $order = $order ?? request('order', 'asc');
+    @endphp
+
     <div class="resource-page">
         <section class="resource-hero">
             <div class="resource-hero__top">
@@ -56,17 +61,40 @@
         <section class="resource-panel">
             <div class="resource-panel__header">
                 <div>
-                    <span class="resource-panel__eyebrow">Consulta</span>
-                    <h2 class="resource-panel__title">Buscar personal</h2>
-                    <p class="resource-panel__copy">Busca por nombre o correo electrónico para ubicar un perfil en segundos.</p>
+                    <span class="resource-panel__eyebrow">Filtros</span>
+                    <h2 class="resource-panel__title">Buscar y ordenar</h2>
+                    <p class="resource-panel__copy">Encuentra por nombre o correo electrónico y ordena los perfiles del panel.</p>
                 </div>
+
+                @if ($search || (string) $limit !== '5' || $order !== 'asc')
+                    <div class="resource-pill">
+                        <i class="fas fa-filter"></i> Filtro activo
+                    </div>
+                @endif
             </div>
 
-            <form action="{{ route('usuarios.index') }}" method="get" class="resource-toolbar mt-4" style="grid-template-columns: minmax(0, 1fr) auto;">
+            <form action="{{ route('usuarios.index') }}" method="get" class="resource-toolbar mt-4">
                 <div class="resource-toolbar__field">
                     <label for="search">Buscar usuario</label>
                     <input type="text" id="search" name="search" class="form-control" value="{{ $search }}"
                         placeholder="Nombre o correo electrónico">
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="limit">Registros</label>
+                    <select name="limit" id="limit" class="form-control">
+                        <option value="5" {{ (string) $limit === '5' ? 'selected' : '' }}>5 por página</option>
+                        <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 por página</option>
+                        <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 por página</option>
+                    </select>
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="order">Orden</label>
+                    <select name="order" id="order" class="form-control">
+                        <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>A-Z</option>
+                        <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z-A</option>
+                    </select>
                 </div>
 
                 <div class="resource-toolbar__actions">
@@ -89,6 +117,10 @@
                         {{ $data->total() }} registro(s) encontrado(s). Página
                         {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}.
                     </p>
+                </div>
+
+                <div class="resource-pill">
+                    <i class="fas fa-users"></i> Límite {{ $data->isEmpty() ? 0 : $data->perPage() }}
                 </div>
             </div>
 

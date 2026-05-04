@@ -86,6 +86,14 @@ ensure_jwt_secret() {
 
 prepare_runtime_env
 
+echo "Limpiando manifests cacheados de Laravel..."
+mkdir -p /var/www/html/bootstrap/cache
+rm -f /var/www/html/bootstrap/cache/config.php \
+      /var/www/html/bootstrap/cache/events.php \
+      /var/www/html/bootstrap/cache/packages.php \
+      /var/www/html/bootstrap/cache/routes-v7.php \
+      /var/www/html/bootstrap/cache/services.php
+
 if [ -d "$PUBLIC_BUILD_SOURCE" ] && [ ! -f "$PUBLIC_BUILD_TARGET/manifest.json" ]; then
     echo "Sincronizando assets compilados en public/build..."
     mkdir -p "$PUBLIC_BUILD_TARGET"

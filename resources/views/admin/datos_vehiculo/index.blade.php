@@ -78,12 +78,75 @@
             </div>
         </section>
 
-        <div class="resource-catalog-grid">
-            <section class="resource-overview-card" id="marcas">
+        <section class="resource-panel">
+            <div class="resource-panel__header">
+                <div>
+                    <span class="resource-panel__eyebrow">Filtros</span>
+                    <h2 class="resource-panel__title">Buscar y ordenar</h2>
+                    <p class="resource-panel__copy">Filtra marcas, tipos de vehículo y servicios desde un solo apartado.</p>
+                </div>
+
+                @if ($brandSearch || $typeSearch || $serviceSearch || $order !== 'asc')
+                    <div class="resource-pill">
+                        <i class="fas fa-filter"></i> Filtro activo
+                    </div>
+                @endif
+            </div>
+
+            <form action="{{ route('catalogos.index') }}" method="get" class="resource-toolbar mt-4">
+                <div class="resource-toolbar__field">
+                    <label for="brand_search">Buscar marca</label>
+                    <input id="brand_search" name="brand_search" type="text" class="form-control" value="{{ $brandSearch }}" placeholder="Ejemplo: Toyota">
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="type_search">Buscar tipo</label>
+                    <input id="type_search" name="type_search" type="text" class="form-control" value="{{ $typeSearch }}" placeholder="Ejemplo: SUV">
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="service_search">Buscar servicio</label>
+                    <input id="service_search" name="service_search" type="text" class="form-control" value="{{ $serviceSearch }}" placeholder="Ejemplo: Afinación">
+                </div>
+
+                <div class="resource-toolbar__field">
+                    <label for="order">Orden</label>
+                    <select name="order" id="order" class="form-control">
+                        <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>A-Z</option>
+                        <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z-A</option>
+                    </select>
+                </div>
+
+                <div class="resource-toolbar__actions">
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Aplicar</button>
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark">
+                        <i class="fas fa-undo-alt me-1"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </section>
+
+        <section class="resource-panel">
+            <div class="resource-panel__header">
+                <div>
+                    <span class="resource-panel__eyebrow">Listado</span>
+                    <h2 class="resource-panel__title">Catálogos registrados</h2>
+                    <p class="resource-panel__copy">
+                        {{ $dataVehiculos->count() + $dataTiposVehiculos->count() + $dataServicios->count() }} registro(s) encontrados en esta vista.
+                    </p>
+                </div>
+
+                <div class="resource-pill">
+                    <i class="fas fa-table"></i> 3 catálogos
+                </div>
+            </div>
+
+            <div class="resource-catalog-grid mt-4">
+            <section class="resource-catalog-block" id="marcas">
                 <div class="resource-panel__header">
                     <div>
                         <span class="resource-panel__eyebrow">Marcas</span>
-                        <h2 class="resource-overview-card__title">Marcas de vehículos</h2>
+                        <h3 class="resource-catalog-block__title">Marcas de vehículos</h3>
                         <p class="resource-panel__copy">{{ $dataVehiculos->count() }} resultado(s) en esta vista.</p>
                     </div>
 
@@ -91,17 +154,6 @@
                         <i class="fas fa-plus me-1"></i> Agregar
                     </button>
                 </div>
-
-                <form action="{{ route('catalogos.index') }}#marcas" method="get" class="resource-toolbar mt-4">
-                    <div class="resource-toolbar__field">
-                        <label for="brand_search">Buscar marca</label>
-                        <input id="brand_search" name="brand_search" type="text" class="form-control" value="{{ $brandSearch }}" placeholder="Ejemplo: Toyota">
-                    </div>
-                    <div class="resource-toolbar__actions">
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Buscar</button>
-                        <a href="{{ route('catalogos.index') }}#marcas" class="btn btn-outline-dark">Limpiar</a>
-                    </div>
-                </form>
 
                 <div class="resource-table-wrap mt-4">
                     <div class="table-responsive">
@@ -138,11 +190,11 @@
                 </div>
             </section>
 
-            <section class="resource-overview-card" id="tipos">
+            <section class="resource-catalog-block" id="tipos">
                 <div class="resource-panel__header">
                     <div>
                         <span class="resource-panel__eyebrow">Clasificación</span>
-                        <h2 class="resource-overview-card__title">Tipos de vehículo</h2>
+                        <h3 class="resource-catalog-block__title">Tipos de vehículo</h3>
                         <p class="resource-panel__copy">{{ $dataTiposVehiculos->count() }} resultado(s) en esta vista.</p>
                     </div>
 
@@ -150,17 +202,6 @@
                         <i class="fas fa-plus me-1"></i> Agregar
                     </button>
                 </div>
-
-                <form action="{{ route('catalogos.index') }}#tipos" method="get" class="resource-toolbar mt-4">
-                    <div class="resource-toolbar__field">
-                        <label for="type_search">Buscar tipo</label>
-                        <input id="type_search" name="type_search" type="text" class="form-control" value="{{ $typeSearch }}" placeholder="Ejemplo: SUV">
-                    </div>
-                    <div class="resource-toolbar__actions">
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Buscar</button>
-                        <a href="{{ route('catalogos.index') }}#tipos" class="btn btn-outline-dark">Limpiar</a>
-                    </div>
-                </form>
 
                 <div class="resource-table-wrap mt-4">
                     <div class="table-responsive">
@@ -197,11 +238,11 @@
                 </div>
             </section>
 
-            <section class="resource-overview-card" id="servicios">
+            <section class="resource-catalog-block" id="servicios">
                 <div class="resource-panel__header">
                     <div>
                         <span class="resource-panel__eyebrow">Servicios</span>
-                        <h2 class="resource-overview-card__title">Nombres de servicios</h2>
+                        <h3 class="resource-catalog-block__title">Nombres de servicios</h3>
                         <p class="resource-panel__copy">{{ $dataServicios->count() }} resultado(s) en esta vista.</p>
                     </div>
 
@@ -209,17 +250,6 @@
                         <i class="fas fa-plus me-1"></i> Agregar
                     </button>
                 </div>
-
-                <form action="{{ route('catalogos.index') }}#servicios" method="get" class="resource-toolbar mt-4">
-                    <div class="resource-toolbar__field">
-                        <label for="service_search">Buscar servicio</label>
-                        <input id="service_search" name="service_search" type="text" class="form-control" value="{{ $serviceSearch }}" placeholder="Ejemplo: Afinación">
-                    </div>
-                    <div class="resource-toolbar__actions">
-                        <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Buscar</button>
-                        <a href="{{ route('catalogos.index') }}#servicios" class="btn btn-outline-dark">Limpiar</a>
-                    </div>
-                </form>
 
                 <div class="resource-table-wrap mt-4">
                     <div class="table-responsive">
@@ -255,7 +285,8 @@
                     </div>
                 </div>
             </section>
-        </div>
+            </div>
+        </section>
     </div>
 
     <div class="modal fade" id="brandModal" tabindex="-1" aria-labelledby="brandModalLabel" aria-hidden="true">
