@@ -28,6 +28,7 @@ LOG_TAIL="${LOG_TAIL:-30}"
 FOLLOW_LOGS="${FOLLOW_LOGS:-1}"
 PROMPT_ADMIN_ON_LAUNCH="${PROMPT_ADMIN_ON_LAUNCH:-1}"
 CLEAR_LARAVEL_CACHE_ON_LAUNCH="${CLEAR_LARAVEL_CACHE_ON_LAUNCH:-0}"
+LIVE_SOURCE_MOUNTS="${LIVE_SOURCE_MOUNTS:-1}"
 
 STACK_MODE=""
 LOG_FOLLOW_PID=""
@@ -49,6 +50,8 @@ Opciones:
 
 Tambien puedes activar la limpieza con CLEAR_LARAVEL_CACHE_ON_LAUNCH=1.
 Tambien puedes usar FOLLOW_LOGS=0 para el mismo comportamiento de --detached.
+Por defecto se montan las carpetas editables del proyecto dentro del contenedor
+para ver cambios en tiempo real. Usa LIVE_SOURCE_MOUNTS=0 para desactivarlo.
 EOF
 }
 
@@ -484,6 +487,41 @@ build_app_db_env_args() {
         -v "${ENV_FILE}:${APP_ENV_FILE_SOURCE_CONTAINER}:ro"
         -v "${APP_START_SCRIPT_HOST}:${APP_START_SCRIPT_CONTAINER}:ro"
     )
+
+    build_live_source_mount_args
+    APP_DB_ENV_ARGS+=("${LIVE_SOURCE_MOUNT_ARGS[@]}")
+}
+
+add_live_source_mount_if_exists() {
+    local host_path="$1"
+    local container_path="$2"
+
+    if [[ -e "${host_path}" ]]; then
+        LIVE_SOURCE_MOUNT_ARGS+=(-v "${host_path}:${container_path}:Z")
+    fi
+}
+
+build_live_source_mount_args() {
+    LIVE_SOURCE_MOUNT_ARGS=()
+
+    if [[ "${LIVE_SOURCE_MOUNTS}" != "1" ]]; then
+        return 0
+    fi
+
+    add_live_source_mount_if_exists "${ROOT_DIR}/app" "/var/www/html/app"
+    add_live_source_mount_if_exists "${ROOT_DIR}/bootstrap" "/var/www/html/bootstrap"
+    add_live_source_mount_if_exists "${ROOT_DIR}/config" "/var/www/html/config"
+    add_live_source_mount_if_exists "${ROOT_DIR}/database" "/var/www/html/database"
+    add_live_source_mount_if_exists "${ROOT_DIR}/public" "/var/www/html/public"
+    add_live_source_mount_if_exists "${ROOT_DIR}/resources" "/var/www/html/resources"
+    add_live_source_mount_if_exists "${ROOT_DIR}/routes" "/var/www/html/routes"
+    add_live_source_mount_if_exists "${ROOT_DIR}/storage" "/var/www/html/storage"
+    add_live_source_mount_if_exists "${ROOT_DIR}/artisan" "/var/www/html/artisan"
+    add_live_source_mount_if_exists "${ROOT_DIR}/composer.json" "/var/www/html/composer.json"
+    add_live_source_mount_if_exists "${ROOT_DIR}/composer.lock" "/var/www/html/composer.lock"
+    add_live_source_mount_if_exists "${ROOT_DIR}/package.json" "/var/www/html/package.json"
+    add_live_source_mount_if_exists "${ROOT_DIR}/package-lock.json" "/var/www/html/package-lock.json"
+    add_live_source_mount_if_exists "${ROOT_DIR}/vite.config.js" "/var/www/html/vite.config.js"
 }
 
 launch_database_container_with_tool() {

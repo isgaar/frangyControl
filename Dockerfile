@@ -41,6 +41,7 @@ RUN composer install \
 
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+COPY --from=frontend /app/public/build /opt/frangy/public-build
 
 RUN if [ ! -f .env ] && [ -f .env.example ]; then cp .env.example .env; fi \
     && composer dump-autoload --optimize --no-interaction \

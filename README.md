@@ -70,4 +70,15 @@ Eso elimina pod, contenedores y red antes de construir. Si tambien quieres borra
 
 `lanzar-pod.sh` es el que realmente levanta el entorno. Detecta `podman` o `docker`, reutiliza un entorno existente si ya esta arriba, pregunta por el administrador inicial cuando corresponde, levanta la base de datos con volumen persistente, inicia Laravel dentro del contenedor de app, ejecuta `php artisan project:install-dev --force`, deja la aplicacion disponible en `http://localhost:9000` y sigue mostrando los logs de Laravel en tiempo real. Si presionas `Ctrl+C`, el script detiene el pod o los contenedores levantados.
 
+El script monta las carpetas editables del proyecto dentro del contenedor, asi que cambios en vistas Blade, rutas, controladores, configuracion, recursos publicos y `storage` se reflejan sin usar `podman cp`. Si ya tenias un contenedor creado antes de este cambio, recrea el entorno una vez:
+```bash
+./unix-scrips/construir-pod.sh --clean
+./unix-scrips/lanzar-pod.sh
+```
+
+Si necesitas arrancar sin esos mounts, puedes usar:
+```bash
+LIVE_SOURCE_MOUNTS=0 ./unix-scrips/lanzar-pod.sh
+```
+
 Dev Ismael

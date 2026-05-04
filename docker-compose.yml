@@ -10,6 +10,21 @@ services:
     ports:
       - "192.168.100.140:80:8000"
     command: php artisan serve --host=0.0.0.0 --port=8000
+    volumes:
+      - ./app:/var/www/html/app:Z
+      - ./bootstrap:/var/www/html/bootstrap:Z
+      - ./config:/var/www/html/config:Z
+      - ./database:/var/www/html/database:Z
+      - ./public:/var/www/html/public:Z
+      - ./resources:/var/www/html/resources:Z
+      - ./routes:/var/www/html/routes:Z
+      - ./storage:/var/www/html/storage:Z
+      - ./artisan:/var/www/html/artisan:Z
+      - ./composer.json:/var/www/html/composer.json:Z
+      - ./composer.lock:/var/www/html/composer.lock:Z
+      - ./package.json:/var/www/html/package.json:Z
+      - ./package-lock.json:/var/www/html/package-lock.json:Z
+      - ./vite.config.js:/var/www/html/vite.config.js:Z
     depends_on:
       db:
         condition: service_healthy

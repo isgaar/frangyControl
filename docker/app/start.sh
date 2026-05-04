@@ -7,6 +7,8 @@ DB_WAIT_TIMEOUT="${DB_WAIT_TIMEOUT:-60}"
 APP_INIT_MAX_ATTEMPTS="${APP_INIT_MAX_ATTEMPTS:-10}"
 ENV_FILE_SOURCE="${ENV_FILE_SOURCE:-/var/www/html/.env.host}"
 ENV_FILE_TARGET="${ENV_FILE_TARGET:-/var/www/html/.env}"
+PUBLIC_BUILD_SOURCE="${PUBLIC_BUILD_SOURCE:-/opt/frangy/public-build}"
+PUBLIC_BUILD_TARGET="${PUBLIC_BUILD_TARGET:-/var/www/html/public/build}"
 
 upsert_env_value() {
     php -r '
@@ -83,6 +85,13 @@ ensure_jwt_secret() {
 }
 
 prepare_runtime_env
+
+if [ -d "$PUBLIC_BUILD_SOURCE" ] && [ ! -f "$PUBLIC_BUILD_TARGET/manifest.json" ]; then
+    echo "Sincronizando assets compilados en public/build..."
+    mkdir -p "$PUBLIC_BUILD_TARGET"
+    cp -R "$PUBLIC_BUILD_SOURCE/." "$PUBLIC_BUILD_TARGET/"
+fi
+
 ensure_jwt_secret
 
 echo "Esperando la base de datos en ${DB_HOST:-127.0.0.1}:${DB_PORT:-3306}..."

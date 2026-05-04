@@ -128,24 +128,14 @@ cleanup_existing_frangy_stack() {
 
     if [[ "${RECREATE_EXISTING_STACK}" != "1" ]]; then
         echo "Se conservara cualquier entorno previo de Frangy. Usa --clean para recrearlo desde cero."
+        if detect_existing_stack "${tool}" >/dev/null; then
+            echo "Aviso: hay un entorno existente. Si cambiaste mounts, puertos o configuracion de arranque, usa --clean y luego lanzar-pod.sh para recrear el contenedor."
+        fi
         return 0
     fi
 
-    if [[ "${tool}" != "podman" ]]; then
-        if container_exists "${tool}" "${CONTAINER_NAME}" || \
-           container_exists "${tool}" "${DB_CONTAINER_NAME}" || \
-           volume_exists "${tool}" "${DB_VOLUME_NAME}" || \
-           network_exists "${tool}" "${NETWORK_NAME}"; then
-            found_existing="1"
-        fi
-    else
-        if podman pod inspect "${POD_NAME}" >/dev/null 2>&1 || \
-           container_exists "${tool}" "${CONTAINER_NAME}" || \
-           container_exists "${tool}" "${DB_CONTAINER_NAME}" || \
-           volume_exists "${tool}" "${DB_VOLUME_NAME}" || \
-           network_exists "${tool}" "${NETWORK_NAME}"; then
-            found_existing="1"
-        fi
+    if detect_existing_stack "${tool}" >/dev/null; then
+        found_existing="1"
     fi
 
     if [[ "${found_existing}" != "1" ]]; then
@@ -169,6 +159,24 @@ cleanup_existing_frangy_stack() {
     fi
 
     remove_network_if_exists "${tool}" "${NETWORK_NAME}"
+}
+
+detect_existing_stack() {
+    local tool="$1"
+
+    if [[ "${tool}" != "podman" ]]; then
+        container_exists "${tool}" "${CONTAINER_NAME}" || \
+        container_exists "${tool}" "${DB_CONTAINER_NAME}" || \
+        volume_exists "${tool}" "${DB_VOLUME_NAME}" || \
+        network_exists "${tool}" "${NETWORK_NAME}"
+        return $?
+    fi
+
+    podman pod inspect "${POD_NAME}" >/dev/null 2>&1 || \
+    container_exists "${tool}" "${CONTAINER_NAME}" || \
+    container_exists "${tool}" "${DB_CONTAINER_NAME}" || \
+    volume_exists "${tool}" "${DB_VOLUME_NAME}" || \
+    network_exists "${tool}" "${NETWORK_NAME}"
 }
 
 parse_args "$@"
