@@ -38,113 +38,108 @@
     @endif
 
     <div class="resource-page">
-        <section class="resource-hero">
-            <div class="resource-hero__top">
-                <div class="resource-hero__copy">
-                    <span class="resource-hero__eyebrow">Catálogos base</span>
-                    <h1 class="resource-hero__title">Datos generales del taller</h1>
-                    <p>Administra marcas, tipos de vehículo y servicios desde una sola pantalla, sin saltar entre módulos.</p>
-                </div>
-
-                <div class="resource-hero__actions">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#brandModal">
-                        <i class="fas fa-car-side me-1"></i> Nueva marca
-                    </button>
-                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#typeModal">
-                        <i class="fas fa-truck me-1"></i> Nuevo tipo
-                    </button>
-                    <button type="button" class="btn btn-outline-light" data-bs-toggle="modal" data-bs-target="#serviceModal">
-                        <i class="fas fa-tools me-1"></i> Nuevo servicio
-                    </button>
-                </div>
+        {{-- Encabezado compacto (Estilo Órdenes) --}}
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:1rem;">
+            <div>
+                <span class="resource-hero__eyebrow" style="font-size:0.78rem;">Catálogos base</span>
+                <h1 class="resource-hero__title" style="font-size:1.5rem; font-weight:800; margin:2px 0 0;">Datos generales del taller</h1>
             </div>
-
-            <div class="resource-metrics">
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Marcas</span>
-                    <p class="resource-metric__value">{{ $catalogTotals['brands'] }}</p>
-                    <p class="resource-metric__copy">Catálogo disponible para capturar unidades.</p>
-                </article>
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Tipos</span>
-                    <p class="resource-metric__value">{{ $catalogTotals['types'] }}</p>
-                    <p class="resource-metric__copy">Clasificaciones operativas listas para usar.</p>
-                </article>
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Servicios</span>
-                    <p class="resource-metric__value">{{ $catalogTotals['services'] }}</p>
-                    <p class="resource-metric__copy">Opciones base para nuevas órdenes de servicio.</p>
-                </article>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" style="font-size:0.9rem; font-weight:800;" data-bs-toggle="modal" data-bs-target="#brandModal">
+                    <i class="fas fa-car-side me-1"></i> Nueva marca
+                </button>
+                <button type="button" class="btn btn-outline-dark" style="font-size:0.9rem; font-weight:800;" data-bs-toggle="modal" data-bs-target="#typeModal">
+                    <i class="fas fa-truck me-1"></i> Nuevo tipo
+                </button>
+                <button type="button" class="btn btn-outline-dark" style="font-size:0.9rem; font-weight:800;" data-bs-toggle="modal" data-bs-target="#serviceModal">
+                    <i class="fas fa-tools me-1"></i> Nuevo servicio
+                </button>
             </div>
-        </section>
+        </div>
+
+        {{-- Métricas compactas (Estilo Órdenes) --}}
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1rem;">
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Marcas</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $catalogTotals['brands'] }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Disponibles para capturar unidades</p>
+            </article>
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Tipos</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $catalogTotals['types'] }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Clasificaciones operativas</p>
+            </article>
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Servicios</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $catalogTotals['services'] }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Opciones base de servicio</p>
+            </article>
+        </div>
 
         {{-- ✅ SECCIÓN UNIFICADA: Filtros + Listado en un solo panel --}}
         <section class="resource-panel">
 
-            {{-- Cabecera del panel --}}
-            <div class="resource-panel__header">
-                <div>
-                    <span class="resource-panel__eyebrow">Filtros y listado</span>
-                    <h2 class="resource-panel__title">Buscar y ordenar catálogos</h2>
-                    <p class="resource-panel__copy">Filtra marcas, tipos de vehículo y servicios desde un solo apartado.</p>
-                </div>
-
-                @if ($brandSearch || $typeSearch || $serviceSearch || $order !== 'asc')
-                    <div class="resource-pill">
-                        <i class="fas fa-filter"></i> Filtro activo
+            {{-- Barra de filtros (Estilo Órdenes) --}}
+            <form action="{{ route('catalogos.index') }}" method="get">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
+                    
+                    {{-- Búsqueda Marca --}}
+                    <div style="display:flex; align-items:center; flex:1; min-width:180px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
+                        <input type="text" name="brand_search" value="{{ $brandSearch }}" placeholder="Buscar marca..." 
+                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
                     </div>
-                @endif
-            </div>
 
-            {{-- Formulario de filtros --}}
-            <form action="{{ route('catalogos.index') }}" method="get" class="resource-toolbar mt-4">
-                <div class="resource-toolbar__field">
-                    <label for="brand_search">Buscar marca</label>
-                    <input id="brand_search" name="brand_search" type="text" class="form-control" value="{{ $brandSearch }}" placeholder="Ejemplo: Toyota">
-                </div>
+                    {{-- Búsqueda Tipo --}}
+                    <div style="display:flex; align-items:center; flex:1; min-width:180px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
+                        <input type="text" name="type_search" value="{{ $typeSearch }}" placeholder="Buscar tipo..." 
+                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
+                    </div>
 
-                <div class="resource-toolbar__field">
-                    <label for="type_search">Buscar tipo</label>
-                    <input id="type_search" name="type_search" type="text" class="form-control" value="{{ $typeSearch }}" placeholder="Ejemplo: SUV">
-                </div>
+                    {{-- Búsqueda Servicio --}}
+                    <div style="display:flex; align-items:center; flex:1; min-width:180px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
+                        <input type="text" name="service_search" value="{{ $serviceSearch }}" placeholder="Buscar servicio..." 
+                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
+                        <button type="submit" title="Buscar" style="height:40px; width:44px; background:#0d6efd; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                        </button>
+                    </div>
 
-                <div class="resource-toolbar__field">
-                    <label for="service_search">Buscar servicio</label>
-                    <input id="service_search" name="service_search" type="text" class="form-control" value="{{ $serviceSearch }}" placeholder="Ejemplo: Afinación">
-                </div>
-
-                <div class="resource-toolbar__field">
-                    <label for="order">Orden</label>
-                    <select name="order" id="order" class="form-control">
+                    <select name="order" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
                         <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>A-Z</option>
                         <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z-A</option>
                     </select>
-                </div>
 
-                <div class="resource-toolbar__actions">
-                    <button class="btn btn-primary" type="submit"><i class="fas fa-search me-1"></i> Aplicar</button>
-                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-undo-alt me-1"></i> Limpiar
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark" style="height:40px; display:inline-flex; align-items:center; font-size:0.9rem; font-weight:600; gap:6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+                        </svg>
+                        Limpiar
                     </a>
+
+                    @if ($brandSearch || $typeSearch || $serviceSearch || $order !== 'asc')
+                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#fff3cd; color:#856404; border:1px solid #ffc107;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                            </svg>
+                            Filtro activo
+                        </span>
+                    @endif
                 </div>
             </form>
-
-            {{-- Separador visual entre filtros y listado --}}
-            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid rgba(0,0,0,.08);">
-
-            {{-- Cabecera del listado --}}
-            <div class="resource-panel__header">
-                <div>
-                    <span class="resource-panel__eyebrow">Listado</span>
-                    <h2 class="resource-panel__title">Catálogos registrados</h2>
-                    <p class="resource-panel__copy">
-                        {{ $dataVehiculos->count() + $dataTiposVehiculos->count() + $dataServicios->count() }} registro(s) encontrados en esta vista.
-                    </p>
-                </div>
-
-                <div class="resource-pill">
-                    <i class="fas fa-table"></i> 3 catálogos
-                </div>
+ 
+            {{-- Info del listado --}}
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:.75rem;">
+                <p style="font-size:0.9rem; margin:0;">
+                    <strong>{{ $dataVehiculos->count() + $dataTiposVehiculos->count() + $dataServicios->count() }}</strong> registro(s) encontrados en esta vista.
+                </p>
+                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#e2e3e5; color:#41464b; border:1px solid #ced4da;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
+                    </svg>
+                    3 catálogos
+                </span>
             </div>
 
             {{-- Grid de catálogos --}}
