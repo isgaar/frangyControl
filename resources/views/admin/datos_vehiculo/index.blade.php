@@ -78,11 +78,14 @@
             </div>
         </section>
 
+        {{-- ✅ SECCIÓN UNIFICADA: Filtros + Listado en un solo panel --}}
         <section class="resource-panel">
+
+            {{-- Cabecera del panel --}}
             <div class="resource-panel__header">
                 <div>
-                    <span class="resource-panel__eyebrow">Filtros</span>
-                    <h2 class="resource-panel__title">Buscar y ordenar</h2>
+                    <span class="resource-panel__eyebrow">Filtros y listado</span>
+                    <h2 class="resource-panel__title">Buscar y ordenar catálogos</h2>
                     <p class="resource-panel__copy">Filtra marcas, tipos de vehículo y servicios desde un solo apartado.</p>
                 </div>
 
@@ -93,6 +96,7 @@
                 @endif
             </div>
 
+            {{-- Formulario de filtros --}}
             <form action="{{ route('catalogos.index') }}" method="get" class="resource-toolbar mt-4">
                 <div class="resource-toolbar__field">
                     <label for="brand_search">Buscar marca</label>
@@ -124,9 +128,11 @@
                     </a>
                 </div>
             </form>
-        </section>
 
-        <section class="resource-panel">
+            {{-- Separador visual entre filtros y listado --}}
+            <hr style="margin: 1.5rem 0; border: none; border-top: 1px solid rgba(0,0,0,.08);">
+
+            {{-- Cabecera del listado --}}
             <div class="resource-panel__header">
                 <div>
                     <span class="resource-panel__eyebrow">Listado</span>
@@ -141,154 +147,161 @@
                 </div>
             </div>
 
+            {{-- Grid de catálogos --}}
             <div class="resource-catalog-grid mt-4">
-            <section class="resource-catalog-block" id="marcas">
-                <div class="resource-panel__header">
-                    <div>
-                        <span class="resource-panel__eyebrow">Marcas</span>
-                        <h3 class="resource-catalog-block__title">Marcas de vehículos</h3>
-                        <p class="resource-panel__copy">{{ $dataVehiculos->count() }} resultado(s) en esta vista.</p>
+
+                {{-- Marcas --}}
+                <section class="resource-catalog-block" id="marcas">
+                    <div class="resource-panel__header">
+                        <div>
+                            <span class="resource-panel__eyebrow">Marcas</span>
+                            <h3 class="resource-catalog-block__title">Marcas de vehículos</h3>
+                            <p class="resource-panel__copy">{{ $dataVehiculos->count() }} resultado(s) en esta vista.</p>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#brandModal">
+                            <i class="fas fa-plus me-1"></i> Agregar
+                        </button>
                     </div>
 
-                    <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#brandModal">
-                        <i class="fas fa-plus me-1"></i> Agregar
-                    </button>
-                </div>
-
-                <div class="resource-table-wrap mt-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Marca</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($dataVehiculos as $row)
+                    <div class="resource-table-wrap mt-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
                                     <tr>
-                                        <td>{{ $row->marca }}</td>
-                                        <td class="text-end">
-                                            <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.marcas.edit', $row->id_vehiculo) }}" title="Editar marca">
-                                                    <i class="fas fa-pen"></i>
-                                                </a>
-                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.marcas.delete', $row->id_vehiculo) }}" title="Eliminar marca">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        <th>Marca</th>
+                                        <th class="text-end">Acciones</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2" class="resource-empty">No hay marcas para mostrar.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse ($dataVehiculos as $row)
+                                        <tr>
+                                            <td>{{ $row->marca }}</td>
+                                            <td class="text-end">
+                                                <div class="resource-actions justify-content-end">
+                                                    <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.marcas.edit', $row->id_vehiculo) }}" title="Editar marca">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.marcas.delete', $row->id_vehiculo) }}" title="Eliminar marca">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="2" class="resource-empty">No hay marcas para mostrar.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
-            <section class="resource-catalog-block" id="tipos">
-                <div class="resource-panel__header">
-                    <div>
-                        <span class="resource-panel__eyebrow">Clasificación</span>
-                        <h3 class="resource-catalog-block__title">Tipos de vehículo</h3>
-                        <p class="resource-panel__copy">{{ $dataTiposVehiculos->count() }} resultado(s) en esta vista.</p>
-                    </div>
+                {{-- Tipos de vehículo --}}
+                <section class="resource-catalog-block" id="tipos">
+                    <div class="resource-panel__header">
+                        <div>
+                            <span class="resource-panel__eyebrow">Clasificación</span>
+                            <h3 class="resource-catalog-block__title">Tipos de vehículo</h3>
+                            <p class="resource-panel__copy">{{ $dataTiposVehiculos->count() }} resultado(s) en esta vista.</p>
+                        </div>
 
-                    <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#typeModal">
-                        <i class="fas fa-plus me-1"></i> Agregar
-                    </button>
-                </div>
-
-                <div class="resource-table-wrap mt-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Tipo</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($dataTiposVehiculos as $row)
-                                    <tr>
-                                        <td>{{ $row->tipo }}</td>
-                                        <td class="text-end">
-                                            <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.tipos_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
-                                                    <i class="fas fa-pen"></i>
-                                                </a>
-                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.tipos_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2" class="resource-empty">No hay tipos de vehículo para mostrar.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section class="resource-catalog-block" id="servicios">
-                <div class="resource-panel__header">
-                    <div>
-                        <span class="resource-panel__eyebrow">Servicios</span>
-                        <h3 class="resource-catalog-block__title">Nombres de servicios</h3>
-                        <p class="resource-panel__copy">{{ $dataServicios->count() }} resultado(s) en esta vista.</p>
+                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#typeModal">
+                            <i class="fas fa-plus me-1"></i> Agregar
+                        </button>
                     </div>
 
-                    <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#serviceModal">
-                        <i class="fas fa-plus me-1"></i> Agregar
-                    </button>
-                </div>
-
-                <div class="resource-table-wrap mt-4">
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th class="text-end">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($dataServicios as $row)
+                    <div class="resource-table-wrap mt-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
                                     <tr>
-                                        <td>{{ $row->nombreServicio }}</td>
-                                        <td class="text-end">
-                                            <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.servicios.edit', $row->id_servicio) }}" title="Editar servicio">
-                                                    <i class="fas fa-pen"></i>
-                                                </a>
-                                                <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.servicios.delete', $row->id_servicio) }}" title="Eliminar servicio">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>
-                                            </div>
-                                        </td>
+                                        <th>Tipo</th>
+                                        <th class="text-end">Acciones</th>
                                     </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="2" class="resource-empty">No hay servicios para mostrar.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @forelse ($dataTiposVehiculos as $row)
+                                        <tr>
+                                            <td>{{ $row->tipo }}</td>
+                                            <td class="text-end">
+                                                <div class="resource-actions justify-content-end">
+                                                    <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.tipos_vehiculo.edit', $row->id_tvehiculo) }}" title="Editar tipo">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.tipos_vehiculo.delete', $row->id_tvehiculo) }}" title="Eliminar tipo">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="2" class="resource-empty">No hay tipos de vehículo para mostrar.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+
+                {{-- Servicios --}}
+                <section class="resource-catalog-block" id="servicios">
+                    <div class="resource-panel__header">
+                        <div>
+                            <span class="resource-panel__eyebrow">Servicios</span>
+                            <h3 class="resource-catalog-block__title">Nombres de servicios</h3>
+                            <p class="resource-panel__copy">{{ $dataServicios->count() }} resultado(s) en esta vista.</p>
+                        </div>
+
+                        <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal" data-bs-target="#serviceModal">
+                            <i class="fas fa-plus me-1"></i> Agregar
+                        </button>
+                    </div>
+
+                    <div class="resource-table-wrap mt-4">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th class="text-end">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($dataServicios as $row)
+                                        <tr>
+                                            <td>{{ $row->nombreServicio }}</td>
+                                            <td class="text-end">
+                                                <div class="resource-actions justify-content-end">
+                                                    <a class="btn btn-outline-dark btn-sm" href="{{ route('catalogos.servicios.edit', $row->id_servicio) }}" title="Editar servicio">
+                                                        <i class="fas fa-pen"></i>
+                                                    </a>
+                                                    <a class="btn btn-outline-danger btn-sm" href="{{ route('catalogos.servicios.delete', $row->id_servicio) }}" title="Eliminar servicio">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="2" class="resource-empty">No hay servicios para mostrar.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
             </div>
         </section>
     </div>
 
+    {{-- Modal: Marcas --}}
     <div class="modal fade" id="brandModal" tabindex="-1" aria-labelledby="brandModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -322,6 +335,7 @@
         </div>
     </div>
 
+    {{-- Modal: Tipos --}}
     <div class="modal fade" id="typeModal" tabindex="-1" aria-labelledby="typeModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
@@ -355,6 +369,7 @@
         </div>
     </div>
 
+    {{-- Modal: Servicios --}}
     <div class="modal fade" id="serviceModal" tabindex="-1" aria-labelledby="serviceModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">

@@ -8,9 +8,7 @@
             <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
                 <span class="dashboard-legacy-alert__text">
                     {{ Session::get('status') }}
-                    @php
-                        Session::forget('status');
-                    @endphp
+                    @php Session::forget('status'); @endphp
                 </span>
             </div>
         </div>
@@ -19,124 +17,118 @@
 
 @section('content')
     @php
-        $limit = request('limit', $data->perPage());
-        $sortBy = $sortBy ?? request('sort_by', 'id_cliente');
+        $limit     = request('limit', $data->perPage());
+        $sortBy    = $sortBy    ?? request('sort_by',    'id_cliente');
         $sortOrder = $sortOrder ?? request('sort_order', 'asc');
     @endphp
 
     <div class="resource-page">
-        <section class="resource-hero">
-            <div class="resource-hero__top">
-                <div class="resource-hero__copy">
-                    <span class="resource-hero__eyebrow">Directorio y atención</span>
-                    <h1 class="resource-hero__title">Clientes listos para operar</h1>
-                    <p>Consulta tarjetas de contacto, busca rápido por nombre, teléfono o correo y mantén el padrón del taller más claro.</p>
-                </div>
 
-                <div class="resource-hero__actions">
-                    <a href="{{ route('clientes.create') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-1"></i> Nuevo cliente
-                    </a>
-                </div>
+        {{-- Encabezado compacto --}}
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:1rem;">
+            <div>
+                <span class="resource-hero__eyebrow" style="font-size:0.78rem;">Directorio y atención</span>
+                <h1 class="resource-hero__title" style="font-size:1.5rem; font-weight:800; margin:2px 0 0;">Clientes listos para operar</h1>
             </div>
+            <a href="{{ route('clientes.create') }}" class="btn btn-primary" style="font-size:0.9rem; font-weight:800;">
+                <i class="fas fa-user-plus me-1"></i> Nuevo cliente
+            </a>
+        </div>
 
-            <div class="resource-metrics">
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Clientes</span>
-                    <p class="resource-metric__value">{{ $data->total() }}</p>
-                    <p class="resource-metric__copy">Registros encontrados en el directorio.</p>
-                </article>
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Página</span>
-                    <p class="resource-metric__value">{{ $data->isEmpty() ? 0 : $data->currentPage() }}</p>
-                    <p class="resource-metric__copy">Vista actual de {{ $data->lastPage() }} disponibles.</p>
-                </article>
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Orden</span>
-                    <p class="resource-metric__value">{{ $sortOrder === 'desc' ? 'DESC' : 'ASC' }}</p>
-                    <p class="resource-metric__copy">Acomodado por {{ $sortBy === 'nombreCompleto' ? 'nombre' : 'ID' }}.</p>
-                </article>
-            </div>
-        </section>
+        {{-- Métricas compactas --}}
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1rem;">
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Clientes</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $data->total() }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Registros en el directorio</p>
+            </article>
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Página</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $data->isEmpty() ? 0 : $data->currentPage() }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">De {{ $data->lastPage() }} disponibles</p>
+            </article>
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Orden</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $sortOrder === 'desc' ? 'DESC' : 'ASC' }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Por {{ $sortBy === 'nombreCompleto' ? 'nombre' : 'ID' }}</p>
+            </article>
+        </div>
 
+        {{-- Panel unificado: filtros + listado --}}
         <section class="resource-panel">
-            <div class="resource-panel__header">
-                <div>
-                    <span class="resource-panel__eyebrow">Filtros</span>
-                    <h2 class="resource-panel__title">Buscar y ordenar</h2>
-                    <p class="resource-panel__copy">Encuentra por nombre, teléfono, correo o RFC y ajusta la cantidad de tarjetas visibles.</p>
-                </div>
 
-                @if ($search || (string) $limit !== '10' || $sortBy !== 'id_cliente' || $sortOrder !== 'asc')
-                    <div class="resource-pill">
-                        <i class="fas fa-filter"></i> Filtro activo
+            {{-- Barra de filtros --}}
+            <form action="{{ route('clientes.index') }}" method="GET">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
+
+                    {{-- Búsqueda con lupa integrada --}}
+                    <div style="display:flex; align-items:center; flex:1; min-width:220px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search }}"
+                            placeholder="Nombre, teléfono o correo…"
+                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
+                        <button type="submit" title="Buscar" style="height:40px; width:44px; background:#0d6efd; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                        </button>
                     </div>
-                @endif
-            </div>
 
-            <form action="{{ route('clientes.index') }}" method="GET" class="resource-toolbar mt-4">
-                <div class="resource-toolbar__field">
-                    <label for="search">Buscar cliente</label>
-                    <input type="text" id="search" name="search" class="form-control" value="{{ $search }}"
-                        placeholder="Nombre, teléfono o correo">
-                </div>
+                    <select name="sort_by" class="form-select" style="height:40px; width:auto; font-size:0.9rem;">
+                        <option value="id_cliente"    {{ $sortBy === 'id_cliente'    ? 'selected' : '' }}>Ordenar por ID</option>
+                        <option value="nombreCompleto" {{ $sortBy === 'nombreCompleto' ? 'selected' : '' }}>Ordenar por nombre</option>
+                    </select>
 
-                <div class="resource-toolbar__field">
-                    <label for="limit">Registros</label>
-                    <select name="limit" id="limit" class="form-select">
-                        <option value="6" {{ (string) $limit === '6' ? 'selected' : '' }}>6 por página</option>
-                        <option value="9" {{ (string) $limit === '9' ? 'selected' : '' }}>9 por página</option>
+                    <select name="sort_order" class="form-select" style="height:40px; width:auto; font-size:0.9rem;">
+                        <option value="asc"  {{ $sortOrder === 'asc'  ? 'selected' : '' }}>Ascendente</option>
+                        <option value="desc" {{ $sortOrder === 'desc' ? 'selected' : '' }}>Descendente</option>
+                    </select>
+
+                    <select name="limit" class="form-select" style="height:40px; width:auto; font-size:0.9rem;">
+                        <option value="6"  {{ (string) $limit === '6'  ? 'selected' : '' }}>6 por página</option>
+                        <option value="9"  {{ (string) $limit === '9'  ? 'selected' : '' }}>9 por página</option>
                         <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 por página</option>
                         <option value="12" {{ (string) $limit === '12' ? 'selected' : '' }}>12 por página</option>
                         <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 por página</option>
                     </select>
-                </div>
 
-                <div class="resource-toolbar__field">
-                    <label for="sort_by">Ordenar por</label>
-                    <select name="sort_by" id="sort_by" class="form-select">
-                        <option value="id_cliente" {{ $sortBy === 'id_cliente' ? 'selected' : '' }}>ID</option>
-                        <option value="nombreCompleto" {{ $sortBy === 'nombreCompleto' ? 'selected' : '' }}>Nombre</option>
-                    </select>
-                </div>
-
-                <div class="resource-toolbar__field">
-                    <label for="sort_order">Dirección</label>
-                    <select name="sort_order" id="sort_order" class="form-select">
-                        <option value="asc" {{ $sortOrder === 'asc' ? 'selected' : '' }}>Ascendente</option>
-                        <option value="desc" {{ $sortOrder === 'desc' ? 'selected' : '' }}>Descendente</option>
-                    </select>
-                </div>
-
-                <div class="resource-toolbar__actions">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search me-1"></i> Aplicar
-                    </button>
-                    <a href="{{ route('clientes.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-undo-alt me-1"></i> Limpiar
+                    <a href="{{ route('clientes.index') }}" class="btn btn-outline-dark" style="height:40px; display:inline-flex; align-items:center; font-size:0.9rem; font-weight:600; gap:6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+                        </svg>
+                        Limpiar
                     </a>
+
+                    @if ($search || (string) $limit !== '10' || $sortBy !== 'id_cliente' || $sortOrder !== 'asc')
+                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#fff3cd; color:#856404; border:1px solid #ffc107;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                            </svg>
+                            Filtro activo
+                        </span>
+                    @endif
                 </div>
             </form>
-        </section>
 
-        <section class="resource-panel">
-            <div class="resource-panel__header">
-                <div>
-                    <span class="resource-panel__eyebrow">Listado</span>
-                    <h2 class="resource-panel__title">Clientes registrados</h2>
-                    <p class="resource-panel__copy">
-                        {{ $data->total() }} registro(s) encontrados. Página
-                        {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}.
-                    </p>
-                </div>
-
-                <div class="resource-pill">
-                    <i class="fas fa-id-card"></i> Límite {{ $data->isEmpty() ? 0 : $data->perPage() }}
-                </div>
+            {{-- Info del listado --}}
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:.75rem;">
+                <p style="font-size:0.9rem; margin:0;">
+                    <strong>{{ $data->total() }}</strong> registro(s) &middot;
+                    Página {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}
+                </p>
+                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#e2e3e5; color:#41464b; border:1px solid #ced4da;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
+                    </svg>
+                    Límite {{ $data->isEmpty() ? 0 : $data->perPage() }}
+                </span>
             </div>
 
+            {{-- Listado --}}
             @if ($data->isEmpty())
-                <div class="resource-empty">
+                <div class="resource-empty" style="font-size:0.9rem;">
                     No existe el cliente "{{ $search }}".
                 </div>
             @else
@@ -153,27 +145,27 @@
                             <div class="resource-person-card__top">
                                 <div class="resource-avatar">{{ $initials ?: 'C' }}</div>
                                 <div>
-                                    <h3 class="resource-person-card__title">{{ ucwords($cliente->nombreCompleto) }}</h3>
-                                    <p class="resource-person-card__copy">Contacto activo dentro del panel administrativo.</p>
+                                    <h3 class="resource-person-card__title" style="font-size:1rem; font-weight:800;">{{ ucwords($cliente->nombreCompleto) }}</h3>
+                                    <p class="resource-person-card__copy" style="font-size:0.84rem;">Contacto activo dentro del panel administrativo.</p>
                                 </div>
                             </div>
 
                             <div class="resource-kv">
                                 <div class="resource-kv__item">
-                                    <span class="resource-kv__label">Teléfono</span>
-                                    <p class="resource-kv__value">{{ $cliente->telefono }}</p>
+                                    <span class="resource-kv__label" style="font-size:0.78rem; font-weight:700;">Teléfono</span>
+                                    <p class="resource-kv__value" style="font-size:0.9rem;">{{ $cliente->telefono }}</p>
                                 </div>
                                 <div class="resource-kv__item">
-                                    <span class="resource-kv__label">Correo electrónico</span>
-                                    <p class="resource-kv__value">{{ $cliente->correo }}</p>
+                                    <span class="resource-kv__label" style="font-size:0.78rem; font-weight:700;">Correo electrónico</span>
+                                    <p class="resource-kv__value" style="font-size:0.9rem;">{{ $cliente->correo }}</p>
                                 </div>
                             </div>
 
                             <div class="resource-person-card__footer">
-                                <a class="btn btn-outline-dark" href="{{ route('clientes.show', $cliente->id_cliente) }}" title="Ver cliente">
+                                <a class="btn btn-outline-dark btn-sm" href="{{ route('clientes.show', $cliente->id_cliente) }}" title="Ver cliente" style="font-size:0.84rem; font-weight:600;">
                                     <i class="fas fa-eye me-1"></i> Ver
                                 </a>
-                                <a class="btn btn-outline-dark" href="{{ route('clientes.edit', $cliente->id_cliente) }}" title="Editar cliente">
+                                <a class="btn btn-outline-dark btn-sm" href="{{ route('clientes.edit', $cliente->id_cliente) }}" title="Editar cliente" style="font-size:0.84rem; font-weight:600;">
                                     <i class="fas fa-user-edit me-1"></i> Editar tarjeta
                                 </a>
                             </div>
@@ -181,11 +173,12 @@
                     @endforeach
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
-                    <p class="mb-0 text-muted">Mostrando {{ $data->count() }} registro(s) en esta página.</p>
+                <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap:.75rem;">
+                    <p class="mb-0 text-muted" style="font-size:0.84rem;">Mostrando {{ $data->count() }} registro(s) en esta página.</p>
                     {{ $data->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
+
         </section>
     </div>
 @endsection

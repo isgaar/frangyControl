@@ -8,9 +8,7 @@
             <div class="alert alert-{{ Session::get('status_type') }} dashboard-legacy-alert">
                 <span class="dashboard-legacy-alert__text">
                     {{ Session::get('status') }}
-                    @php
-                        Session::forget('status');
-                    @endphp
+                    @php Session::forget('status'); @endphp
                 </span>
             </div>
         </div>
@@ -24,115 +22,107 @@
     @endphp
 
     <div class="resource-page">
-        <section class="resource-hero">
-            <div class="resource-hero__top">
-                <div class="resource-hero__copy">
-                    <span class="resource-hero__eyebrow">Accesos y permisos</span>
-                    <h1 class="resource-hero__title">Usuarios del sistema</h1>
-                    <p>Administra accesos, revisa correos, ubica perfiles rápido y entra directo a editar o visualizar permisos del equipo.</p>
-                </div>
 
-                <div class="resource-hero__actions">
-                    <a href="{{ route('usuarios.create') }}" class="btn btn-primary">
-                        <i class="fas fa-user-plus me-1"></i> Nuevo usuario
-                    </a>
-                </div>
+        {{-- Encabezado compacto --}}
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:1rem;">
+            <div>
+                <span class="resource-hero__eyebrow" style="font-size:0.78rem;">Accesos y permisos</span>
+                <h1 class="resource-hero__title" style="font-size:1.5rem; font-weight:800; margin:2px 0 0;">Usuarios del sistema</h1>
             </div>
+            <a href="{{ route('usuarios.create') }}" class="btn btn-primary" style="font-size:0.9rem; font-weight:800;">
+                <i class="fas fa-user-plus me-1"></i> Nuevo usuario
+            </a>
+        </div>
 
-            <div class="resource-metrics">
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Usuarios</span>
-                    <p class="resource-metric__value">{{ $data->total() }}</p>
-                    <p class="resource-metric__copy">Registros encontrados con la búsqueda actual.</p>
-                </article>
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Página</span>
-                    <p class="resource-metric__value">{{ $data->isEmpty() ? 0 : $data->currentPage() }}</p>
-                    <p class="resource-metric__copy">Vista {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}.</p>
-                </article>
-                <article class="resource-metric">
-                    <span class="resource-metric__label">Búsqueda</span>
-                    <p class="resource-metric__value">{{ $search ? 'Sí' : 'No' }}</p>
-                    <p class="resource-metric__copy">{{ $search ? 'Filtro por texto activo.' : 'Mostrando el directorio completo.' }}</p>
-                </article>
-            </div>
-        </section>
+        {{-- Métricas compactas --}}
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1rem;">
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Usuarios</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $data->total() }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Con la búsqueda actual</p>
+            </article>
+            <article class="resource-metric" style="padding:10px 14px;">
+                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Página</span>
+                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $data->isEmpty() ? 0 : $data->currentPage() }}</p>
+                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">De {{ $data->lastPage() }} disponibles</p>
+            </article>
+        </div>
 
+        {{-- Panel unificado: filtros + listado --}}
         <section class="resource-panel">
-            <div class="resource-panel__header">
-                <div>
-                    <span class="resource-panel__eyebrow">Filtros</span>
-                    <h2 class="resource-panel__title">Buscar y ordenar</h2>
-                    <p class="resource-panel__copy">Encuentra por nombre o correo electrónico y ordena los perfiles del panel.</p>
-                </div>
 
-                @if ($search || (string) $limit !== '5' || $order !== 'asc')
-                    <div class="resource-pill">
-                        <i class="fas fa-filter"></i> Filtro activo
+            {{-- Barra de filtros --}}
+            <form action="{{ route('usuarios.index') }}" method="get">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
+
+                    {{-- Búsqueda con lupa integrada --}}
+                    <div style="display:flex; align-items:center; flex:1; min-width:220px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search }}"
+                            placeholder="Nombre o correo electrónico…"
+                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
+                        <button type="submit" title="Buscar" style="height:40px; width:44px; background:#0d6efd; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                        </button>
                     </div>
-                @endif
-            </div>
 
-            <form action="{{ route('usuarios.index') }}" method="get" class="resource-toolbar mt-4">
-                <div class="resource-toolbar__field">
-                    <label for="search">Buscar usuario</label>
-                    <input type="text" id="search" name="search" class="form-control" value="{{ $search }}"
-                        placeholder="Nombre o correo electrónico">
-                </div>
+                    <select name="order" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                        <option value="asc"  {{ $order === 'asc'  ? 'selected' : '' }}>A–Z</option>
+                        <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z–A</option>
+                    </select>
 
-                <div class="resource-toolbar__field">
-                    <label for="limit">Registros</label>
-                    <select name="limit" id="limit" class="form-control">
-                        <option value="5" {{ (string) $limit === '5' ? 'selected' : '' }}>5 por página</option>
+                    <select name="limit" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                        <option value="5"  {{ (string) $limit === '5'  ? 'selected' : '' }}>5 por página</option>
                         <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 por página</option>
                         <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 por página</option>
                     </select>
-                </div>
 
-                <div class="resource-toolbar__field">
-                    <label for="order">Orden</label>
-                    <select name="order" id="order" class="form-control">
-                        <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>A-Z</option>
-                        <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z-A</option>
-                    </select>
-                </div>
-
-                <div class="resource-toolbar__actions">
-                    <button class="btn btn-primary" type="submit">
-                        <i class="fas fa-search me-1"></i> Aplicar
-                    </button>
-                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark">
-                        <i class="fas fa-undo-alt me-1"></i> Limpiar
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark" style="height:40px; display:inline-flex; align-items:center; font-size:0.9rem; font-weight:600; gap:6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
+                        </svg>
+                        Limpiar
                     </a>
+
+                    @if ($search || (string) $limit !== '5' || $order !== 'asc')
+                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#fff3cd; color:#856404; border:1px solid #ffc107;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                            </svg>
+                            Filtro activo
+                        </span>
+                    @endif
                 </div>
             </form>
-        </section>
 
-        <section class="resource-panel">
-            <div class="resource-panel__header">
-                <div>
-                    <span class="resource-panel__eyebrow">Listado</span>
-                    <h2 class="resource-panel__title">Perfiles del panel</h2>
-                    <p class="resource-panel__copy">
-                        {{ $data->total() }} registro(s) encontrado(s). Página
-                        {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}.
-                    </p>
-                </div>
-
-                <div class="resource-pill">
-                    <i class="fas fa-users"></i> Límite {{ $data->isEmpty() ? 0 : $data->perPage() }}
-                </div>
+            {{-- Info del listado --}}
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:.75rem;">
+                <p style="font-size:0.9rem; margin:0;">
+                    <strong>{{ $data->total() }}</strong> registro(s) &middot;
+                    Página {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}
+                </p>
+                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#e2e3e5; color:#41464b; border:1px solid #ced4da;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
+                    </svg>
+                    Límite {{ $data->isEmpty() ? 0 : $data->perPage() }}
+                </span>
             </div>
 
+            {{-- Listado --}}
             @if ($data->isEmpty())
-                <div class="resource-empty">
+                <div class="resource-empty" style="font-size:0.9rem;">
                     {{ $message ?? 'No hay usuarios que coincidan con tu búsqueda.' }}
                 </div>
             @else
-                <div class="resource-table-wrap mt-4">
+                <div class="resource-table-wrap">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead>
+                        <table class="table table-hover mb-0" style="font-size:0.9rem;">
+                            <thead style="font-size:0.82rem;">
                                 <tr>
                                     <th>Usuario</th>
                                     <th>Correo electrónico</th>
@@ -152,30 +142,30 @@
                                     @endphp
                                     <tr>
                                         <td>
-                                            <div class="d-flex align-items-center" style="gap: .85rem;">
-                                                <div class="resource-avatar" style="width: 48px; height: 48px; border-radius: 16px;">
+                                            <div class="d-flex align-items-center" style="gap:.85rem;">
+                                                <div class="resource-avatar" style="width:48px; height:48px; border-radius:16px;">
                                                     {{ $initials ?: 'U' }}
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold">{{ $row->name }}</div>
-                                                    <small class="text-muted">ID {{ $row->id }}</small>
+                                                    <div class="fw-bold" style="font-size:0.9rem;">{{ $row->name }}</div>
+                                                    <small class="text-muted" style="font-size:0.78rem;">ID {{ $row->id }}</small>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ $row->email }}</td>
+                                        <td style="font-size:0.9rem;">{{ $row->email }}</td>
                                         <td>
-                                            <span class="resource-pill">{{ $roleName }}</span>
+                                            <span class="resource-pill" style="font-size:0.78rem; font-weight:700;">{{ $roleName }}</span>
                                         </td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
-                                                <a class="btn btn-outline-dark" href="{{ route('usuarios.show', $row->id) }}" title="Visualizar usuario">
+                                                <a class="btn btn-outline-dark btn-sm" href="{{ route('usuarios.show', $row->id) }}" title="Visualizar usuario">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a class="btn btn-outline-dark {{ $row->id === 1 ? 'disabled' : '' }}"
+                                                <a class="btn btn-outline-dark btn-sm {{ $row->id === 1 ? 'disabled' : '' }}"
                                                     href="{{ route('usuarios.edit', $row->id) }}" title="Editar usuario">
                                                     <i class="fas fa-pen"></i>
                                                 </a>
-                                                <a class="btn btn-outline-danger {{ $row->id === 1 ? 'disabled' : '' }}"
+                                                <a class="btn btn-outline-danger btn-sm {{ $row->id === 1 ? 'disabled' : '' }}"
                                                     href="{{ route('usuarios.delete', $row->id) }}" title="Eliminar usuario">
                                                     <i class="fas fa-trash"></i>
                                                 </a>
@@ -188,11 +178,12 @@
                     </div>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center flex-wrap mt-4" style="gap: .75rem;">
-                    <p class="mb-0 text-muted">Mostrando {{ $data->count() }} usuario(s) en esta página.</p>
+                <div class="d-flex justify-content-between align-items-center flex-wrap mt-3" style="gap:.75rem;">
+                    <p class="mb-0 text-muted" style="font-size:0.84rem;">Mostrando {{ $data->count() }} usuario(s) en esta página.</p>
                     {{ $data->setPath(route('usuarios.index'))->appends(Request::except('page'))->links('pagination::bootstrap-5') }}
                 </div>
             @endif
+
         </section>
     </div>
 @stop
