@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use App\Models\TipoServicio;
 
@@ -29,30 +30,22 @@ class TiposController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipos.*' => 'required' // Validar todos los campos de tipo de servicio
+            'tipos.*.nombreServicio' => 'required|string|max:70',
+            'tipos.*.precio_base' => 'nullable|numeric|min:0|max:99999999.99',
+            'tipos.*.descuento_porcentaje' => 'nullable|numeric|min:0|max:100',
+            'tipos.*.descuento_inicio' => 'nullable|date',
+            'tipos.*.descuento_fin' => 'nullable|date',
         ]);
     
         try {
             DB::beginTransaction();
     
-            // Guardar el tipo de servicio principal
-            $tipoServicio = new TipoServicio([
-                'nombreServicio' => $request->input('tipos.0') // Obtener el primer valor del arreglo de tipos
-            ]);
-            $tipoServicio->save();
-    
-            // Guardar los tipos de servicio adicionales
-            $tiposAdicionales = $request->input('tipos');
-            unset($tiposAdicionales[0]); // Eliminar el primer valor, ya que ya se guardó anteriormente
-    
-            foreach ($tiposAdicionales as $tipo) {
-                $tipoServicioAdicional = new TipoServicio([
-                    'nombreServicio' => $tipo
-                ]);
-                $tipoServicioAdicional->save();
+            foreach ($request->input('tipos', []) as $tipo) {
+                TipoServicio::create($this->servicePayload($tipo));
             }
     
             DB::commit();
+            Cache::forget('catalogos.ordenes.tipos_servicio');
             Session::flash('status', 'Se ha agregado correctamente el tipo de servicio');
             Session::flash('status_type', 'success');
             return redirect(route('catalogos.index') . '#servicios');
@@ -117,17 +110,26 @@ class TiposController extends Controller
         $tipoServicio = TipoServicio::findOrFail($id_servicio);
 
         $request->validate([
-            'nombreServicio' => 'required'
+            'nombreServicio' => 'required|string|max:70',
+            'precio_base' => 'nullable|numeric|min:0|max:99999999.99',
+            'descuento_porcentaje' => 'nullable|numeric|min:0|max:100',
+            'descuento_inicio' => 'nullable|date',
+            'descuento_fin' => 'nullable|date|after_or_equal:descuento_inicio',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $tipoServicio->nombreServicio = $request['nombreServicio'];
-
-            $tipoServicio->save();
+            $tipoServicio->update($this->servicePayload($request->only([
+                'nombreServicio',
+                'precio_base',
+                'descuento_porcentaje',
+                'descuento_inicio',
+                'descuento_fin',
+            ])));
 
             DB::commit();
+            Cache::forget('catalogos.ordenes.tipos_servicio');
             Session::flash('status', 'Se ha editado correctamente el nombre del servicio');
             Session::flash('status_type', 'success');
             return redirect(route('catalogos.index') . '#servicios');
@@ -161,6 +163,7 @@ class TiposController extends Controller
             $tipoServicio->delete();
 
             DB::commit();
+            Cache::forget('catalogos.ordenes.tipos_servicio');
             Session::flash('status', 'Se ha eliminado correctamente el nombre del servicio');
             Session::flash('status_type', 'warning');
             return redirect(route('catalogos.index') . '#servicios');
@@ -177,5 +180,19 @@ class TiposController extends Controller
             Session::flash('status_type', 'error');
             return back();
         }
+    }
+
+    private function servicePayload(array $data): array
+    {
+        $descuentoInicio = $data['descuento_inicio'] ?? null;
+        $descuentoFin = $data['descuento_fin'] ?? null;
+
+        return [
+            'nombreServicio' => trim((string) ($data['nombreServicio'] ?? '')),
+            'precio_base' => round((float) ($data['precio_base'] ?? 0), 2),
+            'descuento_porcentaje' => round((float) ($data['descuento_porcentaje'] ?? 0), 2),
+            'descuento_inicio' => $descuentoInicio ?: null,
+            'descuento_fin' => $descuentoFin ?: null,
+        ];
     }
 }

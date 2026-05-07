@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ClienteController;
+use App\Http\Controllers\Admin\CotizacionController;
 use App\Http\Controllers\Admin\DatovController;
 use App\Http\Controllers\Admin\OrdenController;
 use App\Http\Controllers\Admin\TiposController;
@@ -65,6 +66,18 @@ Route::prefix('clientes')
         Route::get('/{id}/eliminar', [ClienteController::class, 'delete'])->name('delete');
         Route::get('/{id}/destruir', [ClienteController::class, 'destroy'])->name('destroy');
         Route::get('/{id}', [ClienteController::class, 'show'])->name('show');
+    });
+
+Route::prefix('cotizaciones')
+    ->name('cotizaciones.')
+    ->group(function () {
+        Route::get('/', [CotizacionController::class, 'index'])->name('index');
+        Route::get('/nueva', [CotizacionController::class, 'create'])->name('create');
+        Route::post('/', [CotizacionController::class, 'store'])->name('store');
+        Route::get('/{id_cotizacion}/editar', [CotizacionController::class, 'edit'])->name('edit');
+        Route::put('/{id_cotizacion}', [CotizacionController::class, 'update'])->name('update');
+        Route::delete('/{id_cotizacion}', [CotizacionController::class, 'destroy'])->name('destroy');
+        Route::get('/{id_cotizacion}', [CotizacionController::class, 'show'])->name('show');
     });
 
 Route::prefix('ordenes')

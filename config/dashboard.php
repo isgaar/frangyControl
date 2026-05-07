@@ -33,6 +33,13 @@ return [
                     'icon' => 'fas fa-users',
                     'active' => ['clientes.*'],
                 ],
+                [
+                    'label' => 'Cotizaciones',
+                    'description' => 'Precios y propuestas',
+                    'route' => 'cotizaciones.index',
+                    'icon' => 'fas fa-file-invoice-dollar',
+                    'active' => ['cotizaciones.*'],
+                ],
             ],
         ],
         [

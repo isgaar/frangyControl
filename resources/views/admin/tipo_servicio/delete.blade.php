@@ -34,6 +34,10 @@
                         <span class="resource-kv__label">Nombre del servicio</span>
                         <p class="resource-kv__value">{{ $tipoServicio->nombreServicio }}</p>
                     </div>
+                    <div class="resource-kv__item">
+                        <span class="resource-kv__label">Precio base</span>
+                        <p class="resource-kv__value">${{ number_format((float) $tipoServicio->precio_base, 2) }}</p>
+                    </div>
                 </div>
 
                 <div class="resource-warning mt-4">
