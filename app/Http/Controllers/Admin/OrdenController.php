@@ -46,6 +46,7 @@ class OrdenController extends Controller
                         $query->where('marca', 'like', "%$search%");
                     })
                     ->orWhere('placas', 'like', "%$search%")
+                    ->orWhere('modelo', 'like', "%$search%")
                     ->orWhereHas('servicio', function ($query) use ($search) {
                         $query->where('nombreServicio', 'like', "%$search%");
                     })
@@ -500,6 +501,42 @@ class OrdenController extends Controller
 
         if ($contents === false) {
             throw new \RuntimeException('No se pudo leer una fotografía seleccionada.');
+        }
+
+        // Smart image compression without losing quality
+        $imageResource = @imagecreatefromstring($contents);
+        if ($imageResource !== false) {
+            $width = imagesx($imageResource);
+            $height = imagesy($imageResource);
+            $maxWidth = 1920;
+            $maxHeight = 1080;
+
+            if ($width > $maxWidth || $height > $maxHeight) {
+                $ratio = min($maxWidth / $width, $maxHeight / $height);
+                $newWidth = (int) ($width * $ratio);
+                $newHeight = (int) ($height * $ratio);
+
+                $newImage = imagecreatetruecolor($newWidth, $newHeight);
+                if ($photo->getMimeType() === 'image/png') {
+                    imagealphablending($newImage, false);
+                    imagesavealpha($newImage, true);
+                    $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+                    imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+                }
+
+                imagecopyresampled($newImage, $imageResource, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+                imagedestroy($imageResource);
+                $imageResource = $newImage;
+            }
+
+            ob_start();
+            if ($photo->getMimeType() === 'image/png') {
+                imagepng($imageResource, null, 9);
+            } else {
+                imagejpeg($imageResource, null, 85);
+            }
+            $contents = ob_get_clean();
+            imagedestroy($imageResource);
         }
 
         Storage::disk('local')->makeDirectory(dirname($path));

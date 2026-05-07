@@ -38,61 +38,22 @@
     {{-- ══════════════════════════════════════════════════════════════════ --}}
     <div class="row g-3 mt-1 mb-3">
 
+        @foreach (array_slice($stats, 0, 4) as $stat)
         <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 rounded-3 h-100 overflow-hidden">
-                <div class="card-body pb-2">
-                    <p class="text-uppercase text-muted mb-1" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Ventas del mes</p>
-                    <p class="fw-medium mb-1" style="font-size:1.4rem; font-weight:800; line-height:1;">$148,320</p>
-                    <p class="mb-0 d-flex align-items-center gap-1" style="font-size:0.75rem; color:#6c757d;">
-                        <span class="badge rounded-2" style="font-size:0.65rem; font-weight:700; background:#d1e7dd; color:#0a3622;">+12.4 %</span>
-                        vs mes anterior
-                    </p>
+            <a href="{{ $stat['url'] }}" style="text-decoration:none; color:inherit;">
+                <div class="card border-0 rounded-3 h-100 overflow-hidden" style="transition: transform 0.2s;">
+                    <div class="card-body pb-2">
+                        <p class="text-uppercase text-muted mb-1" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">{{ $stat['label'] }}</p>
+                        <p class="fw-medium mb-1" style="font-size:1.4rem; font-weight:800; line-height:1;">{{ $stat['value'] }}</p>
+                        <p class="mb-0 d-flex align-items-center gap-1" style="font-size:0.75rem; color:#6c757d;">
+                            {{ $stat['caption'] }}
+                        </p>
+                    </div>
+                    <div style="height:3px; background:var(--bs-{{ $stat['accent'] }}); width:100%;"></div>
                 </div>
-                <div style="height:3px; background:#0d6efd; width:72%;"></div>
-            </div>
+            </a>
         </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 rounded-3 h-100 overflow-hidden">
-                <div class="card-body pb-2">
-                    <p class="text-uppercase text-muted mb-1" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Órdenes abiertas</p>
-                    <p class="fw-medium mb-1" style="font-size:1.4rem; font-weight:800; line-height:1;">37</p>
-                    <p class="mb-0 d-flex align-items-center gap-1" style="font-size:0.75rem; color:#6c757d;">
-                        <span class="badge rounded-2" style="font-size:0.65rem; font-weight:700; background:#fff3cd; color:#664d03;">+3</span>
-                        desde ayer
-                    </p>
-                </div>
-                <div style="height:3px; background:#ffc107; width:45%;"></div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 rounded-3 h-100 overflow-hidden">
-                <div class="card-body pb-2">
-                    <p class="text-uppercase text-muted mb-1" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Clientes activos</p>
-                    <p class="fw-medium mb-1" style="font-size:1.4rem; font-weight:800; line-height:1;">284</p>
-                    <p class="mb-0 d-flex align-items-center gap-1" style="font-size:0.75rem; color:#6c757d;">
-                        <span class="badge rounded-2" style="font-size:0.65rem; font-weight:700; background:#d1e7dd; color:#0a3622;">+8</span>
-                        este mes
-                    </p>
-                </div>
-                <div style="height:3px; background:#198754; width:84%;"></div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-xl-3">
-            <div class="card border-0 rounded-3 h-100 overflow-hidden">
-                <div class="card-body pb-2">
-                    <p class="text-uppercase text-muted mb-1" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Ticket promedio</p>
-                    <p class="fw-medium mb-1" style="font-size:1.4rem; font-weight:800; line-height:1;">$4,010</p>
-                    <p class="mb-0 d-flex align-items-center gap-1" style="font-size:0.75rem; color:#6c757d;">
-                        <span class="badge rounded-2" style="font-size:0.65rem; font-weight:700; background:#f8d7da; color:#58151c;">−2.1 %</span>
-                        vs mes anterior
-                    </p>
-                </div>
-                <div style="height:3px; background:#dc3545; width:58%;"></div>
-            </div>
-        </div>
+        @endforeach
 
     </div>
 
@@ -139,23 +100,11 @@
                         <a href="#" class="text-primary" style="font-size:0.75rem; text-decoration:none;">Ver reporte →</a>
                     </div>
 
-                    @php
-                        $bars = [
-                            ['lbl'=>'Lun','cur'=>52,'pre'=>40],
-                            ['lbl'=>'Mar','cur'=>68,'pre'=>55],
-                            ['lbl'=>'Mié','cur'=>45,'pre'=>50],
-                            ['lbl'=>'Jue','cur'=>80,'pre'=>62],
-                            ['lbl'=>'Vie','cur'=>93,'pre'=>75],
-                            ['lbl'=>'Sáb','cur'=>70,'pre'=>55],
-                            ['lbl'=>'Dom','cur'=>30,'pre'=>20],
-                        ];
-                    @endphp
-
                     <div class="d-flex gap-2" style="height:120px; align-items:flex-end;">
-                        @foreach ($bars as $b)
+                        @foreach ($weeklyBars as $b)
                         <div class="d-flex flex-column align-items-center flex-fill" style="height:100%; justify-content:flex-end; gap:2px;">
-                            <div class="w-100" style="height:{{ $b['cur'] }}%; background:#0d6efd; border-radius:3px 3px 0 0; min-height:4px;"></div>
-                            <div class="w-100" style="height:{{ $b['pre'] }}%; background:#e9ecef; border-radius:3px 3px 0 0; min-height:4px;"></div>
+                            <div class="w-100 position-relative" style="height:{{ max(2, $b['cur_pct']) }}%; background:#0d6efd; border-radius:3px 3px 0 0;" title="{{ $b['cur'] }} órdenes"></div>
+                            <div class="w-100 position-relative" style="height:{{ max(2, $b['pre_pct']) }}%; background:#e9ecef; border-radius:3px 3px 0 0;" title="{{ $b['pre'] }} órdenes"></div>
                             <span class="text-muted text-center" style="font-size:0.65rem; margin-top:4px;">{{ $b['lbl'] }}</span>
                         </div>
                         @endforeach
@@ -185,39 +134,36 @@
                     <div class="d-flex align-items-center gap-3">
                         <svg width="88" height="88" viewBox="0 0 88 88" style="flex-shrink:0;">
                             <circle cx="44" cy="44" r="32" fill="none" stroke="#e9ecef" stroke-width="14"/>
-                            <circle cx="44" cy="44" r="32" fill="none" stroke="#0d6efd" stroke-width="14"
-                                    stroke-dasharray="80 121" stroke-dashoffset="0"
-                                    transform="rotate(-90 44 44)"/>
-                            <circle cx="44" cy="44" r="32" fill="none" stroke="#198754" stroke-width="14"
-                                    stroke-dasharray="45 156" stroke-dashoffset="-80"
-                                    transform="rotate(-90 44 44)"/>
-                            <circle cx="44" cy="44" r="32" fill="none" stroke="#dc3545" stroke-width="14"
-                                    stroke-dasharray="25 176" stroke-dashoffset="-125"
-                                    transform="rotate(-90 44 44)"/>
-                            <circle cx="44" cy="44" r="32" fill="none" stroke="#ffc107" stroke-width="14"
-                                    stroke-dasharray="16 185" stroke-dashoffset="-150"
-                                    transform="rotate(-90 44 44)"/>
-                            <text x="44" y="41" text-anchor="middle" font-size="13" font-weight="700" fill="#212529">201</text>
+                            @php
+                                $circumference = 201.06;
+                                $offset = 0;
+                            @endphp
+                            @foreach ($serviceDistribution as $c)
+                                @php
+                                    $dash = ($c['pct'] / 100) * $circumference;
+                                @endphp
+                                @if($dash > 0)
+                                <circle cx="44" cy="44" r="32" fill="none" stroke="{{ $c['color'] }}" stroke-width="14"
+                                        stroke-dasharray="{{ $dash }} {{ $circumference - $dash }}" stroke-dashoffset="{{ -$offset }}"
+                                        transform="rotate(-90 44 44)"/>
+                                @endif
+                                @php
+                                    $offset += $dash;
+                                @endphp
+                            @endforeach
+                            <text x="44" y="41" text-anchor="middle" font-size="13" font-weight="700" fill="#212529">{{ $serviceTotal }}</text>
                             <text x="44" y="53" text-anchor="middle" font-size="10" fill="#6c757d">órdenes</text>
                         </svg>
 
                         <div class="flex-fill d-flex flex-column gap-2">
-                            @php
-                                $cats = [
-                                    ['name'=>'Mecánica',    'pct'=>40, 'color'=>'#0d6efd'],
-                                    ['name'=>'Eléctrico',   'pct'=>22, 'color'=>'#198754'],
-                                    ['name'=>'Hojalatería', 'pct'=>13, 'color'=>'#dc3545'],
-                                    ['name'=>'Diagnóstico', 'pct'=> 8, 'color'=>'#ffc107'],
-                                ];
-                            @endphp
-                            @foreach ($cats as $c)
+                            @foreach ($serviceDistribution as $c)
                             <div>
                                 <div class="d-flex justify-content-between align-items-center mb-1">
                                     <span class="d-flex align-items-center gap-1" style="font-size:0.78rem;">
                                         <span style="width:7px; height:7px; border-radius:50%; background:{{ $c['color'] }}; display:inline-block; flex-shrink:0;"></span>
                                         {{ $c['name'] }}
                                     </span>
-                                    <span class="text-muted" style="font-size:0.75rem;">{{ $c['pct'] }}%</span>
+                                    <span class="text-muted" style="font-size:0.75rem;">{{ $c['pct'] }}% ({{ $c['count'] }})</span>
                                 </div>
                                 <div style="height:3px; background:#e9ecef; border-radius:2px;">
                                     <div style="height:3px; width:{{ $c['pct'] }}%; background:{{ $c['color'] }}; border-radius:2px;"></div>
@@ -303,16 +249,7 @@
                     <p class="text-uppercase text-muted mb-0" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Sistema</p>
                     <p class="fw-medium mb-3" style="font-size:0.84rem; font-weight:800;">Actividad reciente</p>
 
-                    @php
-                        $feed = [
-                            ['color'=>'#0d6efd','title'=>'Orden #1084 completada',             'meta'=>'Carlos Ramírez · Hace 12 min'],
-                            ['color'=>'#198754','title'=>'Nuevo cliente registrado',            'meta'=>'Sandra Vega · Hace 34 min'],
-                            ['color'=>'#ffc107','title'=>'Inventario bajo: Filtros de aceite', 'meta'=>'Sistema · Hace 1 h'],
-                            ['color'=>'#dc3545','title'=>'Orden #1079 cancelada',              'meta'=>'Miguel A. Flores · Hace 2 h'],
-                        ];
-                    @endphp
-
-                    @foreach ($feed as $item)
+                    @forelse ($activityFeed as $item)
                     <div class="d-flex gap-2 {{ $loop->last ? '' : 'mb-3' }}">
                         <div class="d-flex flex-column align-items-center" style="width:16px; padding-top:3px; flex-shrink:0;">
                             <div style="width:8px; height:8px; border-radius:50%; background:{{ $item['color'] }}; flex-shrink:0;"></div>
@@ -325,7 +262,9 @@
                             <p class="mb-0 text-muted" style="font-size:0.75rem;">{{ $item['meta'] }}</p>
                         </div>
                     </div>
-                    @endforeach
+                    @empty
+                    <p class="text-muted text-center py-4" style="font-size:0.84rem;">Sin actividad reciente.</p>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -340,34 +279,26 @@
         <div class="col-12 col-lg-6">
             <div class="card border-0 rounded-3 h-100">
                 <div class="card-body">
-                    <p class="text-uppercase text-muted mb-0" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Progreso</p>
-                    <p class="fw-medium mb-3" style="font-size:0.84rem; font-weight:800;">Metas del mes</p>
-
-                    @php
-                        $targets = [
-                            ['name'=>'Órdenes completadas',       'pct'=>78, 'color'=>'#0d6efd'],
-                            ['name'=>'Ingresos totales',           'pct'=>62, 'color'=>'#198754'],
-                            ['name'=>'Satisfacción de cliente',    'pct'=>91, 'color'=>'#1D9E75'],
-                            ['name'=>'Nuevos clientes',            'pct'=>45, 'color'=>'#ffc107'],
-                            ['name'=>'Tiempo promedio de entrega', 'pct'=>83, 'color'=>'#d63384'],
-                        ];
-                    @endphp
+                    <p class="text-uppercase text-muted mb-0" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Catálogo</p>
+                    <p class="fw-medium mb-3" style="font-size:0.84rem; font-weight:800;">Marcas de vehículos frecuentes</p>
 
                     <div class="d-flex flex-column gap-3">
-                        @foreach ($targets as $t)
+                        @forelse ($topBrands as $brand)
                         <div>
                             <div class="d-flex justify-content-between mb-1">
-                                <span style="font-size:0.78rem;">{{ $t['name'] }}</span>
-                                <span class="text-muted" style="font-size:0.75rem;">{{ $t['pct'] }}%</span>
+                                <span style="font-size:0.78rem;">{{ $brand['name'] }}</span>
+                                <span class="text-muted" style="font-size:0.75rem;">{{ $brand['count'] }} uds</span>
                             </div>
                             <div class="progress" style="height:5px; border-radius:3px;">
                                 <div class="progress-bar" role="progressbar"
-                                     style="width:{{ $t['pct'] }}%; background:{{ $t['color'] }};"
-                                     aria-valuenow="{{ $t['pct'] }}" aria-valuemin="0" aria-valuemax="100">
+                                     style="width:{{ round(($brand['count'] / $brand['max']) * 100) }}%; background:{{ $brand['color'] }};"
+                                     aria-valuenow="{{ $brand['count'] }}" aria-valuemin="0" aria-valuemax="{{ $brand['max'] }}">
                                 </div>
                             </div>
                         </div>
-                        @endforeach
+                        @empty
+                        <p class="text-muted" style="font-size:0.84rem;">No hay datos de marcas disponibles.</p>
+                        @endforelse
                     </div>
                 </div>
             </div>
@@ -378,37 +309,26 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div>
-                            <p class="text-uppercase text-muted mb-0" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Almacén</p>
-                            <p class="fw-medium mb-0" style="font-size:0.84rem; font-weight:800;">Inventario crítico</p>
-                            <p class="text-muted mb-0" style="font-size:0.75rem;">Artículos con stock bajo</p>
+                            <p class="text-uppercase text-muted mb-0" style="font-size:0.65rem; letter-spacing:.06em; font-weight:700;">Panel</p>
+                            <p class="fw-medium mb-0" style="font-size:0.84rem; font-weight:800;">Más métricas</p>
+                            <p class="text-muted mb-0" style="font-size:0.75rem;">Otras estadísticas del sistema</p>
                         </div>
-                        <a href="#" class="text-primary" style="font-size:0.75rem; text-decoration:none;">Gestionar →</a>
                     </div>
 
-                    @php
-                        $items = [
-                            ['name'=>'Filtros de aceite',       'stock'=>4, 'max'=>25, 'color'=>'#dc3545'],
-                            ['name'=>'Pastillas de freno',      'stock'=>7, 'max'=>25, 'color'=>'#ffc107'],
-                            ['name'=>'Bujías NGK',              'stock'=>5, 'max'=>25, 'color'=>'#dc3545'],
-                            ['name'=>'Líquido de frenos',       'stock'=>9, 'max'=>25, 'color'=>'#ffc107'],
-                            ['name'=>'Correas de distribución', 'stock'=>3, 'max'=>25, 'color'=>'#dc3545'],
-                        ];
-                    @endphp
-
-                    <div class="d-flex flex-column gap-3">
-                        @foreach ($items as $item)
-                        <div>
-                            <div class="d-flex justify-content-between mb-1">
-                                <span style="font-size:0.78rem;">{{ $item['name'] }}</span>
-                                <span class="text-muted" style="font-size:0.75rem;">{{ $item['stock'] }} uds</span>
-                            </div>
-                            <div class="progress" style="height:4px; border-radius:3px;">
-                                <div class="progress-bar" role="progressbar"
-                                     style="width:{{ round($item['stock']/$item['max']*100) }}%; background:{{ $item['color'] }};"
-                                     aria-valuenow="{{ $item['stock'] }}" aria-valuemin="0" aria-valuemax="{{ $item['max'] }}">
+                    <div class="d-flex flex-column gap-3 mt-4">
+                        @foreach (array_slice($stats, 4) as $stat)
+                        <a href="{{ $stat['url'] }}" style="text-decoration:none; color:inherit; display:block;">
+                            <div class="d-flex align-items-center p-3 rounded-3" style="background:#f8f9fa; border:1px solid #e9ecef; transition:all 0.2s;">
+                                <div class="d-flex align-items-center justify-content-center rounded-2 me-3" style="width:40px; height:40px; background:var(--bs-{{ $stat['accent'] }}); color:white;">
+                                    <i class="{{ $stat['icon'] }}"></i>
                                 </div>
+                                <div>
+                                    <h4 class="mb-0" style="font-size:1.1rem; font-weight:800;">{{ $stat['value'] }}</h4>
+                                    <p class="mb-0 text-muted" style="font-size:0.75rem;">{{ $stat['label'] }} ({{ $stat['caption'] }})</p>
+                                </div>
+                                <i class="fas fa-chevron-right ms-auto text-muted" style="font-size:0.8rem;"></i>
                             </div>
-                        </div>
+                        </a>
                         @endforeach
                     </div>
                 </div>

@@ -170,7 +170,7 @@ textarea {
 <div class="card">
     <div class="header">
         <div class="logo">
-            <img src="{{ public_path('franlogo.png') }}" alt="Logo">
+            <img src="{{ public_path('franlogo.jpg') }}" alt="Logo">
             <div>Fecha de exportación:
                 {{ \Carbon\Carbon::now('America/Mexico_City')->locale('es_ES')->isoFormat('LLLL') }}</div>
         </div>

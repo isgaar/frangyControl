@@ -229,6 +229,110 @@ class HomeController extends Controller
             return $user && method_exists($user, 'can') && $user->can($action['can']);
         })->values();
 
+        // 1. Gráfica Semanal (Órdenes creadas por día, semana actual vs pasada)
+        $startOfCurrentWeek = now()->startOfWeek();
+        $startOfPreviousWeek = now()->subWeek()->startOfWeek();
+        $endOfPreviousWeek = now()->subWeek()->endOfWeek();
+
+        $currentWeekOrders = Ordenes::where('created_at', '>=', $startOfCurrentWeek)
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
+        $previousWeekOrders = Ordenes::whereBetween('created_at', [$startOfPreviousWeek, $endOfPreviousWeek])
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->groupBy('date')
+            ->pluck('count', 'date');
+
+        $dayLabels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+        $weeklyBars = collect($dayLabels)->map(function($dayName, $index) use ($currentWeekOrders, $previousWeekOrders, $startOfCurrentWeek, $startOfPreviousWeek) {
+            $currDate = $startOfCurrentWeek->copy()->addDays($index)->format('Y-m-d');
+            $prevDate = $startOfPreviousWeek->copy()->addDays($index)->format('Y-m-d');
+            return [
+                'lbl' => $dayName,
+                'cur' => $currentWeekOrders->get($currDate, 0),
+                'pre' => $previousWeekOrders->get($prevDate, 0),
+            ];
+        });
+
+        $maxCount = max(1, $weeklyBars->max('cur'), $weeklyBars->max('pre'));
+        $weeklyBars->transform(function($item) use ($maxCount) {
+            $item['cur_pct'] = round(($item['cur'] / $maxCount) * 100);
+            $item['pre_pct'] = round(($item['pre'] / $maxCount) * 100);
+            return $item;
+        });
+
+        // 2. Gráfica de Dona (Distribución de servicios)
+        $totalOrdersCount = Ordenes::whereNotNull('servicio_id')->count();
+        $topServices = Ordenes::whereNotNull('servicio_id')
+            ->select('servicio_id', \DB::raw('COUNT(*) as count'))
+            ->groupBy('servicio_id')
+            ->orderByDesc('count')
+            ->limit(4)
+            ->with('servicio')
+            ->get();
+
+        $donutColors = ['#0d6efd', '#198754', '#dc3545', '#ffc107'];
+        $serviceDistribution = $topServices->map(function($item, $index) use ($totalOrdersCount, $donutColors) {
+            $pct = $totalOrdersCount > 0 ? round(($item->count / $totalOrdersCount) * 100) : 0;
+            return [
+                'name' => optional($item->servicio)->nombreServicio ?? 'Desconocido',
+                'pct' => $pct,
+                'count' => $item->count,
+                'color' => $donutColors[$index % 4],
+            ];
+        });
+        $serviceTotal = $totalOrdersCount;
+
+        // 3. Feed de Actividad Reciente
+        $feedOrders = Ordenes::with(['cliente'])->latest('updated_at')->limit(5)->get()->map(function($o) {
+            $isNew = $o->created_at == $o->updated_at;
+            return [
+                'type' => 'orden',
+                'timestamp' => Carbon::parse($o->updated_at),
+                'color' => $isNew ? '#0d6efd' : '#ffc107',
+                'title' => 'Orden #' . $o->id_ordenes . ($isNew ? ' registrada' : ' actualizada'),
+                'meta' => (optional($o->cliente)->nombreCompleto ?? 'Cliente general') . ' · ' . Carbon::parse($o->updated_at)->diffForHumans()
+            ];
+        });
+
+        $feedClients = Cliente::latest('created_at')->limit(5)->get()->map(function($c) {
+            return [
+                'type' => 'cliente',
+                'timestamp' => Carbon::parse($c->created_at),
+                'color' => '#198754',
+                'title' => 'Nuevo cliente registrado',
+                'meta' => $c->nombreCompleto . ' · ' . Carbon::parse($c->created_at)->diffForHumans()
+            ];
+        });
+
+        $activityFeed = $feedOrders->concat($feedClients)
+            ->sortByDesc(fn($item) => $item['timestamp']->timestamp)
+            ->take(6)
+            ->values();
+
+        // 4. Marcas frecuentes
+        $topBrandsData = Ordenes::whereNotNull('vehiculo_id')
+            ->select('vehiculo_id', \DB::raw('COUNT(*) as count'))
+            ->groupBy('vehiculo_id')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->with('vehiculo')
+            ->get()
+            ->map(function($item, $index) {
+                $brandColors = ['#dc3545', '#ffc107', '#0d6efd', '#198754', '#6610f2'];
+                return [
+                    'name' => optional($item->vehiculo)->marca ?? 'Desconocido',
+                    'count' => $item->count,
+                    'color' => $brandColors[$index % 5],
+                ];
+            });
+        $maxBrandCount = max(1, $topBrandsData->max('count') ?? 1);
+        $topBrands = $topBrandsData->map(function($item) use ($maxBrandCount) {
+            $item['max'] = $maxBrandCount;
+            return $item;
+        });
+
         $dashboardProfile = [
             'primary_role' => $user && method_exists($user, 'getRoleNames')
                 ? ($user->getRoleNames()->first() ?: 'Sin rol')
@@ -251,6 +355,11 @@ class HomeController extends Controller
             'operationalMessages' => $operationalMessages,
             'quickActions' => $quickActions,
             'dashboardProfile' => $dashboardProfile,
+            'weeklyBars' => $weeklyBars,
+            'serviceDistribution' => $serviceDistribution,
+            'serviceTotal' => $serviceTotal,
+            'activityFeed' => $activityFeed,
+            'topBrands' => $topBrands,
         ]);
     }
     public function about(Request $request)

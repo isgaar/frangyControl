@@ -24,27 +24,27 @@
     <div class="resource-page">
 
         {{-- Encabezado compacto --}}
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:1rem;">
+        <div class="page-header">
             <div>
-                <span class="resource-hero__eyebrow" style="font-size:0.78rem;">Accesos y permisos</span>
-                <h1 class="resource-hero__title" style="font-size:1.5rem; font-weight:800; margin:2px 0 0;">Usuarios del sistema</h1>
+                <span class="page-eyebrow">Accesos y permisos</span>
+                <h1 class="page-title">Usuarios del sistema</h1>
             </div>
-            <a href="{{ route('usuarios.create') }}" class="btn btn-primary" style="font-size:0.9rem; font-weight:800;">
+            <a href="{{ route('usuarios.create') }}" class="btn btn-primary" style="font-weight:800;">
                 <i class="fas fa-user-plus me-1"></i> Nuevo usuario
             </a>
         </div>
 
         {{-- Métricas compactas --}}
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1rem;">
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Usuarios</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $data->total() }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Con la búsqueda actual</p>
+        <div class="metrics-grid">
+            <article class="metric-card">
+                <span class="metric-card__label">Usuarios</span>
+                <p class="metric-card__value">{{ $data->total() }}</p>
+                <p class="metric-card__copy">Con la búsqueda actual</p>
             </article>
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Página</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $data->isEmpty() ? 0 : $data->currentPage() }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">De {{ $data->lastPage() }} disponibles</p>
+            <article class="metric-card">
+                <span class="metric-card__label">Página</span>
+                <p class="metric-card__value">{{ $data->isEmpty() ? 0 : $data->currentPage() }}</p>
+                <p class="metric-card__copy">De {{ $data->lastPage() }} disponibles</p>
             </article>
         </div>
 
@@ -53,35 +53,30 @@
 
             {{-- Barra de filtros --}}
             <form action="{{ route('usuarios.index') }}" method="get">
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
+                <div class="filter-toolbar">
 
                     {{-- Búsqueda con lupa integrada --}}
-                    <div style="display:flex; align-items:center; flex:1; min-width:220px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ $search }}"
-                            placeholder="Nombre o correo electrónico…"
-                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
-                        <button type="submit" title="Buscar" style="height:40px; width:44px; background:#0d6efd; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <div class="filter-search-box">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Nombre o correo electrónico…">
+                        <button type="submit" title="Buscar">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                             </svg>
                         </button>
                     </div>
 
-                    <select name="order" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                    <select name="order" class="form-control">
                         <option value="asc"  {{ $order === 'asc'  ? 'selected' : '' }}>A–Z</option>
                         <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z–A</option>
                     </select>
 
-                    <select name="limit" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                    <select name="limit" class="form-control">
                         <option value="5"  {{ (string) $limit === '5'  ? 'selected' : '' }}>5 por página</option>
                         <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 por página</option>
                         <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 por página</option>
                     </select>
 
-                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark" style="height:40px; display:inline-flex; align-items:center; font-size:0.9rem; font-weight:600; gap:6px;">
+                    <a href="{{ route('usuarios.index') }}" class="btn btn-outline-dark filter-btn-clear">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
                         </svg>
@@ -89,7 +84,7 @@
                     </a>
 
                     @if ($search || (string) $limit !== '5' || $order !== 'asc')
-                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#fff3cd; color:#856404; border:1px solid #ffc107;">
+                        <span class="badge-active-filter">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                             </svg>
@@ -100,12 +95,12 @@
             </form>
 
             {{-- Info del listado --}}
-            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:.75rem;">
-                <p style="font-size:0.9rem; margin:0;">
+            <div class="table-compact-info">
+                <p>
                     <strong>{{ $data->total() }}</strong> registro(s) &middot;
                     Página {{ $data->isEmpty() ? 0 : $data->currentPage() }} de {{ $data->lastPage() }}
                 </p>
-                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#e2e3e5; color:#41464b; border:1px solid #ced4da;">
+                <span class="badge-active-filter" style="background:var(--dashboard-surface-soft); color:var(--dashboard-text); border-color:var(--dashboard-border);">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
                     </svg>
@@ -115,14 +110,14 @@
 
             {{-- Listado --}}
             @if ($data->isEmpty())
-                <div class="resource-empty" style="font-size:0.9rem;">
+                <div class="resource-empty">
                     {{ $message ?? 'No hay usuarios que coincidan con tu búsqueda.' }}
                 </div>
             @else
                 <div class="resource-table-wrap">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" style="font-size:0.9rem;">
-                            <thead style="font-size:0.82rem;">
+                        <table class="table table-hover mb-0 table-compact">
+                            <thead>
                                 <tr>
                                     <th>Usuario</th>
                                     <th>Correo electrónico</th>

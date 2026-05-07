@@ -30,16 +30,18 @@ class ClienteController extends Controller
         $sortOrder = $request->input('sort_order') === 'desc' ? 'desc' : 'asc';
 
         if ($search !== '' || $sortBy === 'nombreCompleto') {
-            $clientes = Cliente::query()
-                ->get(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
-                ->when($search !== '', function ($clientes) use ($search) {
-                    return $clientes->filter(fn (Cliente $cliente) => ClientDataSecurity::matchesSearch([
-                        $cliente->nombreCompleto,
-                        $cliente->telefono,
-                        $cliente->correo,
-                        $cliente->rfc,
-                    ], $search));
-                });
+            $clientes = Cache::remember('catalogos.ordenes.clientes', now()->addMinutes(10), fn () =>
+                Cliente::query()->get(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
+            );
+
+            if ($search !== '') {
+                $clientes = $clientes->filter(fn (Cliente $cliente) => ClientDataSecurity::matchesSearch([
+                    $cliente->nombreCompleto,
+                    $cliente->telefono,
+                    $cliente->correo,
+                    $cliente->rfc,
+                ], $search));
+            }
 
             $clientes = $sortBy === 'nombreCompleto'
                 ? $clientes->sortBy(fn (Cliente $cliente) => ClientDataSecurity::normalize('nombreCompleto', $cliente->nombreCompleto), SORT_REGULAR, $sortOrder === 'desc')

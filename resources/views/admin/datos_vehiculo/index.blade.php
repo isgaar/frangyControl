@@ -39,40 +39,40 @@
 
     <div class="resource-page">
         {{-- Encabezado compacto (Estilo Órdenes) --}}
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:1rem;">
+        <div class="page-header">
             <div>
-                <span class="resource-hero__eyebrow" style="font-size:0.78rem;">Catálogos base</span>
-                <h1 class="resource-hero__title" style="font-size:1.5rem; font-weight:800; margin:2px 0 0;">Datos generales del taller</h1>
+                <span class="page-eyebrow">Catálogos base</span>
+                <h1 class="page-title">Datos generales del taller</h1>
             </div>
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-primary" style="font-size:0.9rem; font-weight:800;" data-bs-toggle="modal" data-bs-target="#brandModal">
+                <button type="button" class="btn btn-primary" style="font-weight:800;" data-bs-toggle="modal" data-bs-target="#brandModal">
                     <i class="fas fa-car-side me-1"></i> Nueva marca
                 </button>
-                <button type="button" class="btn btn-outline-dark" style="font-size:0.9rem; font-weight:800;" data-bs-toggle="modal" data-bs-target="#typeModal">
+                <button type="button" class="btn btn-outline-dark" style="font-weight:800;" data-bs-toggle="modal" data-bs-target="#typeModal">
                     <i class="fas fa-truck me-1"></i> Nuevo tipo
                 </button>
-                <button type="button" class="btn btn-outline-dark" style="font-size:0.9rem; font-weight:800;" data-bs-toggle="modal" data-bs-target="#serviceModal">
+                <button type="button" class="btn btn-outline-dark" style="font-weight:800;" data-bs-toggle="modal" data-bs-target="#serviceModal">
                     <i class="fas fa-tools me-1"></i> Nuevo servicio
                 </button>
             </div>
         </div>
 
         {{-- Métricas compactas (Estilo Órdenes) --}}
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1rem;">
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Marcas</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $catalogTotals['brands'] }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Disponibles para capturar unidades</p>
+        <div class="metrics-grid">
+            <article class="metric-card">
+                <span class="metric-card__label">Marcas</span>
+                <p class="metric-card__value">{{ $catalogTotals['brands'] }}</p>
+                <p class="metric-card__copy">Disponibles para capturar unidades</p>
             </article>
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Tipos</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $catalogTotals['types'] }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Clasificaciones operativas</p>
+            <article class="metric-card">
+                <span class="metric-card__label">Tipos</span>
+                <p class="metric-card__value">{{ $catalogTotals['types'] }}</p>
+                <p class="metric-card__copy">Clasificaciones operativas</p>
             </article>
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Servicios</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $catalogTotals['services'] }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Opciones base de servicio</p>
+            <article class="metric-card">
+                <span class="metric-card__label">Servicios</span>
+                <p class="metric-card__value">{{ $catalogTotals['services'] }}</p>
+                <p class="metric-card__copy">Opciones base de servicio</p>
             </article>
         </div>
 
@@ -81,37 +81,34 @@
 
             {{-- Barra de filtros (Estilo Órdenes) --}}
             <form action="{{ route('catalogos.index') }}" method="get">
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
+                <div class="filter-toolbar">
                     
                     {{-- Búsqueda Marca --}}
-                    <div style="display:flex; align-items:center; flex:1; min-width:180px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
-                        <input type="text" name="brand_search" value="{{ $brandSearch }}" placeholder="Buscar marca..." 
-                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
+                    <div class="filter-search-box" style="min-width:180px;">
+                        <input type="text" name="brand_search" value="{{ $brandSearch }}" placeholder="Buscar marca...">
                     </div>
 
                     {{-- Búsqueda Tipo --}}
-                    <div style="display:flex; align-items:center; flex:1; min-width:180px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
-                        <input type="text" name="type_search" value="{{ $typeSearch }}" placeholder="Buscar tipo..." 
-                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
+                    <div class="filter-search-box" style="min-width:180px;">
+                        <input type="text" name="type_search" value="{{ $typeSearch }}" placeholder="Buscar tipo...">
                     </div>
 
                     {{-- Búsqueda Servicio --}}
-                    <div style="display:flex; align-items:center; flex:1; min-width:180px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
-                        <input type="text" name="service_search" value="{{ $serviceSearch }}" placeholder="Buscar servicio..." 
-                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
-                        <button type="submit" title="Buscar" style="height:40px; width:44px; background:#0d6efd; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <div class="filter-search-box" style="min-width:180px;">
+                        <input type="text" name="service_search" value="{{ $serviceSearch }}" placeholder="Buscar servicio...">
+                        <button type="submit" title="Buscar">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                             </svg>
                         </button>
                     </div>
 
-                    <select name="order" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                    <select name="order" class="form-control">
                         <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>A-Z</option>
                         <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Z-A</option>
                     </select>
 
-                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark" style="height:40px; display:inline-flex; align-items:center; font-size:0.9rem; font-weight:600; gap:6px;">
+                    <a href="{{ route('catalogos.index') }}" class="btn btn-outline-dark filter-btn-clear">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
                         </svg>
@@ -119,7 +116,7 @@
                     </a>
 
                     @if ($brandSearch || $typeSearch || $serviceSearch || $order !== 'asc')
-                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#fff3cd; color:#856404; border:1px solid #ffc107;">
+                        <span class="badge-active-filter">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                             </svg>
@@ -130,11 +127,11 @@
             </form>
  
             {{-- Info del listado --}}
-            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:.75rem;">
-                <p style="font-size:0.9rem; margin:0;">
+            <div class="table-compact-info">
+                <p>
                     <strong>{{ $dataVehiculos->count() + $dataTiposVehiculos->count() + $dataServicios->count() }}</strong> registro(s) encontrados en esta vista.
                 </p>
-                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#e2e3e5; color:#41464b; border:1px solid #ced4da;">
+                <span class="badge-active-filter" style="background:var(--dashboard-surface-soft); color:var(--dashboard-text); border-color:var(--dashboard-border);">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
                     </svg>
@@ -161,7 +158,7 @@
 
                     <div class="resource-table-wrap mt-4">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0 table-compact">
                                 <thead>
                                     <tr>
                                         <th>Marca</th>
@@ -210,7 +207,7 @@
 
                     <div class="resource-table-wrap mt-4">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0 table-compact">
                                 <thead>
                                     <tr>
                                         <th>Tipo</th>
@@ -259,7 +256,7 @@
 
                     <div class="resource-table-wrap mt-4">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="table table-hover mb-0 table-compact">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>

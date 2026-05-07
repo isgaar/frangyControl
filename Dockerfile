@@ -38,12 +38,17 @@ RUN apk add --no-cache tzdata \
 RUN apk add --no-cache \
         libzip-dev \
         oniguruma-dev \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo \
         pdo_mysql \
         mbstring \
         zip \
         opcache \
+        gd \
     && rm -rf /tmp/*
 
 # Composer directo desde su imagen oficial (sin instalar git/curl en la final)

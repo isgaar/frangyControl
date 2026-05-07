@@ -28,37 +28,37 @@
     <div class="resource-page">
 
         {{-- Encabezado compacto --}}
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:1rem;">
+        <div class="page-header">
             <div>
-                <span class="resource-hero__eyebrow" style="font-size:0.78rem;">Seguimiento del taller</span>
-                <h1 class="resource-hero__title" style="font-size:1.5rem; font-weight:800; margin:2px 0 0;">Órdenes activas y registradas</h1>
+                <span class="page-eyebrow">Seguimiento del taller</span>
+                <h1 class="page-title">Órdenes activas y registradas</h1>
             </div>
-            <a href="{{ route('ordenes.registro') }}" class="btn btn-primary" style="font-size:0.9rem; font-weight:800;">
+            <a href="{{ route('ordenes.registro') }}" class="btn btn-primary" style="font-weight:800;">
                 <i class="fas fa-clipboard-list me-1"></i> Nueva orden
             </a>
         </div>
 
         {{-- Métricas compactas --}}
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:1rem;">
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Resultados</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $ordenes->total() }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Con el filtro actual</p>
+        <div class="metrics-grid">
+            <article class="metric-card">
+                <span class="metric-card__label">Resultados</span>
+                <p class="metric-card__value">{{ $ordenes->total() }}</p>
+                <p class="metric-card__copy">Con el filtro actual</p>
             </article>
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">En proceso</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $statusCounts['en proceso'] }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Abiertas en esta página</p>
+            <article class="metric-card">
+                <span class="metric-card__label">En proceso</span>
+                <p class="metric-card__value">{{ $statusCounts['en proceso'] }}</p>
+                <p class="metric-card__copy">Abiertas en esta página</p>
             </article>
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Finalizadas</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $statusCounts['finalizada'] }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Listas para consulta</p>
+            <article class="metric-card">
+                <span class="metric-card__label">Finalizadas</span>
+                <p class="metric-card__value">{{ $statusCounts['finalizada'] }}</p>
+                <p class="metric-card__copy">Listas para consulta</p>
             </article>
-            <article class="resource-metric" style="padding:10px 14px;">
-                <span class="resource-metric__label" style="font-size:0.75rem; font-weight:700;">Vista actual</span>
-                <p class="resource-metric__value" style="font-size:1.4rem; font-weight:800; margin:3px 0;">{{ $ordenes->isEmpty() ? 0 : $ordenes->currentPage() }}</p>
-                <p class="resource-metric__copy" style="font-size:0.75rem; margin:0;">Página {{ $ordenes->isEmpty() ? 0 : $ordenes->currentPage() }} de {{ $ordenes->lastPage() }}</p>
+            <article class="metric-card">
+                <span class="metric-card__label">Vista actual</span>
+                <p class="metric-card__value">{{ $ordenes->isEmpty() ? 0 : $ordenes->currentPage() }}</p>
+                <p class="metric-card__copy">Página {{ $ordenes->isEmpty() ? 0 : $ordenes->currentPage() }} de {{ $ordenes->lastPage() }}</p>
             </article>
         </div>
 
@@ -67,42 +67,37 @@
 
             {{-- Barra de filtros --}}
             <form action="{{ route('ordenes.index') }}" method="get">
-                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem;">
+                <div class="filter-toolbar">
 
                     {{-- Búsqueda con lupa integrada --}}
-                    <div style="display:flex; align-items:center; flex:1; min-width:220px; border:1px solid #ced4da; border-radius:6px; overflow:hidden; height:40px;">
-                        <input
-                            type="text"
-                            name="search"
-                            value="{{ $search }}"
-                            placeholder="Cliente, placas, servicio o encargado…"
-                            style="flex:1; border:none; outline:none; padding:0 12px; font-size:0.9rem; height:100%; background:transparent; color:inherit;">
-                        <button type="submit" title="Buscar" style="height:40px; width:44px; background:#0d6efd; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                    <div class="filter-search-box">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Buscar por orden, cliente, placas, servicio, encargado o modelo...">
+                        <button type="submit" title="Buscar">
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                             </svg>
                         </button>
                     </div>
 
-                    <select name="status" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                    <select name="status" class="form-control">
                         <option value="">Todos los estados</option>
                         <option value="en proceso" {{ $status === 'en proceso' ? 'selected' : '' }}>En proceso</option>
                         <option value="cancelada"  {{ $status === 'cancelada'  ? 'selected' : '' }}>Cancelada</option>
                         <option value="finalizada" {{ $status === 'finalizada' ? 'selected' : '' }}>Finalizada</option>
                     </select>
 
-                    <select name="order" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                    <select name="order" class="form-control">
                         <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Últimos agregados</option>
                         <option value="asc"  {{ $order === 'asc'  ? 'selected' : '' }}>Primeros registros</option>
                     </select>
 
-                    <select name="limit" class="form-control" style="height:40px; width:auto; font-size:0.9rem;">
+                    <select name="limit" class="form-control">
                         <option value="5"  {{ (string) $limit === '5'  ? 'selected' : '' }}>5 por página</option>
                         <option value="10" {{ (string) $limit === '10' ? 'selected' : '' }}>10 por página</option>
                         <option value="15" {{ (string) $limit === '15' ? 'selected' : '' }}>15 por página</option>
                     </select>
 
-                    <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark" style="height:40px; display:inline-flex; align-items:center; font-size:0.9rem; font-weight:600; gap:6px;">
+                    <a href="{{ route('ordenes.index') }}" class="btn btn-outline-dark filter-btn-clear">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/>
                         </svg>
@@ -110,7 +105,7 @@
                     </a>
 
                     @if ($search || $status || $limit || $order)
-                        <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#fff3cd; color:#856404; border:1px solid #ffc107;">
+                        <span class="badge-active-filter">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                                 <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                             </svg>
@@ -121,12 +116,12 @@
             </form>
 
             {{-- Info del listado --}}
-            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:.75rem;">
-                <p style="font-size:0.9rem; margin:0;">
+            <div class="table-compact-info">
+                <p>
                     <strong>{{ $ordenes->total() }}</strong> registro(s) &middot;
                     Página {{ $ordenes->isEmpty() ? 0 : $ordenes->currentPage() }} de {{ $ordenes->lastPage() }}
                 </p>
-                <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.84rem; font-weight:700; padding:4px 12px; border-radius:20px; background:#e2e3e5; color:#41464b; border:1px solid #ced4da;">
+                <span class="badge-active-filter" style="background:var(--dashboard-surface-soft); color:var(--dashboard-text); border-color:var(--dashboard-border);">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/>
                     </svg>
@@ -136,14 +131,14 @@
 
             {{-- Listado --}}
             @if ($ordenes->isEmpty())
-                <div class="resource-empty" style="font-size:0.9rem;">
+                <div class="resource-empty">
                     No hay coincidencias para "{{ $search ?: 'tu búsqueda actual' }}".
                 </div>
             @else
                 <div class="resource-table-wrap">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0" style="font-size:0.9rem;">
-                            <thead style="font-size:0.82rem;">
+                        <table class="table table-hover mb-0 table-compact">
+                            <thead>
                                 <tr>
                                     <th># en sistema</th>
                                     <th>Estado</th>
@@ -165,17 +160,17 @@
                                         };
                                     @endphp
                                     <tr>
-                                        <th style="font-size:0.9rem;">#{{ $row->id_ordenes }}</th>
+                                        <th>#{{ $row->id_ordenes }}</th>
                                         <td>
-                                            <span class="resource-status is-{{ $statusClass }}" style="font-size:0.84rem; font-weight:700;">
+                                            <span class="resource-status is-{{ $statusClass }}">
                                                 <i class="fas fa-circle"></i> {{ ucwords($row->status) }}
                                             </span>
                                         </td>
-                                        <td style="font-size:0.9rem;">{{ ucwords($row->cliente->nombreCompleto) }}</td>
-                                        <td style="font-size:0.9rem;">{{ $row->servicio->nombreServicio }}</td>
-                                        <td style="font-size:0.9rem;">{{ $row->vehiculo->marca }}</td>
-                                        <td style="font-size:0.9rem;">{{ $row->placas }}</td>
-                                        <td style="font-size:0.9rem;">{{ $row->user->name }}</td>
+                                        <td>{{ ucwords($row->cliente->nombreCompleto) }}</td>
+                                        <td>{{ $row->servicio->nombreServicio }}</td>
+                                        <td>{{ $row->vehiculo->marca }}</td>
+                                        <td>{{ $row->placas }}</td>
+                                        <td>{{ $row->user->name }}</td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark btn-sm" href="{{ route('ordenes.show', $row->id_ordenes) }}" title="Visualizar a detalle">
@@ -203,20 +198,20 @@
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header bg-danger text-white">
-                                                        <h5 class="modal-title" style="font-size:1rem; font-weight:800;">Eliminar orden</h5>
+                                                        <h5 class="modal-title" style="font-weight:800;">Eliminar orden</h5>
                                                         <button type="button" class="close" data-bs-dismiss="modal" aria-label="Cerrar">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <div class="modal-body" style="font-size:0.9rem;">
+                                                    <div class="modal-body">
                                                         ¿Seguro que deseas eliminar la orden <strong>#{{ $row->id_ordenes }}</strong>?
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="font-size:0.9rem; font-weight:600;">Cancelar</button>
+                                                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="font-weight:600;">Cancelar</button>
                                                         <form method="POST" action="{{ route('ordenes.destroy', $row->id_ordenes) }}">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger" style="font-size:0.9rem; font-weight:800;">Eliminar</button>
+                                                            <button type="submit" class="btn btn-danger" style="font-weight:800;">Eliminar</button>
                                                         </form>
                                                     </div>
                                                 </div>
