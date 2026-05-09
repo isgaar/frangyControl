@@ -540,10 +540,10 @@
                 <div class="od-gallery-grid">
                     @foreach ($orden->fotografias as $index => $fotografia)
                     <a class="od-photo"
-                        href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
+                        href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id], false) }}"
                         target="_blank" rel="noopener">
                         <div class="od-photo__img">
-                            <img src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id]) }}"
+                            <img src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $fotografia->id], false) }}"
                                 alt="Evidencia {{ $index + 1 }}"
                                 loading="lazy">
                         </div>

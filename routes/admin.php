@@ -75,6 +75,7 @@ Route::prefix('cotizaciones')
         Route::get('/nueva', [CotizacionController::class, 'create'])->name('create');
         Route::post('/', [CotizacionController::class, 'store'])->name('store');
         Route::get('/{id_cotizacion}/editar', [CotizacionController::class, 'edit'])->name('edit');
+        Route::get('/{id_cotizacion}/crear-orden', [CotizacionController::class, 'createOrder'])->name('create_order');
         Route::put('/{id_cotizacion}', [CotizacionController::class, 'update'])->name('update');
         Route::delete('/{id_cotizacion}', [CotizacionController::class, 'destroy'])->name('destroy');
         Route::get('/{id_cotizacion}', [CotizacionController::class, 'show'])->name('show');

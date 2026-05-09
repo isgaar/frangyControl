@@ -45,4 +45,11 @@ class Cotizacion extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function conceptos()
+    {
+        return $this->hasMany(CotizacionConcepto::class, 'cotizacion_id', 'id_cotizacion')
+            ->orderBy('orden')
+            ->orderBy('id_concepto');
+    }
 }

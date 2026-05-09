@@ -21,6 +21,7 @@ use App\Models\TipoVehiculo;
 use App\Models\TipoServicio;
 use App\Models\User;
 use App\Models\Fotografia;
+use App\Models\Cotizacion;
 use PDF;
 use Carbon\Carbon;
 
@@ -83,14 +84,20 @@ class OrdenController extends Controller
         return response()->json(['exists' => $exists]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return $this->registro();
+        return $this->registro($request);
     }
 
-    public function registro()
+    public function registro(?Request $request = null)
     {
-        return view('admin.ordenes.registro', $this->registroCatalogos());
+        $cotizacion = $this->acceptedCotizacionForOrder($request);
+        $catalogos = $this->registroCatalogos();
+
+        return view('admin.ordenes.registro', array_merge($catalogos, [
+            'preferExistingClient' => $cotizacion ? true : ($catalogos['preferExistingClient'] ?? false),
+            'orderPrefill' => $cotizacion ? $this->orderPrefillFromCotizacion($cotizacion) : [],
+        ]));
     }
 
     public function store(Request $request)
@@ -302,6 +309,43 @@ class OrdenController extends Controller
         ];
     }
 
+    private function acceptedCotizacionForOrder(?Request $request): ?Cotizacion
+    {
+        $id = $request?->integer('cotizacion_id');
+
+        if (!$id) {
+            return null;
+        }
+
+        return Cotizacion::with(['servicio', 'user', 'conceptos'])
+            ->where('estado', 'aceptada')
+            ->find($id);
+    }
+
+    private function orderPrefillFromCotizacion(Cotizacion $cotizacion): array
+    {
+        $conceptos = $cotizacion->conceptos
+            ->map(fn ($concepto) => '- ' . $concepto->descripcion . ' (' . number_format((float) $concepto->cantidad, 2) . ' x $' . number_format((float) $concepto->precio_unitario, 2) . ' = $' . number_format((float) $concepto->subtotal, 2) . ')')
+            ->implode("\n");
+
+        $detalle = trim(implode("\n", array_filter([
+            'Cotización aceptada: ' . $cotizacion->folio,
+            'Servicio principal: ' . ($cotizacion->servicio?->nombreServicio ?? 'Sin servicio'),
+            'Total cotizado: $' . number_format((float) $cotizacion->total, 2),
+            $conceptos ? "Conceptos adicionales:\n" . $conceptos : null,
+            $cotizacion->notas ? "Notas de cotización:\n" . $cotizacion->notas : null,
+        ])));
+
+        return [
+            'cotizacion_id' => $cotizacion->id_cotizacion,
+            'servicio_id' => $cotizacion->servicio_id,
+            'user_id' => $cotizacion->user_id,
+            'detallesOrden' => $detalle,
+            'recomendacionesCliente' => 'Cotización ' . $cotizacion->folio . ' aceptada por $' . number_format((float) $cotizacion->total, 2) . '.',
+            'observacionesInt' => 'Orden generada desde cotización aceptada ' . $cotizacion->folio . '.',
+        ];
+    }
+
     private function normalizedOrderInput(Request $request): array
     {
         return [
@@ -503,44 +547,68 @@ class OrdenController extends Controller
             throw new \RuntimeException('No se pudo leer una fotografía seleccionada.');
         }
 
-        // Smart image compression without losing quality
-        $imageResource = @imagecreatefromstring($contents);
-        if ($imageResource !== false) {
-            $width = imagesx($imageResource);
-            $height = imagesy($imageResource);
-            $maxWidth = 1920;
-            $maxHeight = 1080;
-
-            if ($width > $maxWidth || $height > $maxHeight) {
-                $ratio = min($maxWidth / $width, $maxHeight / $height);
-                $newWidth = (int) ($width * $ratio);
-                $newHeight = (int) ($height * $ratio);
-
-                $newImage = imagecreatetruecolor($newWidth, $newHeight);
-                if ($photo->getMimeType() === 'image/png') {
-                    imagealphablending($newImage, false);
-                    imagesavealpha($newImage, true);
-                    $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
-                    imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
-                }
-
-                imagecopyresampled($newImage, $imageResource, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-                imagedestroy($imageResource);
-                $imageResource = $newImage;
-            }
-
-            ob_start();
-            if ($photo->getMimeType() === 'image/png') {
-                imagepng($imageResource, null, 9);
-            } else {
-                imagejpeg($imageResource, null, 85);
-            }
-            $contents = ob_get_clean();
-            imagedestroy($imageResource);
-        }
+        $contents = $this->compressPhotoIfSupported($contents, $photo->getMimeType());
 
         Storage::disk('local')->makeDirectory(dirname($path));
         Storage::disk('local')->put($path, Crypt::encryptString(base64_encode($contents)));
+    }
+
+    private function compressPhotoIfSupported(string $contents, ?string $mimeType): string
+    {
+        if (!$this->gdImageFunctionsAreAvailable()) {
+            return $contents;
+        }
+
+        $imageResource = @imagecreatefromstring($contents);
+        if ($imageResource === false) {
+            return $contents;
+        }
+
+        $width = imagesx($imageResource);
+        $height = imagesy($imageResource);
+        $maxWidth = 1920;
+        $maxHeight = 1080;
+
+        if ($width > $maxWidth || $height > $maxHeight) {
+            $ratio = min($maxWidth / $width, $maxHeight / $height);
+            $newWidth = max(1, (int) ($width * $ratio));
+            $newHeight = max(1, (int) ($height * $ratio));
+
+            $newImage = imagecreatetruecolor($newWidth, $newHeight);
+            if ($mimeType === 'image/png') {
+                imagealphablending($newImage, false);
+                imagesavealpha($newImage, true);
+                $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+                imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+            }
+
+            imagecopyresampled($newImage, $imageResource, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagedestroy($imageResource);
+            $imageResource = $newImage;
+        }
+
+        ob_start();
+        if ($mimeType === 'image/png') {
+            imagepng($imageResource, null, 9);
+        } else {
+            imagejpeg($imageResource, null, 85);
+        }
+        $compressedContents = ob_get_clean();
+        imagedestroy($imageResource);
+
+        return $compressedContents !== false ? $compressedContents : $contents;
+    }
+
+    private function gdImageFunctionsAreAvailable(): bool
+    {
+        return function_exists('imagecreatefromstring')
+            && function_exists('imagesx')
+            && function_exists('imagesy')
+            && function_exists('imagecreatetruecolor')
+            && function_exists('imagecopyresampled')
+            && function_exists('imagedestroy')
+            && function_exists('imagepng')
+            && function_exists('imagejpeg');
     }
 
     private function finalPhotoPath(Ordenes $orden, string $token, string $extension): string

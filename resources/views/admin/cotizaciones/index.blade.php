@@ -20,6 +20,44 @@
         ];
     @endphp
 
+    <style>
+        .quote-list-card {
+            display: grid;
+            gap: .2rem;
+        }
+
+        .quote-list-card strong {
+            color: var(--dashboard-text);
+        }
+
+        .quote-list-card span {
+            color: var(--dashboard-muted);
+            font-size: .82rem;
+        }
+
+        .quote-filter-field {
+            display: grid;
+            gap: .25rem;
+        }
+
+        .quote-filter-field label {
+            margin: 0;
+            font-size: .74rem;
+            font-weight: 800;
+            color: var(--dashboard-muted);
+            text-transform: uppercase;
+        }
+
+        .quote-empty-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: .75rem;
+        }
+    </style>
+
     <div class="resource-page">
         <div class="page-header">
             <div>
@@ -58,29 +96,38 @@
             <form action="{{ route('cotizaciones.index') }}" method="get">
                 <div class="filter-toolbar">
                     <div class="filter-search-box">
-                        <input type="text" name="search" value="{{ $search }}" placeholder="Buscar por folio, cliente, servicio o responsable...">
+                        <input type="text" name="search" value="{{ $search }}" placeholder="Buscar por folio, servicio o responsable...">
                         <button type="submit" title="Buscar">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
 
-                    <select name="estado" class="form-control">
-                        <option value="">Todos los estados</option>
-                        @foreach ($estadoLabel as $value => $label)
-                            <option value="{{ $value }}" {{ $estado === $value ? 'selected' : '' }}>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                    <div class="quote-filter-field">
+                        <label for="estado">Estado</label>
+                        <select name="estado" id="estado" class="form-control">
+                            <option value="">Todos los estados</option>
+                            @foreach ($estadoLabel as $value => $label)
+                                <option value="{{ $value }}" {{ $estado === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                    <select name="order" class="form-control">
-                        <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Últimas primero</option>
-                        <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>Primeras primero</option>
-                    </select>
+                    <div class="quote-filter-field">
+                        <label for="order">Orden</label>
+                        <select name="order" id="order" class="form-control">
+                            <option value="desc" {{ $order === 'desc' ? 'selected' : '' }}>Últimas primero</option>
+                            <option value="asc" {{ $order === 'asc' ? 'selected' : '' }}>Primeras primero</option>
+                        </select>
+                    </div>
 
-                    <select name="limit" class="form-control">
-                        @foreach ([5, 10, 15, 25] as $option)
-                            <option value="{{ $option }}" {{ (int) $limit === $option ? 'selected' : '' }}>{{ $option }} por página</option>
-                        @endforeach
-                    </select>
+                    <div class="quote-filter-field">
+                        <label for="limit">Vista</label>
+                        <select name="limit" id="limit" class="form-control">
+                            @foreach ([5, 10, 15, 25] as $option)
+                                <option value="{{ $option }}" {{ (int) $limit === $option ? 'selected' : '' }}>{{ $option }} por página</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <a href="{{ route('cotizaciones.index') }}" class="btn btn-outline-dark filter-btn-clear">
                         <i class="fas fa-redo-alt"></i> Limpiar
@@ -96,7 +143,17 @@
             </div>
 
             @if ($cotizaciones->isEmpty())
-                <div class="resource-empty">No hay cotizaciones para mostrar.</div>
+                <div class="resource-empty">
+                    <strong>No hay cotizaciones para mostrar.</strong>
+                    <div class="quote-empty-actions">
+                        <a href="{{ route('cotizaciones.create') }}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-plus me-1"></i> Crear cotización
+                        </a>
+                        <a href="{{ route('cotizaciones.index') }}" class="btn btn-outline-dark btn-sm">
+                            <i class="fas fa-redo-alt me-1"></i> Limpiar filtros
+                        </a>
+                    </div>
+                </div>
             @else
                 <div class="resource-table-wrap">
                     <div class="table-responsive">
@@ -104,9 +161,9 @@
                             <thead>
                                 <tr>
                                     <th>Folio</th>
-                                    <th>Cliente</th>
+                                    <th>Responsable</th>
                                     <th>Servicio</th>
-                                    <th>Estado</th>
+                                    <th>Seguimiento</th>
                                     <th>Vigencia</th>
                                     <th>Total</th>
                                     <th class="text-end">Acciones</th>
@@ -115,12 +172,39 @@
                             <tbody>
                                 @foreach ($cotizaciones as $row)
                                     <tr>
-                                        <th>{{ $row->folio }}</th>
-                                        <td>{{ $row->cliente?->nombreCompleto ?? 'Sin cliente' }}</td>
-                                        <td>{{ $row->servicio?->nombreServicio ?? 'Sin servicio' }}</td>
-                                        <td><span class="badge-active-filter">{{ $estadoLabel[$row->estado] ?? ucfirst($row->estado) }}</span></td>
-                                        <td>{{ $row->vigencia ? $row->vigencia->format('d/m/Y') : 'Sin vigencia' }}</td>
-                                        <td>${{ number_format((float) $row->total, 2) }}</td>
+                                        <th>
+                                            <div class="quote-list-card">
+                                                <strong>{{ $row->folio }}</strong>
+                                                <span>{{ $row->created_at?->format('d/m/Y H:i') }}</span>
+                                            </div>
+                                        </th>
+                                        <td>
+                                            <div class="quote-list-card">
+                                                <strong>{{ $row->user?->name ?? 'Sin responsable' }}</strong>
+                                                <span>{{ $estadoLabel[$row->estado] ?? ucfirst($row->estado) }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="quote-list-card">
+                                                <strong>{{ $row->servicio?->nombreServicio ?? 'Sin servicio' }}</strong>
+                                                <span>Subtotal ${{ number_format((float) $row->precio_base, 2) }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge-active-filter">{{ $estadoLabel[$row->estado] ?? ucfirst($row->estado) }}</span>
+                                        </td>
+                                        <td>
+                                            <div class="quote-list-card">
+                                                <strong>{{ $row->vigencia ? $row->vigencia->format('d/m/Y') : 'Sin vigencia' }}</strong>
+                                                <span>{{ $row->vigencia && $row->vigencia->isBefore(today()) ? 'Vigencia vencida' : 'Seguimiento abierto' }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="quote-list-card">
+                                                <strong>${{ number_format((float) $row->total, 2) }}</strong>
+                                                <span>Rebaja ${{ number_format((float) $row->descuento_monto, 2) }}</span>
+                                            </div>
+                                        </td>
                                         <td class="text-end">
                                             <div class="resource-actions justify-content-end">
                                                 <a class="btn btn-outline-dark btn-sm" href="{{ route('cotizaciones.show', $row->id_cotizacion) }}" title="Ver cotización">

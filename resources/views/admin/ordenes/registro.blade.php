@@ -19,7 +19,8 @@
 
 @section('content')
 @php
-    $usingExistingClient = (bool) old('usar_cliente_existente', $preferExistingClient ?? false);
+    $orderPrefill = $orderPrefill ?? [];
+    $usingExistingClient = (bool) old('usar_cliente_existente', ($preferExistingClient ?? false) || !empty($orderPrefill['cliente_id']));
 @endphp
 <style>
     .order-panel {
@@ -659,6 +660,13 @@
 </div>
 @endif
 
+@if (!empty($orderPrefill['cotizacion_id']))
+<div class="alert alert-info">
+    <strong>Datos cargados desde cotización aceptada.</strong>
+    Revisa la unidad y completa los campos faltantes antes de guardar la orden.
+</div>
+@endif
+
 <form method="POST" action="{{ route('ordenes.store') }}" enctype="multipart/form-data" id="ordenRegistroForm"
     novalidate>
     @csrf
@@ -764,7 +772,7 @@
 
                                 <div class="form-group {{ $usingExistingClient ? '' : 'd-none' }}" id="clienteExistenteBox">
                                     <input type="hidden" name="cliente_existente_id" id="cliente_existente_id"
-                                        value="{{ old('cliente_existente_id') }}">
+                                        value="{{ old('cliente_existente_id', $orderPrefill['cliente_id'] ?? '') }}">
                                     <div class="selected-client-summary d-none" id="selectedClientSummary" aria-live="polite"></div>
                                     <small class="helper-copy">El sistema cargará nombre, teléfono, correo y RFC del cliente
                                         seleccionado.</small>
@@ -782,7 +790,7 @@
                                         data-telefono="{{ $cliente->telefono }}"
                                         data-correo="{{ $cliente->correo }}"
                                         data-rfc="{{ $cliente->rfc }}"
-                                        {{ (string) old('cliente_existente_id') === (string) $cliente->id_cliente ? 'selected' : '' }}>
+                                        {{ (string) old('cliente_existente_id', $orderPrefill['cliente_id'] ?? '') === (string) $cliente->id_cliente ? 'selected' : '' }}>
                                         {{ $cliente->nombreCompleto }} - {{ $cliente->telefono }}
                                     </option>
                                     @endforeach
@@ -1042,7 +1050,7 @@
                                     <option value="">Selecciona un servicio</option>
                                     @foreach ($tiposServicio as $tipoServicio)
                                     <option value="{{ $tipoServicio->id_servicio }}"
-                                        {{ (string) old('servicio_id') === (string) $tipoServicio->id_servicio ? 'selected' : '' }}>
+                                        {{ (string) old('servicio_id', $orderPrefill['servicio_id'] ?? '') === (string) $tipoServicio->id_servicio ? 'selected' : '' }}>
                                         {{ $tipoServicio->nombreServicio }}
                                     </option>
                                     @endforeach
@@ -1063,7 +1071,7 @@
                                     <option value="">Selecciona un empleado</option>
                                     @foreach ($users as $user)
                                     <option value="{{ $user->id }}"
-                                        {{ (string) old('user_id', $attendingUserId ?? '') === (string) $user->id ? 'selected' : '' }}>
+                                        {{ (string) old('user_id', $orderPrefill['user_id'] ?? $attendingUserId ?? '') === (string) $user->id ? 'selected' : '' }}>
                                         {{ $user->name }}
                                     </option>
                                     @endforeach
@@ -1133,7 +1141,7 @@
                                 <label for="observacionesInt">Observaciones internas</label>
                                 <textarea name="observacionesInt" id="observacionesInt" rows="5"
                                     class="form-control @error('observacionesInt') is-invalid @enderror"
-                                    required>{{ old('observacionesInt') }}</textarea>
+                                    required>{{ old('observacionesInt', $orderPrefill['observacionesInt'] ?? '') }}</textarea>
                                 <small class="helper-copy">Describe recepción, fallas detectadas o notas del taller.</small>
                                 <div class="invalid-feedback">Agrega las observaciones internas de la orden.</div>
                                 @error('observacionesInt')
@@ -1147,7 +1155,7 @@
                                 <label for="recomendacionesCliente">Recomendaciones del cliente</label>
                                 <textarea name="recomendacionesCliente" id="recomendacionesCliente" rows="5"
                                     class="form-control @error('recomendacionesCliente') is-invalid @enderror"
-                                    required>{{ old('recomendacionesCliente') }}</textarea>
+                                    required>{{ old('recomendacionesCliente', $orderPrefill['recomendacionesCliente'] ?? '') }}</textarea>
                                 <small class="helper-copy">Anota exactamente lo que pide o autoriza el cliente.</small>
                                 <div class="invalid-feedback">Agrega las recomendaciones del cliente.</div>
                                 @error('recomendacionesCliente')
@@ -1161,7 +1169,7 @@
                                 <label for="detallesOrden">Detalles del servicio</label>
                                 <textarea name="detallesOrden" id="detallesOrden" rows="5"
                                     class="form-control @error('detallesOrden') is-invalid @enderror"
-                                    required>{{ old('detallesOrden') }}</textarea>
+                                    required>{{ old('detallesOrden', $orderPrefill['detallesOrden'] ?? '') }}</textarea>
                                 <small class="helper-copy">Resume el trabajo que se realizará en esta orden.</small>
                                 <div class="invalid-feedback">Agrega los detalles del servicio.</div>
                                 @error('detallesOrden')
@@ -1186,8 +1194,8 @@
                             <div class="form-group">
                                 <label for="photos">Fotografías de apoyo</label>
                                 <div class="photo-uploader" id="photoUploader"
-                                    data-upload-url="{{ route('ordenes.photos.temporary.store') }}"
-                                    data-delete-url="{{ route('ordenes.photos.temporary.destroy') }}">
+                                    data-upload-url="{{ route('ordenes.photos.temporary.store', [], false) }}"
+                                    data-delete-url="{{ route('ordenes.photos.temporary.destroy', [], false) }}">
                                     <input type="file" name="photos[]" id="photos"
                                         class="photo-uploader__input @error('photos.*') is-invalid @enderror"
                                         accept="image/png,image/jpeg" multiple>
@@ -1658,7 +1666,7 @@
 
         function updateAcceptanceState(showError) {
             var accepted = acceptCheckbox.checked;
-            submitButton.disabled = !accepted || pendingPhotoUploads > 0;
+            submitButton.disabled = !accepted || pendingPhotoUploads > 0 || failedPhotoUploadCount() > 0;
             acceptError.classList.toggle('d-none', accepted || !showError);
         }
 
@@ -1689,11 +1697,20 @@
                 : 0;
         }
 
+        function failedPhotoUploadCount() {
+            return photoPreviewContainer
+                ? photoPreviewContainer.querySelectorAll('.preview-card.is-error').length
+                : 0;
+        }
+
         function refreshPhotoStatus() {
             var savedCount = savedPhotoCount();
+            var failedCount = failedPhotoUploadCount();
 
             if (pendingPhotoUploads > 0) {
                 setPhotoStatus('Cifrando y guardando ' + pendingPhotoUploads + ' fotografía(s)...', false);
+            } else if (failedCount > 0) {
+                setPhotoStatus(failedCount + ' fotografía(s) no se pudieron guardar. Quítalas y vuelve a seleccionarlas.', true);
             } else if (savedCount > 0) {
                 setPhotoStatus(savedCount + ' fotografía(s) listas para esta orden.', false);
             } else {
@@ -2186,7 +2203,7 @@
                 return;
             }
 
-            fetch('{{ route('clientes.verificar_nombre') }}', {
+            fetch('{{ route('clientes.verificar_nombre', [], false) }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -2283,6 +2300,12 @@
                 event.preventDefault();
                 event.stopPropagation();
                 setPhotoStatus('Espera a que terminen de cifrarse las fotografías.', true);
+            }
+
+            if (failedPhotoUploadCount() > 0) {
+                event.preventDefault();
+                event.stopPropagation();
+                setPhotoStatus('Hay fotografías que no se pudieron guardar. Quítalas y vuelve a seleccionarlas.', true);
             }
 
             if (!acceptCheckbox.checked) {

@@ -1118,10 +1118,10 @@
         <div class="existing-photo-card"
              id="existingPhoto{{ $foto->id }}">
             {{-- Imagen clickeable que abre en nueva pestaña --}}
-            <a href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $foto->id]) }}"
+            <a href="{{ route('ordenes.photos.show', [$orden->id_ordenes, $foto->id], false) }}"
                target="_blank" rel="noopener" title="Ver foto {{ $loop->iteration }} en tamaño completo">
                 <img
-                    src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $foto->id]) }}"
+                    src="{{ route('ordenes.photos.show', [$orden->id_ordenes, $foto->id], false) }}"
                     alt="Foto de orden {{ $loop->iteration }}"
                     loading="lazy">
             </a>
@@ -1148,8 +1148,8 @@
 
                                             {{-- Uploader de nuevas fotos --}}
                                             <div class="photo-uploader mt-3" id="photoUploader"
-                                                data-upload-url="{{ route('ordenes.photos.temporary.store') }}"
-                                                data-delete-url="{{ route('ordenes.photos.temporary.destroy') }}">
+                                                data-upload-url="{{ route('ordenes.photos.temporary.store', [], false) }}"
+                                                data-delete-url="{{ route('ordenes.photos.temporary.destroy', [], false) }}">
                                                 <input type="file" name="photos[]" id="photos"
                                                     class="photo-uploader__input"
                                                     accept="image/png,image/jpeg" multiple>
@@ -1412,7 +1412,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Checkbox de aceptación ──
     function updateAcceptanceState(showError) {
         var accepted = acceptCheckbox.checked;
-        submitButton.disabled = !accepted || pendingPhotoUploads > 0;
+        submitButton.disabled = !accepted || pendingPhotoUploads > 0 || failedPhotoUploadCount() > 0;
         acceptError.classList.toggle('d-none', accepted || !showError);
     }
 
@@ -1465,10 +1465,17 @@ document.addEventListener('DOMContentLoaded', function () {
         return photoTokenContainer ? photoTokenContainer.querySelectorAll('input[name="photo_tokens[]"]').length : 0;
     }
 
+    function failedPhotoUploadCount() {
+        return photoPreviewContainer ? photoPreviewContainer.querySelectorAll('.preview-card.is-error').length : 0;
+    }
+
     function refreshPhotoStatus() {
         var savedCount = savedPhotoCount();
+        var failedCount = failedPhotoUploadCount();
         if (pendingPhotoUploads > 0) {
             setPhotoStatus('Cifrando y guardando ' + pendingPhotoUploads + ' fotografía(s)...', false);
+        } else if (failedCount > 0) {
+            setPhotoStatus(failedCount + ' fotografía(s) no se pudieron guardar. Quítalas y vuelve a seleccionarlas.', true);
         } else if (savedCount > 0) {
             setPhotoStatus(savedCount + ' fotografía(s) nuevas listas.', false);
         } else {
@@ -1603,6 +1610,11 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             event.stopPropagation();
             setPhotoStatus('Espera a que terminen de cifrarse las fotografías.', true);
+        }
+        if (failedPhotoUploadCount() > 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            setPhotoStatus('Hay fotografías que no se pudieron guardar. Quítalas y vuelve a seleccionarlas.', true);
         }
         if (!acceptCheckbox.checked) { event.preventDefault(); event.stopPropagation(); }
         if (!valid || !form.checkValidity()) { event.preventDefault(); event.stopPropagation(); }
