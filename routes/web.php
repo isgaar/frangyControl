@@ -29,6 +29,8 @@ Auth::routes();
 
 Route::get('/panel', [HomeController::class, 'index'])->name('panel.index');
 Route::get('/panel/pdf', [HomeController::class, 'exportPdf'])->name('panel.pdf');
+Route::get('/panel/reportes', [App\Http\Controllers\Admin\ReporteController::class, 'index'])->name('reportes.index');
+Route::get('/panel/reportes/pdf', [App\Http\Controllers\Admin\ReporteController::class, 'exportPdf'])->name('reportes.pdf');
 Route::redirect('/home', '/panel');
 
 Route::get('/acerca', [HomeController::class, 'about'])->name('acerca.index');

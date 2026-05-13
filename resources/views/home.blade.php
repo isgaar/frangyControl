@@ -100,7 +100,7 @@
                             <p class="fw-medium mb-0" style="font-size:0.84rem; font-weight:800;">Ingresos semanales</p>
                             <p class="text-muted mb-0" style="font-size:0.75rem;">Semana actual vs semana anterior</p>
                         </div>
-                        <a href="#" class="text-primary" style="font-size:0.75rem; text-decoration:none;">Ver reporte →</a>
+                        <a href="{{ route('reportes.index') }}" class="text-primary" style="font-size:0.75rem; text-decoration:none;">Ver reporte →</a>
                     </div>
 
                     <div class="d-flex gap-2" style="height:120px; align-items:flex-end;">
