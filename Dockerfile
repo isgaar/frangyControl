@@ -57,7 +57,7 @@ COPY --from=docker.io/library/composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Dependencias PHP (solo producción — sin paquetes de testing/dev)
-COPY composer.json composer.lock ./
+COPY composer.json composer.lock* ./
 RUN composer install \
         --no-interaction \
         --prefer-dist \

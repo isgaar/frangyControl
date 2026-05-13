@@ -197,8 +197,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Collective\Html\HtmlServiceProvider::class,
-        App\Providers\inputformProvider::class,
+
         Barryvdh\DomPDF\ServiceProvider::class,
         
     ])->toArray(),
