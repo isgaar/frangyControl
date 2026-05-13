@@ -45,7 +45,8 @@
                     </div>
                 </div>
 
-                {!! Form::open(['route' => 'clientes.store', 'method' => 'post', 'enctype' => 'multipart/form-data']) !!}
+                <form action="{{ route('clientes.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="nombreCompleto">Nombre completo</label>
@@ -90,7 +91,7 @@
                             <button type="submit" class="btn btn-primary">Guardar cliente</button>
                         </div>
                     </div>
-                {!! Form::close() !!}
+                </form>
             </section>
 
             <aside class="resource-side-card">

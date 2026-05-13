@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            {!! Form::open(['route' => ['catalogos.tipos_vehiculo.destroy', $tipoVehiculo->id_tvehiculo], 'method' => 'get']) !!}
+            <form action="{{ route('catalogos.tipos_vehiculo.destroy', $tipoVehiculo->id_tvehiculo) }}" method="GET">
                 <div class="resource-kv mt-4">
                     <div class="resource-kv__item">
                         <span class="resource-kv__label">Tipo de vehículo</span>
@@ -47,7 +47,7 @@
                         <button type="submit" class="btn btn-danger">Eliminar tipo</button>
                     </div>
                 </div>
-            {!! Form::close() !!}
+            </form>
         </section>
     </div>
 @stop

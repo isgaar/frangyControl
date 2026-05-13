@@ -32,7 +32,7 @@
                 </div>
             </div>
 
-            {!! Form::open(['route' => ['usuarios.destroy', $user->id], 'method' => 'get']) !!}
+            <form action="{{ route('usuarios.destroy', $user->id) }}" method="GET">
                 <div class="resource-kv mt-4">
                     <div class="resource-kv__item">
                         <span class="resource-kv__label">Nombre del usuario</span>
@@ -55,7 +55,7 @@
                         <button type="submit" class="btn btn-danger">Eliminar usuario</button>
                     </div>
                 </div>
-            {!! Form::close() !!}
+            </form>
         </section>
     </div>
 @stop

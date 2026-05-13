@@ -45,11 +45,13 @@
                     </div>
                 </div>
 
-                {!! Form::model($cliente, ['route' => ['clientes.update', $cliente->id_cliente], 'method' => 'put']) !!}
+                <form action="{{ route('clientes.update', $cliente->id_cliente) }}" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="nombreCompleto">Nombre completo</label>
-                            {!! Form::text('nombreCompleto', null, ['class' => 'form-control', 'id' => 'nombreCompleto', 'oninput' => 'formatNameInput(this)']) !!}
+                            <input type="text" name="nombreCompleto" id="nombreCompleto" class="form-control" oninput="formatNameInput(this)" value="{{ old('nombreCompleto', $cliente->nombreCompleto) }}">
                             @error('nombreCompleto')
                                 <span class="text-danger d-block mt-2">{{ $message }}</span>
                             @enderror
@@ -57,7 +59,7 @@
 
                         <div class="form-group mb-0">
                             <label for="telefono">Teléfono</label>
-                            {!! Form::text('telefono', null, ['class' => 'form-control', 'id' => 'telefono', 'oninput' => 'validatePhoneNumber(this)', 'maxlength' => '10', 'inputmode' => 'numeric']) !!}
+                            <input type="text" name="telefono" id="telefono" class="form-control" maxlength="10" inputmode="numeric" oninput="validatePhoneNumber(this)" value="{{ old('telefono', $cliente->telefono) }}">
                             @error('telefono')
                                 <span class="text-danger d-block mt-2">{{ $message }}</span>
                             @enderror
@@ -65,7 +67,7 @@
 
                         <div class="form-group mb-0">
                             <label for="correo">Correo electrónico</label>
-                            {!! Form::text('correo', null, ['class' => 'form-control', 'id' => 'correo', 'oninput' => 'validateEmail(this)']) !!}
+                            <input type="email" name="correo" id="correo" class="form-control" oninput="validateEmail(this)" value="{{ old('correo', $cliente->correo) }}">
                             @error('correo')
                                 <span class="text-danger d-block mt-2">{{ $message }}</span>
                             @enderror
@@ -73,7 +75,7 @@
 
                         <div class="form-group mb-0">
                             <label for="rfc">RFC</label>
-                            {!! Form::text('rfc', null, ['class' => 'form-control', 'id' => 'rfc', 'oninput' => 'formatRFC(event)']) !!}
+                            <input type="text" name="rfc" id="rfc" class="form-control" oninput="formatRFC(event)" value="{{ old('rfc', $cliente->rfc) }}">
                             @error('rfc')
                                 <span class="text-danger d-block mt-2">{{ $message }}</span>
                             @enderror
@@ -86,7 +88,7 @@
                             <button type="submit" class="btn btn-warning">Actualizar cliente</button>
                         </div>
                     </div>
-                {!! Form::close() !!}
+                </form>
             </section>
 
             <aside class="resource-side-card">

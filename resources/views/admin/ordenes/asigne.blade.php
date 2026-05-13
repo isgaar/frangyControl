@@ -52,8 +52,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card card-primary">
-                {!! Form::open(['route' => 'ordenes.cliente_existente.store', 'method' => 'post', 'enctype' => 'multipart/form-data',
-                'id' => 'formulario']) !!}
+                <form action="{{ route('ordenes.cliente_existente.store') }}" method="POST" enctype="multipart/form-data" id="formulario">
                 @csrf
                 <div class="card-header bg-danger">
                     <h3 class="card-title">Información del cliente</h3>
@@ -110,8 +109,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="modelo">Línea</label>
-                                {!! Form::text('modelo', null, ['class' => 'form-control', 'id' => 'modelo', 'maxlength'
-                                => '100', 'oninput' => 'capitalizeFirstLetter(event)']) !!}
+                                <input type="text" name="modelo" id="modelo" class="form-control" maxlength="100" oninput="capitalizeFirstLetter(event)" value="{{ old('modelo') }}">
                                 @error('modelo')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -121,24 +119,21 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="yearVehiculo">Año</label>
-                                {!! Form::text('yearVehiculo', null, ['class' => 'form-control', 'id' => 'yearVehiculo',
-                                'oninput' => 'validateYearInput(this)']) !!}
+                                <input type="text" name="yearVehiculo" id="yearVehiculo" class="form-control" oninput="validateYearInput(this)" value="{{ old('yearVehiculo') }}">
                                 @error('yearVehiculo')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="form-group">
                                 <label for="color">Color</label>
-                                {!! Form::text('color', null, ['class' => 'form-control', 'id' => 'color', 'maxlength'
-                                => '80', 'oninput' => 'formatColorInput(this)']) !!}
+                                <input type="text" name="color" id="color" class="form-control" maxlength="80" oninput="formatColorInput(this)" value="{{ old('color') }}">
                                 @error('color')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="form-group">
                                 <label for="placas">Placas</label>
-                                {!! Form::text('placas', null, ['class' => 'form-control', 'id' => 'placas', 'oninput'
-                                => 'limitInputLength(this, 7); formatPlacasInput(this);']) !!}
+                                <input type="text" name="placas" id="placas" class="form-control" oninput="limitInputLength(this, 7); formatPlacasInput(this);" value="{{ old('placas') }}">
                                 @error('placas')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -151,9 +146,7 @@
                             <div class="form-group">
                                 <label for="kilometraje">Kilometraje</label>
                                 <div class="input-group">
-                                    {!! Form::text('kilometraje', null, ['class' => 'form-control', 'id' =>
-                                    'kilometraje',
-                                    'maxlength' => '8', 'oninput' => 'formatKilometrajeInput(this)']) !!}
+                                    <input type="text" name="kilometraje" id="kilometraje" class="form-control" maxlength="8" oninput="formatKilometrajeInput(this)" value="{{ old('kilometraje') }}">
                                     <div class="input-group-append">
                                         <span class="input-group-text">Km</span>
                                     </div>
@@ -164,8 +157,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="motor">Motor</label>
-                                {!! Form::text('motor', null, ['class' => 'form-control', 'id' => 'motor', 'maxlength'
-                                => '8', 'oninput' => 'formatMotorInput(this)']) !!}
+                                <input type="text" name="motor" id="motor" class="form-control" maxlength="8" oninput="formatMotorInput(this)" value="{{ old('motor') }}">
                                 @error('motor')
                                 <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -180,8 +172,7 @@
 
                                 <div class="form-group">
                                     <label for="cilindros">Cilindros</label>
-                                    {!! Form::text('cilindros', null, ['class' => 'form-control', 'id' => 'cilindros',
-                                    'maxlength' => '20', 'oninput' => 'formatCilindrosInput(this)']) !!}
+                                    <input type="text" name="cilindros" id="cilindros" class="form-control" maxlength="20" oninput="formatCilindrosInput(this)" value="{{ old('cilindros') }}">
                                     @error('cilindros')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -189,8 +180,7 @@
 
                                 <div class="form-group">
                                     <label for="numSerie">No. Serie</label>
-                                    {!! Form::text('noSerievehiculo', null, ['class' => 'form-control', 'id' =>
-                                    'noSerievehiculo', 'oninput' => 'validateInput(this)']) !!}
+                                    <input type="text" name="noSerievehiculo" id="noSerievehiculo" class="form-control" oninput="validateInput(this)" value="{{ old('noSerievehiculo') }}">
                                     @error('noSerievehiculo')
                                     <span class="text-danger">{{ $message }}</span>
                                     @enderror
@@ -245,23 +235,20 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="observacionesInt">Observaciones internas (Recepción)</label>
-                                    {!! Form::textarea('observacionesInt', null, ['class' => 'form-control', 'id' =>
-                                    'observacionesInt']) !!}
+                                    <textarea name="observacionesInt" id="observacionesInt" class="form-control">{{ old('observacionesInt') }}</textarea>
                                 </div>
 
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="recomendacionesCliente">Recomendaciones del cliente</label>
-                                    {!! Form::textarea('recomendacionesCliente', null, ['class' => 'form-control', 'id'
-                                    => 'recomendacionesCliente']) !!}
+                                    <textarea name="recomendacionesCliente" id="recomendacionesCliente" class="form-control">{{ old('recomendacionesCliente') }}</textarea>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="detallesOrden">Detalles del servicio</label>
-                                    {!! Form::textarea('detallesOrden', null, ['class' => 'form-control', 'id' =>
-                                    'detallesOrden']) !!}
+                                    <textarea name="detallesOrden" id="detallesOrden" class="form-control">{{ old('detallesOrden') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -272,16 +259,17 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="retiroRefacciones">Refacciones</label>
-                                    {!! Form::select('retiroRefacciones', [false => 'No retira', true => 'Retira'],
-                                    null, ['class' => 'form-control', 'id' => 'retiroRefacciones']) !!}
+                                    <select name="retiroRefacciones" id="retiroRefacciones" class="form-control">
+                                        <option value="0" {{ old('retiroRefacciones') == '0' ? 'selected' : '' }}>No retira</option>
+                                        <option value="1" {{ old('retiroRefacciones') == '1' ? 'selected' : '' }}>Retira</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="fechaEntrega">Fecha estimada de entrega</label>
-                                    {!! Form::text('fechaEntrega', null, ['class' => 'form-control', 'id' =>
-                                    'fechaEntrega', 'placeholder' => 'Fecha de entrega']) !!}
+                                    <input type="text" name="fechaEntrega" id="fechaEntrega" class="form-control" placeholder="Fecha de entrega" value="{{ old('fechaEntrega') }}">
                                 </div>
                             </div>
 
@@ -329,7 +317,7 @@
                     </div>
                 </div>
 
-                {!! Form::close() !!}
+                </form>
 
 
                 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

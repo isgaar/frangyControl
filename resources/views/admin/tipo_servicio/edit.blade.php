@@ -45,11 +45,16 @@
                     </div>
                 </div>
 
-                {!! Form::model($tipoServicio, ['route' => ['catalogos.servicios.update', $tipoServicio->id_servicio], 'method' => 'put']) !!}
+                <form action="{{ route('catalogos.servicios.update', $tipoServicio->id_servicio) }}" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="nombreServicio">Nombre del servicio</label>
-                            {!! Form::UTTextOnly('nombreServicio', '', 'nombreServicio', $tipoServicio->nombreServicio, $errors, 40, true) !!}
+                            <input type="text" name="nombreServicio" id="nombreServicio" value="{{ old('nombreServicio', $tipoServicio->nombreServicio) }}" class="form-control @error('nombreServicio') is-invalid @enderror" maxlength="40" required>
+                            @error('nombreServicio')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                         <div class="form-group mb-0">
                             <label for="precio_base">Precio base</label>
@@ -75,7 +80,7 @@
                             <button type="submit" class="btn btn-warning">Actualizar servicio</button>
                         </div>
                     </div>
-                {!! Form::close() !!}
+                </form>
             </section>
 
             <aside class="resource-side-card">

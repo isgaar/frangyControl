@@ -45,11 +45,13 @@
                     </div>
                 </div>
 
-                {!! Form::model($user, ['route' => ['usuarios.update', $user->id], 'method' => 'put']) !!}
+                <form action="{{ route('usuarios.update', $user->id) }}" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="name">Nombre del usuario</label>
-                            {!! Form::text('name', $user->name, ['class' => 'form-control', 'id' => 'name', 'oninput' => 'capitalizeInput(this)']) !!}
+                            <input type="text" name="name" id="name" class="form-control" oninput="capitalizeInput(this)" value="{{ old('name', $user->name) }}">
                             @if ($errors->has('name'))
                                 <span class="text-danger d-block mt-2">{{ $errors->first('name') }}</span>
                             @endif
@@ -57,7 +59,7 @@
 
                         <div class="form-group mb-0">
                             <label for="email">Correo electrónico</label>
-                            {!! Form::email('email', $user->email, ['class' => 'form-control', 'id' => 'email']) !!}
+                            <input type="email" name="email" id="email" class="form-control" value="{{ old('email', $user->email) }}">
                             @if ($errors->has('email'))
                                 <span class="text-danger d-block mt-2">{{ $errors->first('email') }}</span>
                             @endif
@@ -75,8 +77,13 @@
 
                         <div class="form-group mb-0">
                             <label for="roles">Rol</label>
-                            {!! Form::select('roles', $roles->pluck('name', 'id'), null, ['class' => 'form-select', 'id' => 'roles']) !!}
-                        </div>
+                            <select name="roles" id="roles" class="form-select">
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id }}" {{ (in_array($role->id, $user->roles->pluck('id')->toArray()) || old('roles') == $role->id) ? 'selected' : '' }}>
+                                        {{ $role->name }}
+                                    </option>
+                                @endforeach
+                            </select>                        </div>
                     </div>
 
                     <div class="resource-form-card__footer">
@@ -85,7 +92,7 @@
                             <button type="submit" class="btn btn-warning">Actualizar usuario</button>
                         </div>
                     </div>
-                {!! Form::close() !!}
+                </form>
             </section>
 
             <aside class="resource-side-card">

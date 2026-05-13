@@ -45,11 +45,16 @@
                     </div>
                 </div>
 
-                {!! Form::model($tipoVehiculo, ['route' => ['catalogos.tipos_vehiculo.update', $tipoVehiculo->id_tvehiculo], 'method' => 'put']) !!}
+                <form action="{{ route('catalogos.tipos_vehiculo.update', $tipoVehiculo->id_tvehiculo) }}" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="tipo">Tipo de vehículo</label>
-                            <input id="tipo" type="text" class="form-control" name="tipo" value="{{ $tipoVehiculo->tipo }}" required oninput="formatInput(this)">
+                            <input id="tipo" type="text" class="form-control @error('tipo') is-invalid @enderror" name="tipo" value="{{ old('tipo', $tipoVehiculo->tipo) }}" required oninput="formatInput(this)">
+                            @error('tipo')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -59,7 +64,7 @@
                             <button type="submit" class="btn btn-warning">Actualizar tipo</button>
                         </div>
                     </div>
-                {!! Form::close() !!}
+                </form>
             </section>
 
             <aside class="resource-side-card">

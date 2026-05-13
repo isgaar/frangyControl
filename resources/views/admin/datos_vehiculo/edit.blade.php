@@ -45,11 +45,16 @@
                     </div>
                 </div>
 
-                {!! Form::model($datoVehiculo, ['route' => ['catalogos.marcas.update', $datoVehiculo->id_vehiculo], 'method' => 'put']) !!}
+                <form action="{{ route('catalogos.marcas.update', $datoVehiculo->id_vehiculo) }}" method="POST">
+                    @csrf
+                    @method('PUT')
                     <div class="resource-kv mt-4">
                         <div class="form-group mb-0">
                             <label for="marca">Marca</label>
-                            {!! Form::UTTextOnly('marca', '', 'marca', $datoVehiculo->marca, $errors, 40, true) !!}
+                            <input type="text" name="marca" id="marca" value="{{ old('marca', $datoVehiculo->marca) }}" class="form-control @error('marca') is-invalid @enderror" maxlength="40" required>
+                            @error('marca')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
 
@@ -59,7 +64,7 @@
                             <button type="submit" class="btn btn-warning">Actualizar marca</button>
                         </div>
                     </div>
-                {!! Form::close() !!}
+                </form>
             </section>
 
             <aside class="resource-side-card">

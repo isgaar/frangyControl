@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            {!! Form::open(['route' => ['catalogos.servicios.destroy', $tipoServicio->id_servicio], 'method' => 'get']) !!}
+            <form action="{{ route('catalogos.servicios.destroy', $tipoServicio->id_servicio) }}" method="GET">
                 <div class="resource-kv mt-4">
                     <div class="resource-kv__item">
                         <span class="resource-kv__label">Nombre del servicio</span>
@@ -51,7 +51,7 @@
                         <button type="submit" class="btn btn-danger">Eliminar servicio</button>
                     </div>
                 </div>
-            {!! Form::close() !!}
+            </form>
         </section>
     </div>
 @stop
