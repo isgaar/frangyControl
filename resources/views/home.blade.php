@@ -22,6 +22,9 @@
                 <p style="font-size:0.9rem;">Consulta métricas clave, revisa órdenes recientes y entra rápido a los módulos más usados.</p>
             </div>
             <div class="resource-hero__actions">
+                <a href="{{ route('panel.pdf') }}" class="btn btn-light" style="font-size:0.9rem; font-weight:800;">
+                    <i class="fas fa-file-pdf me-1"></i> Reporte PDF
+                </a>
                 @foreach ($quickActions as $action)
                     <a href="{{ route($action['route']) }}"
                        class="btn {{ $loop->first ? 'btn-primary' : 'btn-outline-light' }}"
@@ -103,8 +106,8 @@
                     <div class="d-flex gap-2" style="height:120px; align-items:flex-end;">
                         @foreach ($weeklyBars as $b)
                         <div class="d-flex flex-column align-items-center flex-fill" style="height:100%; justify-content:flex-end; gap:2px;">
-                            <div class="w-100 position-relative" style="height:{{ max(2, $b['cur_pct']) }}%; background:#0d6efd; border-radius:3px 3px 0 0;" title="{{ $b['cur'] }} órdenes"></div>
-                            <div class="w-100 position-relative" style="height:{{ max(2, $b['pre_pct']) }}%; background:#e9ecef; border-radius:3px 3px 0 0;" title="{{ $b['pre'] }} órdenes"></div>
+                            <div class="w-100 position-relative" style="height:{{ max(2, $b['cur_pct']) }}%; background:var(--bs-primary); border-radius:3px 3px 0 0;" title="{{ $b['cur'] }} órdenes"></div>
+                            <div class="w-100 position-relative" style="height:{{ max(2, $b['pre_pct']) }}%; background:var(--bs-secondary-bg); border-radius:3px 3px 0 0;" title="{{ $b['pre'] }} órdenes"></div>
                             <span class="text-muted text-center" style="font-size:0.65rem; margin-top:4px;">{{ $b['lbl'] }}</span>
                         </div>
                         @endforeach
@@ -112,11 +115,11 @@
 
                     <div class="d-flex gap-3 mt-2">
                         <span class="d-flex align-items-center gap-1 text-muted" style="font-size:0.75rem;">
-                            <span style="width:8px; height:8px; border-radius:50%; background:#0d6efd; display:inline-block; flex-shrink:0;"></span>
+                            <span style="width:8px; height:8px; border-radius:50%; background:var(--bs-primary); display:inline-block; flex-shrink:0;"></span>
                             Esta semana
                         </span>
                         <span class="d-flex align-items-center gap-1 text-muted" style="font-size:0.75rem;">
-                            <span style="width:8px; height:8px; border-radius:50%; background:#e9ecef; border:.5px solid #ced4da; display:inline-block; flex-shrink:0;"></span>
+                            <span style="width:8px; height:8px; border-radius:50%; background:var(--bs-secondary-bg); border:.5px solid var(--bs-border-color); display:inline-block; flex-shrink:0;"></span>
                             Semana anterior
                         </span>
                     </div>
@@ -133,7 +136,7 @@
 
                     <div class="d-flex align-items-center gap-3">
                         <svg width="88" height="88" viewBox="0 0 88 88" style="flex-shrink:0;">
-                            <circle cx="44" cy="44" r="32" fill="none" stroke="#e9ecef" stroke-width="14"/>
+                            <circle cx="44" cy="44" r="32" fill="none" stroke="var(--bs-secondary-bg)" stroke-width="14"/>
                             @php
                                 $circumference = 201.06;
                                 $offset = 0;
@@ -165,7 +168,7 @@
                                     </span>
                                     <span class="text-muted" style="font-size:0.75rem;">{{ $c['pct'] }}% ({{ $c['count'] }})</span>
                                 </div>
-                                <div style="height:3px; background:#e9ecef; border-radius:2px;">
+                                <div style="height:3px; background:var(--bs-secondary-bg); border-radius:2px;">
                                     <div style="height:3px; width:{{ $c['pct'] }}%; background:{{ $c['color'] }}; border-radius:2px;"></div>
                                 </div>
                             </div>
@@ -254,10 +257,10 @@
                         <div class="d-flex flex-column align-items-center" style="width:16px; padding-top:3px; flex-shrink:0;">
                             <div style="width:8px; height:8px; border-radius:50%; background:{{ $item['color'] }}; flex-shrink:0;"></div>
                             @if (!$loop->last)
-                            <div style="width:1px; flex:1; background:#dee2e6; margin-top:4px; min-height:20px;"></div>
+                            <div style="width:1px; flex:1; background:var(--bs-border-color); margin-top:4px; min-height:20px;"></div>
                             @endif
                         </div>
-                        <div class="{{ $loop->last ? '' : 'pb-3' }} flex-fill" style="{{ $loop->last ? '' : 'border-bottom:.5px solid #f0f0f0;' }}">
+                        <div class="{{ $loop->last ? '' : 'pb-3' }} flex-fill" style="{{ $loop->last ? '' : 'border-bottom:.5px solid var(--bs-border-color);' }}">
                             <p class="mb-0 fw-medium" style="font-size:0.78rem; font-weight:800;">{{ $item['title'] }}</p>
                             <p class="mb-0 text-muted" style="font-size:0.75rem;">{{ $item['meta'] }}</p>
                         </div>
@@ -318,7 +321,7 @@
                     <div class="d-flex flex-column gap-3 mt-4">
                         @foreach (array_slice($stats, 4) as $stat)
                         <a href="{{ $stat['url'] }}" style="text-decoration:none; color:inherit; display:block;">
-                            <div class="d-flex align-items-center p-3 rounded-3" style="background:#f8f9fa; border:1px solid #e9ecef; transition:all 0.2s;">
+                            <div class="d-flex align-items-center p-3 rounded-3 bg-body-tertiary" style="border:1px solid var(--bs-border-color); transition:all 0.2s;">
                                 <div class="d-flex align-items-center justify-content-center rounded-2 me-3" style="width:40px; height:40px; background:var(--bs-{{ $stat['accent'] }}); color:white;">
                                     <i class="{{ $stat['icon'] }}"></i>
                                 </div>

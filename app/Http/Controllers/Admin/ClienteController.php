@@ -18,15 +18,16 @@ class ClienteController extends Controller
     public function index(Request $request)
     {
         $search = trim((string) $request->input('search', ''));
+        $filter = $request->input('filter', null);
         $limit = max(1, (int) $request->input('limit', 10));
         $sortBy = in_array($request->input('sort_by'), ['id_cliente', 'nombreCompleto'], true)
             ? $request->input('sort_by')
             : 'id_cliente';
         $sortOrder = $request->input('sort_order') === 'desc' ? 'desc' : 'asc';
 
-        if ($search !== '' || $sortBy === 'nombreCompleto') {
+        if ($search !== '' || $sortBy === 'nombreCompleto' || $filter === 'nuevos_mes') {
             $clientes = Cache::remember('catalogos.ordenes.clientes', now()->addMinutes(10), fn () =>
-                Cliente::query()->get(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc'])
+                Cliente::query()->get(['id_cliente', 'nombreCompleto', 'telefono', 'correo', 'rfc', 'created_at'])
             );
 
             if ($search !== '') {
@@ -38,14 +39,24 @@ class ClienteController extends Controller
                 ], $search));
             }
 
+            if ($filter === 'nuevos_mes') {
+                $startOfMonth = now()->startOfMonth();
+                $clientes = $clientes->filter(fn (Cliente $cliente) => $cliente->created_at >= $startOfMonth);
+            }
+
             $clientes = $sortBy === 'nombreCompleto'
                 ? $clientes->sortBy(fn (Cliente $cliente) => ClientDataSecurity::normalize('nombreCompleto', $cliente->nombreCompleto), SORT_REGULAR, $sortOrder === 'desc')
                 : $clientes->sortBy('id_cliente', SORT_REGULAR, $sortOrder === 'desc');
 
             $data = $this->paginateClients($clientes->values(), $limit, $request);
         } else {
-            $data = Cliente::query()
-                ->orderBy('id_cliente', $sortOrder)
+            $query = Cliente::query();
+            
+            if ($filter === 'nuevos_mes') {
+                $query->where('created_at', '>=', now()->startOfMonth());
+            }
+            
+            $data = $query->orderBy('id_cliente', $sortOrder)
                 ->paginate($limit)
                 ->withQueryString();
         }

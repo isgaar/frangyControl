@@ -28,6 +28,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/panel', [HomeController::class, 'index'])->name('panel.index');
+Route::get('/panel/pdf', [HomeController::class, 'exportPdf'])->name('panel.pdf');
 Route::redirect('/home', '/panel');
 
 Route::get('/acerca', [HomeController::class, 'about'])->name('acerca.index');

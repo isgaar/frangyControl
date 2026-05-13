@@ -8,6 +8,7 @@ use App\Models\Ordenes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
+use PDF;
 
 class HomeController extends Controller
 {
@@ -91,7 +92,7 @@ class HomeController extends Controller
                 'icon' => 'fas fa-tools',
                 'accent' => 'info',
                 'caption' => 'Trabajo activo',
-                'url' => route('ordenes.index'),
+                'url' => route('ordenes.index', ['status' => 'en proceso']),
             ],
             [
                 'label' => 'Finalizadas',
@@ -99,7 +100,7 @@ class HomeController extends Controller
                 'icon' => 'fas fa-check-circle',
                 'accent' => 'success',
                 'caption' => 'Órdenes cerradas',
-                'url' => route('ordenes.index'),
+                'url' => route('ordenes.index', ['status' => 'finalizada']),
             ],
             [
                 'label' => 'Vencidas',
@@ -107,7 +108,7 @@ class HomeController extends Controller
                 'icon' => 'fas fa-triangle-exclamation',
                 'accent' => 'danger',
                 'caption' => 'Fecha de entrega vencida',
-                'url' => route('ordenes.index'),
+                'url' => route('ordenes.index', ['filter' => 'vencidas']),
             ],
             [
                 'label' => 'Clientes del mes',
@@ -115,7 +116,7 @@ class HomeController extends Controller
                 'icon' => 'fas fa-user-plus',
                 'accent' => 'warning',
                 'caption' => 'Altas del periodo',
-                'url' => route('clientes.index'),
+                'url' => route('clientes.index', ['filter' => 'nuevos_mes']),
             ],
             [
                 'label' => 'Sin asignar',
@@ -123,7 +124,7 @@ class HomeController extends Controller
                 'icon' => 'fas fa-user-clock',
                 'accent' => 'danger',
                 'caption' => 'Pendientes de responsable',
-                'url' => route('ordenes.index'),
+                'url' => route('ordenes.index', ['filter' => 'sin_asignar']),
             ],
         ];
 
@@ -365,5 +366,68 @@ class HomeController extends Controller
     public function about(Request $request)
     {
         return view('acerca');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $today = Carbon::today();
+        $periodStart = now()->startOfMonth();
+
+        $totalOrders = Ordenes::count();
+        $ordersInProgress = Ordenes::where('status', 'en proceso')->count();
+        $finishedOrders = Ordenes::where('status', 'finalizada')->count();
+        $overdueOrdersCount = Ordenes::query()
+            ->where('status', '!=', 'finalizada')
+            ->whereNotNull('fechaEntrega')
+            ->whereDate('fechaEntrega', '<', $today)
+            ->count();
+        $newClientsInPeriod = Cliente::query()
+            ->where('created_at', '>=', $periodStart)
+            ->count();
+        $unassignedOrdersCount = Ordenes::query()
+            ->whereNull('id')
+            ->count();
+
+        $recentOrders = Ordenes::query()
+            ->with(['cliente', 'vehiculo', 'servicio'])
+            ->latest('created_at')
+            ->limit(10)
+            ->get();
+
+        $totalOrdersCount = Ordenes::whereNotNull('servicio_id')->count();
+        $topServices = Ordenes::whereNotNull('servicio_id')
+            ->select('servicio_id', \DB::raw('COUNT(*) as count'))
+            ->groupBy('servicio_id')
+            ->orderByDesc('count')
+            ->limit(5)
+            ->with('servicio')
+            ->get();
+
+        $serviceDistribution = $topServices->map(function($item) use ($totalOrdersCount) {
+            $pct = $totalOrdersCount > 0 ? round(($item->count / $totalOrdersCount) * 100) : 0;
+            return [
+                'name' => optional($item->servicio)->nombreServicio ?? 'Desconocido',
+                'pct' => $pct,
+                'count' => $item->count,
+            ];
+        });
+
+        $html = view('admin.reportes.dashboard_pdf', [
+            'totalOrders' => $totalOrders,
+            'ordersInProgress' => $ordersInProgress,
+            'finishedOrders' => $finishedOrders,
+            'overdueOrdersCount' => $overdueOrdersCount,
+            'newClientsInPeriod' => $newClientsInPeriod,
+            'unassignedOrdersCount' => $unassignedOrdersCount,
+            'recentOrders' => $recentOrders,
+            'serviceDistribution' => $serviceDistribution,
+            'serviceTotal' => $totalOrdersCount,
+            'date' => now()->format('d/m/Y H:i'),
+        ])->render();
+
+        $pdf = PDF::loadHTML($html);
+        $pdf->setPaper('letter', 'portrait');
+
+        return $pdf->download('reporte_panel_' . now()->format('Ymd_His') . '.pdf');
     }
 }

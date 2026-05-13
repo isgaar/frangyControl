@@ -42,6 +42,7 @@ class OrdenController extends Controller
         $limit = $request->input('limit', 5);
         $order = $request->input('order', 'desc');
         $status = $request->input('status', null);
+        $filter = $request->input('filter', null);
         $query = Ordenes::query()->with(['cliente', 'vehiculo', 'servicio', 'user']);
 
         if (trim($search) != '') {
@@ -69,6 +70,14 @@ class OrdenController extends Controller
 
         if (!is_null($status)) {
             $query->where('status', $status);
+        }
+
+        if ($filter === 'vencidas') {
+            $query->where('status', '!=', 'finalizada')
+                  ->whereNotNull('fechaEntrega')
+                  ->whereDate('fechaEntrega', '<', Carbon::today());
+        } elseif ($filter === 'sin_asignar') {
+            $query->whereNull('id');
         }
 
         $ordenes = $query->orderBy('id_ordenes', $order)->paginate($limit)->withQueryString();
