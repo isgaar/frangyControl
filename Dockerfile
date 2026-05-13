@@ -19,7 +19,7 @@ RUN npm run build
 # =============================================================================
 # STAGE 2 — PHP Alpine (imagen final, ~150 MB vs ~800 MB anterior)
 # =============================================================================
-FROM docker.io/library/php:8.2-fpm-alpine
+FROM docker.io/library/php:8.4-fpm-alpine
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
