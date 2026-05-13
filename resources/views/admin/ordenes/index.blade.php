@@ -184,7 +184,8 @@
                                                 </a>
                                                 @if (auth()->user()->can('admin.orden.destroy'))
                                                     <button class="btn btn-outline-danger btn-sm" title="Eliminar orden"
-                                                        data-toggle="modal" data-target="#deleteModal{{ $row->id_ordenes }}">
+                                                        data-bs-toggle="modal" data-bs-target="#globalDeleteModal"
+                                                        onclick="document.getElementById('deleteForm').action = '{{ route('ordenes.destroy', $row->id_ordenes) }}'; document.getElementById('deleteOrderId').innerText = '{{ $row->id_ordenes }}';">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 @endif
@@ -192,32 +193,7 @@
                                         </td>
                                     </tr>
 
-                                    @if (auth()->user()->can('admin.orden.destroy'))
-                                        <div class="modal fade" id="deleteModal{{ $row->id_ordenes }}" tabindex="-1"
-                                            aria-labelledby="deleteModalLabel{{ $row->id_ordenes }}" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                    <div class="modal-header bg-danger text-white">
-                                                        <h5 class="modal-title" style="font-weight:800;">Eliminar orden</h5>
-                                                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Cerrar">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        ¿Seguro que deseas eliminar la orden <strong>#{{ $row->id_ordenes }}</strong>?
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="font-weight:600;">Cancelar</button>
-                                                        <form method="POST" action="{{ route('ordenes.destroy', $row->id_ordenes) }}">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger" style="font-weight:800;">Eliminar</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
+
                                 @endforeach
                             </tbody>
                         </table>
@@ -232,4 +208,29 @@
 
         </section>
     </div>
+
+    @if (auth()->user()->can('admin.orden.destroy'))
+        {{-- Modal global de eliminación --}}
+        <div class="modal fade" id="globalDeleteModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" style="font-weight:800;">Eliminar orden</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Seguro que deseas eliminar la orden <strong id="deleteOrderId"></strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal" style="font-weight:600;">Cancelar</button>
+                        <form id="deleteForm" method="POST" action="">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" style="font-weight:800;">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @stop
