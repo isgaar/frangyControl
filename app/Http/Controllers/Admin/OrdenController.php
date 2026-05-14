@@ -17,6 +17,7 @@ use App\Models\TipoServicio;
 use App\Models\Fotografia;
 use App\Models\Cotizacion;
 use App\Models\Inventario;
+use App\Models\User;
 use PDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
