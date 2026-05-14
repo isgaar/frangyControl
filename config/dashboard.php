@@ -96,6 +96,14 @@ return [
                     'can' => 'admin.users.usuarios',
                 ],
                 [
+                    'label' => 'Importar BD',
+                    'description' => 'Carga masiva de datos',
+                    'route' => 'database.import.index',
+                    'icon' => 'fas fa-database',
+                    'active' => ['base-de-datos.*'],
+                    'can' => 'admin.users.usuarios',
+                ],
+                [
                     'label' => 'Acerca',
                     'description' => 'Créditos y proyecto',
                     'route' => 'acerca.index',

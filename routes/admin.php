@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\InventarioController;
 use App\Http\Controllers\Admin\ChatController;
 use App\Http\Controllers\Admin\AuditController;
+use App\Http\Controllers\Admin\DatabaseController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:admin.users.usuarios')
@@ -149,4 +150,12 @@ Route::middleware('can:admin.users.usuarios')
     ->name('auditoria.')
     ->group(function () {
         Route::get('/', [AuditController::class, 'index'])->name('index');
+    });
+
+Route::middleware('can:admin.users.usuarios')
+    ->prefix('base-de-datos')
+    ->name('database.')
+    ->group(function () {
+        Route::get('/importar', [DatabaseController::class, 'index'])->name('import.index');
+        Route::post('/importar', [DatabaseController::class, 'import'])->name('import.process');
     });
