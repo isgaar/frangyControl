@@ -93,6 +93,14 @@ class UserController extends Controller
 
             $token = JWTAuth::fromUser($user);
 
+            \App\Models\UserActivity::create([
+                'user_id' => Auth::id(),
+                'action' => 'Creación de Usuario',
+                'description' => 'Se ha creado la cuenta para: ' . $user->email,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             DB::commit();
             Cache::forget('catalogos.ordenes.users');
 
@@ -169,6 +177,14 @@ class UserController extends Controller
 
             // Actualizar roles
             $user->roles()->sync($request->input('roles'));
+
+            \App\Models\UserActivity::create([
+                'user_id' => Auth::id(),
+                'action' => 'Edición de Usuario',
+                'description' => 'Se ha editado el perfil de: ' . $user->email,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
 
             DB::commit();
             Cache::forget('catalogos.ordenes.users');

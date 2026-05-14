@@ -20,6 +20,8 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'last_login_at',
+        'last_login_ip',
     ];
     /**
      * The attributes that should be hidden for serialization.
@@ -45,5 +47,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(UserActivity::class);
     }
 }

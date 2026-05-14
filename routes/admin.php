@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\InventarioController;
 use App\Http\Controllers\Admin\ChatController;
+use App\Http\Controllers\Admin\AuditController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:admin.users.usuarios')
@@ -141,4 +142,11 @@ Route::prefix('chat')
         Route::get('/messages/{userId}', [ChatController::class, 'fetchMessages'])->name('messages');
         Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
         Route::get('/unread-count', [ChatController::class, 'getUnreadCount'])->name('unread_count');
+    });
+
+Route::middleware('can:admin.users.usuarios')
+    ->prefix('auditoria')
+    ->name('auditoria.')
+    ->group(function () {
+        Route::get('/', [AuditController::class, 'index'])->name('index');
     });

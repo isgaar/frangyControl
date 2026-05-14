@@ -88,6 +88,14 @@ return [
                     'can' => 'admin.users.usuarios',
                 ],
                 [
+                    'label' => 'Bitácora',
+                    'description' => 'Registro de actividad',
+                    'route' => 'auditoria.index',
+                    'icon' => 'fas fa-history',
+                    'active' => ['auditoria.*'],
+                    'can' => 'admin.users.usuarios',
+                ],
+                [
                     'label' => 'Acerca',
                     'description' => 'Créditos y proyecto',
                     'route' => 'acerca.index',
