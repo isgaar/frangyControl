@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role;
 use JWTAuth;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserCredentialsMail;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -81,6 +83,14 @@ class UserController extends Controller
 
             $user->roles()->sync([$validated['roles']]);
 
+            // Enviar credenciales por correo electrónico
+            try {
+                Mail::to($user->email)->send(new UserCredentialsMail($user, $validated['password']));
+            } catch (\Exception $e) {
+                // Si falla el correo, no revertimos la transacción, pero podemos registrar el error o notificar
+                \Log::error("No se pudo enviar el correo de credenciales a {$user->email}: " . $e->getMessage());
+            }
+
             $token = JWTAuth::fromUser($user);
 
             DB::commit();
@@ -118,8 +128,12 @@ class UserController extends Controller
             DB::beginTransaction();
 
             $valida = User::where('email', '=', $request['email'])->first();
+            
+            // Verificar si el usuario actual es el dueño del perfil
+            $isOwner = Auth::id() == $id;
+
             if ($valida != null && $valida->id == $id) {
-                if ($request['password'] != null) {
+                if ($isOwner && $request['password'] != null) {
                     $data = [
                         'name' => $request['name'],
                         'email' => $request['email'],
@@ -132,7 +146,7 @@ class UserController extends Controller
                     ];
                 }
             } elseif ($valida == null) {
-                if ($request['password'] != null) {
+                if ($isOwner && $request['password'] != null) {
                     $data = [
                         'name' => $request['name'],
                         'email' => $request['email'],

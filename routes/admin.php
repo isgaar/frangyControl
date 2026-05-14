@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\TipoVehiculoController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\CampanaController;
 use App\Http\Controllers\Admin\InventarioController;
+use App\Http\Controllers\Admin\ChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:admin.users.usuarios')
@@ -131,4 +132,13 @@ Route::prefix('inventario')
         Route::get('/{inventario}/editar', [InventarioController::class, 'edit'])->name('edit');
         Route::put('/{inventario}', [InventarioController::class, 'update'])->name('update');
         Route::delete('/{inventario}', [InventarioController::class, 'destroy'])->name('destroy');
+    });
+
+Route::prefix('chat')
+    ->name('chat.')
+    ->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('index');
+        Route::get('/messages/{userId}', [ChatController::class, 'fetchMessages'])->name('messages');
+        Route::post('/send', [ChatController::class, 'sendMessage'])->name('send');
+        Route::get('/unread-count', [ChatController::class, 'getUnreadCount'])->name('unread_count');
     });

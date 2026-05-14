@@ -41,7 +41,13 @@
                     <div>
                         <span class="resource-form-card__eyebrow">Perfil</span>
                         <h2 class="resource-form-card__title">{{ $user->name }}</h2>
-                        <p class="resource-form-card__copy">La contraseña es opcional. Solo captúrala si necesitas reemplazar la actual.</p>
+                        <p class="resource-form-card__copy">
+                            @if(Auth::id() == $user->id)
+                                La contraseña es opcional. Solo captúrala si necesitas reemplazar la actual.
+                            @else
+                                Por motivos de seguridad, solo el titular de la cuenta puede cambiar su propia contraseña.
+                            @endif
+                        </p>
                     </div>
                 </div>
 
@@ -65,6 +71,7 @@
                             @endif
                         </div>
 
+                        @if(Auth::id() == $user->id)
                         <div class="form-group mb-0">
                             <label for="password">Nueva contraseña</label>
                             <div class="input-group">
@@ -74,6 +81,7 @@
                                 </button>
                             </div>
                         </div>
+                        @endif
 
                         <div class="form-group mb-0">
                             <label for="roles">Rol</label>

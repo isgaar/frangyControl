@@ -54,6 +54,13 @@ return [
                     'icon' => 'fas fa-boxes',
                     'active' => ['inventario.*'],
                 ],
+                [
+                    'label' => 'Chat',
+                    'description' => 'Mensajes internos',
+                    'route' => 'chat.index',
+                    'icon' => 'fas fa-comments',
+                    'active' => ['chat.*'],
+                ],
             ],
         ],
         [

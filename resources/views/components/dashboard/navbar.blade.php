@@ -31,6 +31,11 @@
         </div>
 
         <div class="dashboard-navbar__right">
+            <a href="{{ route('chat.index') }}" class="dashboard-theme-toggle" style="text-decoration: none; position: relative; margin-right: 8px; color: var(--dashboard-muted);">
+                <i class="fas fa-bell"></i>
+                <span id="nav-unread-count" class="badge bg-danger rounded-circle position-absolute" style="top: -2px; right: -2px; font-size: 0.55rem; padding: 0.25em 0.4em; display: none;">0</span>
+            </a>
+
             <button class="dashboard-theme-toggle" type="button" data-theme-toggle aria-label="Activar modo oscuro">
                 <i class="fas fa-moon" data-theme-icon></i>
                 <span class="dashboard-theme-toggle__label" data-theme-text>Modo oscuro</span>

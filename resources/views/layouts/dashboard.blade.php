@@ -247,5 +247,29 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @include('layouts.partials.theme-script')
     @yield('js')
+    <script>
+        $(document).ready(function() {
+            @auth
+            function fetchUnreadCount() {
+                $.ajax({
+                    url: '{{ route("chat.unread_count") }}',
+                    type: 'GET',
+                    success: function(res) {
+                        const count = res.count;
+                        const badge = $('#nav-unread-count');
+                        if (count > 0) {
+                            badge.text(count).show();
+                        } else {
+                            badge.hide();
+                        }
+                    }
+                });
+            }
+            
+            fetchUnreadCount();
+            setInterval(fetchUnreadCount, 10000); // Revisar cada 10 segundos globalmente
+            @endauth
+        });
+    </script>
 </body>
 </html>
