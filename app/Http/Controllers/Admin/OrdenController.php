@@ -14,9 +14,9 @@ use App\Models\Cliente;
 use App\Models\DatosVehiculo;
 use App\Models\TipoVehiculo;
 use App\Models\TipoServicio;
-use App\Models\User;
 use App\Models\Fotografia;
 use App\Models\Cotizacion;
+use App\Models\Inventario;
 use PDF;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
@@ -404,6 +404,43 @@ class OrdenController extends Controller
         $pdf->setPaper('letter', 'portrait');
 
         return $pdf->download('orden_' . Carbon::now()->format('Ymd_His') . '.pdf');
+    }
+
+    public function imprimirTicket($id_ordenes)
+    {
+        $orden = Ordenes::with(['cliente', 'vehiculo', 'servicio', 'user'])->findOrFail($id_ordenes);
+
+        return view('admin.ordenes.ticket', [
+            'orden' => $orden,
+        ]);
+    }
+
+    public function addInventario(Request $request, $id_ordenes)
+    {
+        $request->validate([
+            'inventario_id' => 'required|exists:inventarios,id_inventario',
+            'cantidad' => 'required|integer|min:1'
+        ]);
+
+        $orden = Ordenes::findOrFail($id_ordenes);
+        $inventario = Inventario::findOrFail($request->inventario_id);
+        $cantidad = $request->cantidad;
+
+        if ($inventario->cantidad_stock < $cantidad) {
+            return back()->with('status', 'Stock insuficiente para este producto.')->with('status_type', 'danger');
+        }
+
+        // Descontar inventario
+        $inventario->decrement('cantidad_stock', $cantidad);
+
+        // Relacionar
+        $orden->belongsToMany(Inventario::class, 'orden_inventario', 'orden_id', 'inventario_id')
+              ->attach($inventario->id_inventario, [
+                  'cantidad' => $cantidad,
+                  'precio_unitario' => $inventario->precio_venta
+              ]);
+
+        return back()->with('status', 'Producto agregado a la orden y stock descontado.')->with('status_type', 'success');
     }
 
     public function destroy($id_ordenes)

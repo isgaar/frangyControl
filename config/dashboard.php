@@ -40,6 +40,20 @@ return [
                     'icon' => 'fas fa-file-invoice-dollar',
                     'active' => ['cotizaciones.*'],
                 ],
+                [
+                    'label' => 'Campañas',
+                    'description' => 'Ofertas y recordatorios',
+                    'route' => 'campanas.index',
+                    'icon' => 'fas fa-bullhorn',
+                    'active' => ['campanas.*'],
+                ],
+                [
+                    'label' => 'Inventario',
+                    'description' => 'Almacén y Refacciones',
+                    'route' => 'inventario.index',
+                    'icon' => 'fas fa-boxes',
+                    'active' => ['inventario.*'],
+                ],
             ],
         ],
         [

@@ -322,6 +322,13 @@
 
 @section('content')
 @php
+    $inventariosDisponibles = \App\Models\Inventario::where('cantidad_stock', '>', 0)->orderBy('nombre')->get();
+    $productosAgregados = \Illuminate\Support\Facades\DB::table('orden_inventario')
+        ->join('inventarios', 'orden_inventario.inventario_id', '=', 'inventarios.id_inventario')
+        ->where('orden_inventario.orden_id', $orden->id_ordenes)
+        ->get();
+@endphp
+@php
     $cliente      = $orden->cliente;
     $fechaEntrega = $orden->fechaEntrega
         ? \Carbon\Carbon::parse($orden->fechaEntrega)->format('d/m/Y')
@@ -387,6 +394,9 @@
                     </a>
                     <a href="{{ route('ordenes.export', $orden->id_ordenes) }}" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-file-pdf me-1"></i> PDF
+                    </a>
+                    <a href="{{ route('ordenes.ticket', $orden->id_ordenes) }}" target="_blank" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-print me-1"></i> Ticket POS
                     </a>
                     <a href="{{ route('ordenes.index') }}" class="btn btn-outline-secondary btn-sm">
                         <i class="fas fa-arrow-left me-1"></i> Volver
@@ -518,6 +528,86 @@
         </div>
     </div>
 
+    {{-- ══ INVENTARIO / PRODUCTOS UTILIZADOS ════════════════════════ --}}
+    <div class="od-card">
+        <div class="od-card__head">
+            <div>
+                <span class="od-card__eyebrow">Almacén</span>
+                <h2 class="od-card__title">Refacciones Utilizadas</h2>
+                <p class="od-card__copy">Productos del inventario asignados a esta orden.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalAddInventario">
+                <i class="fas fa-plus"></i> Agregar Producto
+            </button>
+        </div>
+        <div class="od-card__body">
+            @if ($productosAgregados->isNotEmpty())
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Código</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($productosAgregados as $prod)
+                        <tr>
+                            <td>{{ $prod->nombre }}</td>
+                            <td>{{ $prod->codigo_barras ?? 'N/A' }}</td>
+                            <td>{{ $prod->cantidad }}</td>
+                            <td>${{ number_format($prod->precio_unitario, 2) }}</td>
+                            <td>${{ number_format($prod->cantidad * $prod->precio_unitario, 2) }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @else
+            <div class="text-center py-3 od-empty">
+                <p class="mb-0">No se han agregado productos a esta orden.</p>
+            </div>
+            @endif
+        </div>
+    </div>
+
+    {{-- Modal para agregar inventario --}}
+    <div class="modal fade" id="modalAddInventario" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form action="{{ route('ordenes.add_inventario', $orden->id_ordenes) }}" method="POST">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar Refacción</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Seleccionar Producto</label>
+                            <select name="inventario_id" class="form-select" required>
+                                <option value="">-- Elige un producto --</option>
+                                @foreach($inventariosDisponibles as $inv)
+                                    <option value="{{ $inv->id_inventario }}">{{ $inv->nombre }} (Stock: {{ $inv->cantidad_stock }} | Precio: ${{ $inv->precio_venta }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cantidad a descontar</label>
+                            <input type="number" name="cantidad" class="form-control" min="1" value="1" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Agregar y Descontar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {{-- ══ EVIDENCIA FOTOGRÁFICA ════════════════════════════════════ --}}
     <div class="od-card">
         <div class="od-card__head">
@@ -579,6 +669,9 @@
                 </a>
                 <a href="{{ route('ordenes.export', $orden->id_ordenes) }}" class="btn btn-outline-secondary btn-sm">
                     <i class="fas fa-file-pdf me-1"></i> Exportar a PDF
+                </a>
+                <a href="{{ route('ordenes.ticket', $orden->id_ordenes) }}" target="_blank" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-print me-1"></i> Imprimir Ticket
                 </a>
             </div>
         </div>

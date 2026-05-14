@@ -7,6 +7,8 @@ use App\Http\Controllers\Admin\OrdenController;
 use App\Http\Controllers\Admin\TiposController;
 use App\Http\Controllers\Admin\TipoVehiculoController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\CampanaController;
+use App\Http\Controllers\Admin\InventarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('can:admin.users.usuarios')
@@ -103,6 +105,30 @@ Route::prefix('ordenes')
         Route::get('/{id_ordenes}/editar', [OrdenController::class, 'edit'])->name('edit');
         Route::put('/{id_ordenes}', [OrdenController::class, 'update'])->name('update');
         Route::get('/{id_ordenes}/exportar-pdf', [OrdenController::class, 'exportToPDF'])->name('export');
+        Route::get('/{id_ordenes}/ticket', [OrdenController::class, 'imprimirTicket'])->name('ticket');
+        Route::post('/{id_ordenes}/inventario', [OrdenController::class, 'addInventario'])->name('add_inventario');
         Route::delete('/{id_ordenes}', [OrdenController::class, 'destroy'])->name('destroy');
         Route::get('/{id_ordenes}', [OrdenController::class, 'show'])->name('show');
+    });
+
+Route::prefix('campanas')
+    ->name('campanas.')
+    ->group(function () {
+        Route::get('/', [CampanaController::class, 'index'])->name('index');
+        Route::get('/nueva', [CampanaController::class, 'create'])->name('create');
+        Route::post('/', [CampanaController::class, 'store'])->name('store');
+        Route::get('/{campana}/editar', [CampanaController::class, 'edit'])->name('edit');
+        Route::put('/{campana}', [CampanaController::class, 'update'])->name('update');
+        Route::delete('/{campana}', [CampanaController::class, 'destroy'])->name('destroy');
+    });
+
+Route::prefix('inventario')
+    ->name('inventario.')
+    ->group(function () {
+        Route::get('/', [InventarioController::class, 'index'])->name('index');
+        Route::get('/nuevo', [InventarioController::class, 'create'])->name('create');
+        Route::post('/', [InventarioController::class, 'store'])->name('store');
+        Route::get('/{inventario}/editar', [InventarioController::class, 'edit'])->name('edit');
+        Route::put('/{inventario}', [InventarioController::class, 'update'])->name('update');
+        Route::delete('/{inventario}', [InventarioController::class, 'destroy'])->name('destroy');
     });

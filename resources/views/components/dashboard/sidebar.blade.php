@@ -74,4 +74,8 @@
          aria-valuemax="420"
          aria-valuenow="320">
     </div>
+
+    <div class="dashboard-sidebar__footer" style="padding: 1rem; border-top: 1px solid var(--dashboard-border); font-size: 0.75rem; color: var(--dashboard-muted); text-align: center;">
+        Versión {{ config('frangy.version', '2.0.14') }}
+    </div>
 </aside>

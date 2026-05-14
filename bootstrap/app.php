@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
         // Register any application-level middleware here
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
